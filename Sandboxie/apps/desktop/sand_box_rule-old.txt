@@ -1,0 +1,51 @@
+{
+	"cmd": "getSandBoxRule",
+	"data": [{
+		"name": "hello",
+		"fileExport": 1,
+		"screenCapture": 1,
+		"waterMark": 1,
+		"printer": 1,
+		"allowPrograms": [{
+			"name": "test1",
+			"copyrightInfo": "copy",
+			"processName": "process",
+			"signerInfo": "sign",
+			"originalName": "orogin",
+			"proType": "type"
+		}, {
+			"name": "test2",
+			"copyrightInfo": "copy2",
+			"processName": "proc2",
+			"signerInfo": "sign2",
+			"originalName": "origin2",
+			"proType": "type2"
+		}],
+		"resProtectState": 1,
+		"resList": [{
+			"name": "app1",
+			"resSeq": "5ecas837",
+			"ipMatchInfo": [{
+				"ip": "172.16.110.120",
+				"showUrl": "http://172.16.110.120:22",
+				"defaultShow": true
+			}],
+			"resAuthState": 1,
+			"resAuthremark": "normal"
+		}, {
+			"name": "app2",
+			"resSeq": "5ecde836",
+			"ipMatchInfo": [{
+				"ip": "172.16.110.119",
+				"showUrl": "http://172.16.110.120:22",
+				"defaultShow": true
+			}],
+			"resAuthState": 2,
+			"resAuthremark": "stop",
+			"logo":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlcAAAHsCAYAAAD/3oivAAAgAElEQVR4Aey9P68k13X2u3VxQTPzF6ACRZIjM6OjGUyoTHAuRUxsOHLEA8GYM4FxlF0bEOSEwAv4/QLKBDgZcCIyozMpciB9AWfkJLxYp+d3+ul19q7aVV3VXd39NDBae/171tpPtXovVvfp/tF337//ofhhBsyAGTADZsAMmAEzsAgD"
+		}]
+	}],
+	"err_code": 0,
+	"ret": "success",
+	"timestamp": "2022-03-14T20:54:54.7146074+08:00"
+}

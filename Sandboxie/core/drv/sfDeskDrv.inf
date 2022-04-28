@@ -1,0 +1,60 @@
+;-------------------------------------------------------------------------
+; Copyright 2004 – 2020 Sandboxie Holdings, LLC 
+;
+; This program is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+;
+;    This program is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+;-------------------------------------------------------------------------
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class=System
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider    = "sfDeskDrv Holdings, LLC"
+DriverVer = 03/04/2022,11.48.34.896
+CatalogFile = sfDeskDrv.cat
+
+[DestinationDirs]
+DefaultDestDir          = 12
+MiniFilter.DriverFiles  = 12            ;%windir%\system32\drivers
+
+[MiniFilter.DriverFiles]
+sfDeskDrv.sys
+
+[SourceDisksFiles]
+sfDeskDrv.sys = 1,,
+
+[SourceDisksNames]
+1 = %DiskId1%,,,
+
+[DefaultInstall]
+OptionDesc          = %ServiceDescription%
+CopyFiles           = MiniFilter.DriverFiles
+
+[DefaultInstall.Services]
+AddService          = %ServiceName%,,MiniFilter.Service
+
+[MiniFilter.Service]
+DisplayName    = %ServiceName%
+Description    = %ServiceDescription%
+ServiceBinary  = %12%\sfDeskDrv.sys
+ServiceType    = 2 ;    SERVICE_FILE_SYSTEM_DRIVER
+StartType      = 1 ;    SERVICE_SYSTEM_START
+ErrorControl   = 1 ;    SERVICE_ERROR_NORMAL
+LoadOrderGroup = "File System"
+
+[Strings]
+SG                      = "sfDeskDrv"
+ServiceDescription      = "sfDeskDrv Mini-Filter Driver"
+ServiceName             = "sfDeskDrv"
+DriverName              = "sfDeskDrv"
+DiskId1                 = "sfDeskDrv Driver Installation Disk"

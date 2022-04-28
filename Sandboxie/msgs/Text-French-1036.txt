@@ -1,0 +1,3930 @@
+#----------------------------------------------------------------------------
+# SbieDrv
+#
+# Initialization errors issued to to the System event Log
+#----------------------------------------------------------------------------
+
+1101;evt;inf;01
+SBIE1101 Driver Sandboxie (SbieDrv) version %2 initialisé
+.
+
+1102;evt;inf;01
+SBIE1102 Pilote Sandboxie (SbieDrv) déchargé
+.
+
+1103;evt;err;01
+SBIE1103 Le pilote Sandboxie (SbieDrv) version %2 n'a pu démarrer
+.
+
+1104;evt;err;01
+SBIE1104 Ressources système insuffisantes pour démarrer
+.
+
+1105;evt;err;01
+SBIE1105 Système d'exploitation inconnu :  %2
+.
+
+1106;evt;err;01
+SBIE1106 erreur %2, détail %3
+.
+
+# 1107;evt;err;01
+# SBIE1107 Impossible de accéder au compte du système %2
+# .
+
+1108;evt;err;01
+SBIE1108 La procédure %2 ne peut être analysée
+.
+
+1109;evt;err;01
+SBIE1109 Information de licence invalide :  %2
+.
+
+1110;evt;err;01
+SBIE1110 Impossible d'intercepter le type %3, erreur %2
+.
+
+1111;evt;err;01
+SBIE1111 La DLL système %3 ne peut être chargée %2
+.
+
+1112;evt;err;01
+SBIE1112 La procédure %2 ne peut être localisée
+.
+
+1113;evt;err;01
+SBIE1113 Impossible de trouver système Nt, raison %2
+.
+
+1114;evt;err;01
+SBIE1114 Impossible de trouver système Zw, raison %2
+.
+
+1116;evt;err;01
+SBIE1116 Le pilote ne peut enregistrer la routine de notification du processus %2
+.
+
+1119;evt;err;01
+SBIE1119 Impossible de créer le périphérique API %2
+.
+
+1120;evt;err;01
+SBIE1120 Incohérence service %2
+.
+
+1121;evt;err;01
+SBIE1121 Echec surveillance service %2
+.
+
+1122;evt;err;01
+SBIE1122 Erreur :  %2
+.
+
+#----------------------------------------------------------------------------
+# SbieDrv
+#
+# Error Messages to both Event and Popup Logs
+#----------------------------------------------------------------------------
+
+1151;evt;pop;err;01
+SBIE1151 Impossible de gérer l'instruction %2
+.
+
+1152;evt;pop;err;01
+SBIE1152 Echec de l'allocation trampoline %2
+.
+
+1153;evt;pop;err;01
+SBIE1153 Echec démarrage de Sandboxie. Fermez tous les programmes et réinstallez Sandboxie  OU  redémarrer votre ordinateur.
+.
+
+#----------------------------------------------------------------------------
+# SbieDrv
+#
+# Error Messages to Popup Log
+#----------------------------------------------------------------------------
+
+1201;pop;err;01
+SBIE1201 Mémoire insuffisante
+.
+
+1202;pop;err;01
+SBIE1202 Impossible de mettre à jour la licence :  %2
+.
+
+1203;pop;err;01
+SBIE1203 Impossible de construire la liste des chemins (erreur dans %2)
+.
+
+1204;pop;err;01
+SBIE1204 Echec création Bac à sable pour %3 %2
+.
+
+1211;pop;err;01
+SBIE1211 Impossible de démarrer processus "sandboxé" %2
+.
+
+1212;pop;err;01
+SBIE1212 Impossible de créer le répertoire '%3' %2
+.
+
+1213;pop;err;01
+SBIE1213 Impossible de créer l'objet répertoire '%3' %2
+.
+
+# 1214;pop;err;01
+# SBIE1214 Impossible de injecter SbieDll %2
+# .
+
+# 1215;pop;err;01
+# SBIE1215 Impossible de résoudre le chemin de l'image processus %2
+# .
+
+# 1216;pop;err;01
+# SBIE1216 Echec de la requête de sécurité ID %2
+# .
+
+# 1217;pop;err;01
+# SBIE1217 Impossible de trouver le processus parent
+# .
+
+# 1221;pop;err;01
+# SBIE1221 Impossible de créer la tâche :  %2
+# .
+
+1222;pop;err;02
+SBIE1222 Erreur avec le token de sécurité :  %2
+.
+
+# 1223;pop;err;01
+# SBIE1223 Impossible de remplacer le token :  %2
+# .
+
+# 1224;pop;err;01
+# SBIE1224 Impossible de interroger le token :  %2
+# .
+
+1231;pop;err;01
+SBIE1231 Echec de l'initialisation pour le processus %3 %2
+.
+
+1241;pop;err;01
+SBIE1241 Impossible de monter la ruche du registre :  %2
+.
+
+1242;pop;err;01
+SBIE1242 Moniteur débordement cache
+.
+
+#----------------------------------------------------------------------------
+# SbieDrv
+#
+# Informational Messages to Popup Log
+#----------------------------------------------------------------------------
+
+1301;pop;inf;01
+SBIE1301 Le programme '%2' a démarré hors du Bac à sable
+.
+
+# 1302;pop;inf;01
+# SBIE1302 Bac à sable '%2' n'est pas défini ou est inactif
+# .
+
+1303;pop;inf;01
+SBIE1303 Un seul Bac à sable peut être activé à la fois
+.
+
+# 1304;pop;inf;01
+# SBIE1304 Simulation clavier ou souris bloquée par processus '%2'
+# .
+
+1306;pop;inf;01
+SBIE1306 Le pilote Sandboxie (SbieDrv) ne peut être déchargé actuellement
+.
+
+1307;pop;inf;02
+SBIE1307 Le programme ne peut accéder à Internet à cause des restrictions - %2
+.
+
+1308;pop;inf;02
+SBIE1308 Le programme ne peut démarrer à causes des restrictions - %2
+.
+
+1309;pop;inf;01
+SBIE1309 Accès refusé pour changer mot de passe du compte
+.
+
+1310;pop;inf;01
+SBIE1310 Les fonctionnalités étendues sont désactivées jusqu'à la réactivation de la licence
+.
+
+#1311;pop;inf;01
+#SBIE1311 Blocage de la demande de changement de l'arrière-plan du bureau par processus '%2'
+#.
+
+1312;pop;inf;01
+SBIE1312 Blocage de la demande pour démarrer un programme 16 bit dans la sandbox
+.
+
+1313;pop;inf;01
+SBIE1313 Accès direct au disque est bloqué par le(s) processus de %2
+.
+
+1314;pop;inf;01
+SBIE1314 Blocage de la demande pour modifier les paramètres du pare-feu/réseau par le processus '%2'
+.
+
+# 1315;pop;inf;01
+# SBIE1315 Probablement en raison d'un conflit avec le logiciel : %2
+# .
+
+1316;pop;inf;01
+SBIE1316 Requête bloquée afin de générer un évènement d'appareil (Device) dans le Bac à sable
+.
+
+1319;pop;inf;01
+SBIE1319 Impression vers un fichier bloquée, %2 %3
+.
+
+1320;pop;wrn;01
+SBIE1320 Pour autoriser le Spouleur d'impression à écrire dans des fichiers en dehors du Bac à sable, veuillez double-cliquer sur ce message
+.
+
+1399;pop;inf;01
+%0
+.
+
+#----------------------------------------------------------------------------
+# SbieDrv
+#
+# Configuration Error Messages to both Event and Popup Logs
+#----------------------------------------------------------------------------
+
+1401;evt;pop;inf;01
+SBIE1401 Fichier de configuration introuvable, utilisation réglages par défaut
+.
+
+1402;evt;pop;wrn;01
+SBIE1402 Erreur du fichier configuration à la ligne %3 :  %2
+.
+
+1403;evt;pop;wrn;01
+SBIE1403 Erreur du fichier configuration à la ligne %2 :  ligne trop longue
+.
+
+1404;evt;pop;wrn;01
+SBIE1404 Erreur du fichier configuration à la ligne %2 :  trop de lignes
+.
+
+1405;evt;pop;wrn;01
+SBIE1405 Erreur du fichier configuration à la ligne %2 :  erreur de syntaxe
+.
+
+1406;evt;pop;err;01
+SBIE1406 Expansion manquante ou invalide pour %3 :  %2
+.
+
+# 1407;evt;pop;err;01
+# SBIE1407 Valeur invalide pour réglage %2, utilisation réglage par défaut
+# .
+
+1408;pop;err;01
+SBIE1408 Nom d'utilisateur inconnu pour le SID :  %2
+.
+
+1409;evt;pop;wrn;01
+SBIE1409 Le fichier "templates.ini" ne peut être ouvert
+.
+
+1410;evt;pop;wrn;01
+SBIE1410 Le message suivant indique une erreur dans le fichier "templates.ini"
+.
+
+1411;evt;pop;wrn;01
+SBIE1411 Sandbox %2 indique un modèle inconnu %3
+.
+
+1412;evt;pop;err;01
+SBIE1412 Dans le texte : %2
+.
+
+#----------------------------------------------------------------------------
+# SbieDrv
+#
+# Messages from user mode -- informational -- 2101 through 2199
+#----------------------------------------------------------------------------
+
+2101;pop;inf;01
+SBIE2101 %2
+.
+
+2102;pop;inf;01
+SBIE2102 Fichier trop gros pour le Bac à sable - %2
+.
+
+2103;pop;inf;01
+SBIE2103 Echec au chargement du pilote système '%2'
+.
+
+2104;pop;inf;02
+SBIE2104 Echec à la fermeture de cette session Windows - %2
+.
+
+# 2105;pop;inf;01
+# SBIE2105 Service "sandboxé" démarré avec succès :  %2
+# .
+
+# 2106;pop;inf;01
+# SBIE2106 Veuillez activer "Exécuter comme Administrateur UAC" dans Sandboxie Control, menu Fichier
+# .
+
+# 2107;pop;inf;01
+# SBIE2107 Préparation assemblage WinSxS '%2'
+# .
+
+2108;pop;inf;01
+SBIE2108 Simulation de l'achèvement du programme '%2' réussi
+.
+
+2191;pop;inf;01
+SBIE2191 %2 ne devra pas être mis à jour pendant son fonctionnement dans Sandboxie.
+.
+
+2192;pop;inf;01
+SBIE2192 Pour mettre à jour le programme, son exécution doit se faire en dehors de Sandboxie.
+.
+
+2193;pop;inf;01
+SBIE2193 Assurez-vous d'avoir effacé la sandbox après le processus de mise à jour.
+.
+
+2194;pop;inf;01
+SBIE2194 L'installateur de MSI a besoin que l'option %s soit placée dans l'ini, ce qui affaiblit cependant l'isolement.
+.
+
+2198;pop;inf;01
+%0
+.
+
+2199;pop;inf;01
+%0
+.
+
+#----------------------------------------------------------------------------
+# SbieDrv
+#
+# Messages from user mode -- warning -- 2201 through 2299
+#----------------------------------------------------------------------------
+
+2201;pop;wrn;01
+SBIE2201 %2
+.
+
+# 2202;pop;wrn;01
+# SBIE2202 Liste des périphériques installés manquante
+# .
+
+2203;pop;wrn;01
+SBIE2203 Echec de la communication avec le service Sandboxie :  %2
+.
+
+2204;pop;wrn;01
+SBIE2204 Impossible de démarrer le service "sandboxé" %2
+.
+
+2205;pop;wrn;01
+SBIE2205 Service non exécuté :  %2
+.
+
+2206;pop;wrn;01
+SBIE2206 Echec du traitement AutoExec %2
+.
+
+2207;pop;wrn;01
+SBIE2207 Valeur invalide du réglage '%2', utilisation du réglage par défaut
+.
+
+2208;pop;wrn;01
+SBIE2208 Impossible de enlever la Ruche Registre :  %2
+.
+
+2209;pop;wrn;01
+SBIE2209 Impossible de traduire SID en nom utilisateur :  %2
+.
+
+2210;pop;wrn;01
+SBIE2210 Impossible de démarrer l'Explorateur Windows pour :  %2
+.
+
+2211;pop;wrn;01
+SBIE2211 Echec au démarrage du service "sandboxé" :  %2
+.
+
+2212;pop;wrn;01
+SBIE2212 Le lecteur de courrier '%2' n'est pas configuré pour démarrer "sandboxé"
+.
+
+2213;pop;wrn;01
+SBIE2213 Les identités Windows ne peuvent être stockées dans la sandbox
+.
+
+2214;pop;wrn;01
+SBIE2214 Demande d'exécution service '%2' refusée en raison de droits restreints
+.
+
+2217;pop;wrn;02
+SBIE2217 Demande d'exécution comme "administrateur" a été refusée à cause des droits restreints
+.
+
+2218;pop;wrn;01
+SBIE2218 Echec de l'obtention des droits plus élevés :  %2
+.
+
+2219;pop;wrn;01
+SBIE2219 Une demande a été émise par le programme %2
+.
+
+2220;pop;wrn;01
+SBIE2220 Pour avoir les droits administrateurs, double-cliquez sur cette ligne du message
+.
+
+2221;pop;wrn;01
+SBIE2221 Pour ajouter au programme un accès restreint à internet, double-cliquez sur cette ligne du message
+.
+
+2222;pop;wrn;01
+SBIE2222 Pour ajouter au programme des restrictions d'accès au démarrage et en exécution, double-cliquez sur cette ligne du message
+.
+
+2223;pop;wrn;01
+SBIE2223 Pour augmenter la taille limite des fichiers à copier, double-cliquez sur cette ligne du message
+.
+
+2224;pop;wrn;01
+SBIE2224 Le programme du Bac à sable a planté : %2
+.
+
+#----------------------------------------------------------------------------
+# SbieDrv
+#
+# Messages from user mode -- error -- 2301 through 2399
+#----------------------------------------------------------------------------
+
+2301;pop;err;01
+SBIE2301 %2
+.
+
+2302;pop;err;01
+SBIE2302 Conflit dans la configuration de l'image du processus : %2
+.
+
+2303;pop;err;01
+SBIE2303 Impossible de surveiller %2
+.
+
+2304;pop;err;01
+SBIE2304 Echec initialisation processus %2
+.
+
+2305;pop;err;01
+SBIE2305 Débordement mémoire
+.
+
+2306;pop;err;01
+SBIE2306 Impossible de localiser le répertoire utilisateur :  %2
+.
+
+2307;pop;err;01
+SBIE2307 Impossible de mapper le lecteur %2
+.
+
+2308;pop;err;01
+SBIE2308 Impossible de créer l'objet répertoire :  %2
+.
+
+2309;pop;err;01
+SBIE2309 Impossible de désactiver COM+/DCOM :  %2
+.
+
+2310;pop;err;01
+SBIE2310 Le nom du cache approche du débordement (%2)
+.
+
+2311;pop;err;01
+SBIE2311 Impossible de désactiver la corbeille (BitBucket) :  %2
+.
+
+2312;pop;err;01
+SBIE2312 Impossible d'activer les réglages BrowseNewProcess :  %2
+.
+
+2313;pop;err;01
+SBIE2313 Impossible d'exécuter %2
+.
+
+2314;pop;err;01
+SBIE2314 Abandon du processus %2
+.
+
+# 2315;pop;err;01
+# SBIE2315 Impossible de réparer l'image exécutable
+# .
+
+2316;pop;err;01
+SBIE2316 Corruption mémoire
+.
+
+2317;pop;err;01
+SBIE2317 Impossible d'initialiser la liste des chemins '%2'
+.
+
+2318;pop;err;01
+SBIE2318 Echec d'initialisation DLL '%2'
+.
+
+# 2319;pop;err;01
+# SBIE2319 Echec d'activation du contexte du processus "sandboxé" %2
+# .
+
+# 2320;pop;err;01
+# SBIE2320 Impossible de désactiver l'Explorateur Windows comme processus de bureau :  %2
+# .
+
+2321;pop;err;01
+SBIE2321 Impossible de gérer les périphériques :  %2
+.
+
+2322;pop;err;01
+SBIE2322 Impossible de réécrire Sandboxie.ini :  %2
+.
+
+2323;pop;err;01
+SBIE2323 Erreur de chiffrement :  %2
+.
+
+2326;pop;err;01
+SBIE2326 Impossible de préparer le Registre :  %2
+.
+
+2327;pop;err;01
+SBIE2327 Erreur du serveur COM :  %2
+.
+
+2331;pop;err;01
+SBIE2331 Echec du démarrage du service :  %2
+.
+
+2332;pop;err;01
+SBIE2332 Impossible de accéder au fichier "SbiePst.dat"
+.
+
+# 2333;pop;err;01
+# SBIE2333 Des "DLL" incompatibles ont été trouvées :  %2
+# .
+
+#2334;pop;err;01
+#SBIE2334 Impossible de charger le fichier "DLL" :  %2
+#.
+
+2335;pop;err;01
+SBIE2335 Initialisation échouée pour le processus %2
+.
+
+2336;pop;err;01
+SBIE2336 Erreur dans le serveur graphique :  %2
+.
+
+2337;pop;err;01
+SBIE2337 Echec de démarrage du programme :  %2
+.
+
+#----------------------------------------------------------------------------
+# SbieSvc
+#----------------------------------------------------------------------------
+
+9101;evt;err;01
+SBIE9101 Ressources système insuffisantes
+.
+
+9153;evt;err;01
+SBIE9153 Impossible de démarrer le pilote (SbieDrv)
+.
+
+9154;evt;err;01
+SBIE9154 Pilote (SbieDrv) et service (SbieSvc) sont de versions différentes
+.
+
+9156;evt;err;01
+SBIE9156 Initialisation du pilote incomplète
+.
+
+9234;evt;err;01
+SBIE9234 Erreur de démarrage du service %2
+
+# 9201;evt;err;01
+# SBIE9201 Erreur Token
+# .
+
+# 9202;evt;err;01
+# SBIE9202 Erreur Token
+# .
+
+# 9203;evt;err;01
+# SBIE9203 Erreur Token
+# .
+
+# 9204;evt;err;01
+# SBIE9204 Erreur de descripteur de sécurité
+# .
+
+# 9205;evt;err;01
+# SBIE9205 Erreur de descripteur de sécurité
+# .
+
+# 9206;evt;err;01
+# SBIE9206 Erreur de descripteur de sécurité
+# .
+
+# 9207;evt;err;01
+# SBIE9207 Erreur de descripteur de sécurité
+# .
+
+# 9208;evt;err;01
+# SBIE9208 Echec d'activation SeRestorePrivilege
+# .
+
+# 9251;evt;err;01
+# SBIE9251 Echec de création d'évènement de Port
+# .
+
+# 9252;evt;err;01
+# SBIE9252 Echec de création de Port
+# .
+
+# 9253;evt;err;01
+# SBIE9253 Echec de création du thread du Port
+# .
+
+#----------------------------------------------------------------------------
+# Common Texts
+#----------------------------------------------------------------------------
+
+3001;txt;01
+&OK
+.
+
+3002;txt;01
+&Annuler
+.
+
+3003;txt;01
+&Naviguer...
+.
+
+3004;txt;01
+&Fermer
+.
+
+3005;txt;01
+Cou&per
+.
+
+3051;txt;01
+Protection contre l'effacement activée pour le Bac à sable
+.
+
+3052;txt;01
+Démarrer "sandboxé"
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Start
+#----------------------------------------------------------------------------
+
+3101;txt;01
+Démarrage Sandboxie
+.
+
+3103;txt;01
+Tapez le nom du programme et Sandboxie l'ouvrira pour vous.
+.
+
+3104;txt;01
+Tapez  .  (le caractère point) pour explorer avec Sandboxie.
+.
+
+3105;txt;01
+Effacer la commande de l'historique
+.
+
+3106;txt;01
+Sélectionnez quel Bac à sable doit démarrer le programme ou le document.
+.
+
+3111;txt;01
+      Menu démarrage Sandboxie - %2  %0
+.
+
+3112;txt;01
+Bureau
+.
+
+3113;txt;01
+(explorer le dossier)
+.
+
+# should match the localized folder name for Programs in the Start Menu folder
+3114;txt;01
+Programmes
+.
+
+3202;txt;01
+Paramètre de ligne de commande invalide : %2
+.
+
+3203;txt;01
+Usage : Start.exe <nom du programme>
+.
+
+3204;txt;01
+Paramètre du bac invalide : %2
+.
+
+3205;txt;01
+Impossible d'appeler le programme :
+
+%2
+.
+
+3206;txt;01
+Code erreur système :
+.
+
+# 3207;txt;01
+# Impossible de trouver l'exécutable Internet Explorer
+# .
+
+# 3208;txt;01
+# Impossible de trouver l'exécutable du navigateur Internet par défaut
+# .
+
+3209;txt;01
+Impossible de trouver l'exécutable du lecteur de courrier par défaut
+.
+
+3210;txt;01
+Impossible de démarrer le programme Sandboxie Control
+.
+
+# 3211;txt;01
+# Incohérence de version Sandboxie.  Essayez de réinstaller.
+# .
+
+3212;txt;01
+Le driver Sandboxie (SbieDrv) n'est pas disponible pour les programmes Bac à sable.
+Assurez-vous que le driver et le service Sandboxie (SbieSvc) sont correctement démarrés.
+.
+
+3213;txt;01
+Impossible d'initialiser les services Sandboxie COM
+.
+
+3214;txt;01
+Effacement Bac à sable %2 :  %0
+.
+
+3215;txt;01
+L'objet (fichier ou dossier) est peut-être utilisé par un autre programme.
+Fermez les programmes ou fenêtres pouvant bloquer l'accès.
+.
+
+3216;txt;01
+Impossible de localiser le dossier Bac à sable
+.
+
+3217;txt;01
+Impossible d'ouvrir le dossier Bac à sable
+.
+
+3218;txt;01
+Impossible d'ouvrir le dossier contenant le dossier Bac à sable
+.
+
+3219;txt;01
+Impossible de déplacer le dossier Bac à sable
+.
+
+3220;txt;01
+Erreur en renommant un long fichier du Bac à sable.
+Le Bac à sable ne peut être effacé.
+.
+
+3221;txt;01
+Veuillez fermer les programmes lancés dans le Bac à sable avant d'en effacer le contenu
+.
+
+3222;txt;01
+Echec commande d'effacement :  %0
+.
+
+3231;txt;01
+Vous avez installé Sandboxie depuis plus de 30 jours.
+.
+
+3232;txt;01
+L'utilisation personnelle de Sandboxie est permise aussi longtemps que vous le souhaitez.
+.
+
+3233;txt;01
+La version gratuite vous fera patienter quelques secondes.
+.
+
+3234;txt;01
+La version libre ne permet d'utiliser qu'un Bac à sable à la fois.
+.
+
+3235;txt;01
+Cette limitation est supprimée dans la version payante de Sandboxie.
+.
+
+3236;txt;01
+En plus, la version payante permet d'exécuter des programmes "sandboxés" automatiquement.
+.
+
+3237;txt;01
+Pour plus d'informations ou pour acheter le programme, cliquez sur le lien suivant :
+.
+
+3238;txt;01
+Veuillez patienter %2 secondes
+.
+
+3239;txt;01
+Cliquez pour continuer et fermer cette fenêtre
+.
+
+3240;txt;01
+Cliquez pour arrêter et fermer cette fenêtre
+.
+
+3241;txt;01
+Sandboxie demande des droits "administrateur" pour le programme qui s'exécute dans la sandbox.
+.
+
+3242;txt;01
+Pour refuser ou accepter la demande, activer la
+fenêtre User Account Control.
+.
+
+3243;txt;01
+Remarque : le programme va continuer à s'exécuter dans Sandboxie,
+même après que des droits administrateurs aient été accordés.
+.
+
+3251;txt;01
+Démarrer en dehors de la sandbox
+.
+
+3252;txt;01
+Démarre le programme volontairement à l'extérieur du panneau de contrôle de Sandboxie,
+même si le programme est forcé dans Sandboxie,
+ceci s'applique aussi à tous les programmes démarrés par ce programme.
+
+Vous pouvez aussi utiliser cette option en maintenant les touches "ctrl" et "shift"
+enfoncées quand vous cliquez sur la commande "exécuter sandboxé".
+.
+
+3253;txt;01
+Etes-vous sûr de vouloir utiliser ce programme à l'extérieur de la sandbox ?
+.
+
+3254;txt;01
+Passer cette fenêtre en maintenant enfoncé la touche "ctrl"
+quand vous cliquez sur la commande "exécuter Sandboxé".
+.
+
+3255;txt;01
+L'option est désactivée car des droits restreints sont activés dans cette sandbox
+.
+
+3256;txt;01
+L'option est désactivée car ce programme s'exécute déjà avec les droits administrateurs
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Common
+#----------------------------------------------------------------------------
+
+3301;txt;01
+Sandboxie Control
+.
+
+3302;txt;01
+Version %2
+.
+
+3303;txt;01
+  -  Initialisation
+.
+
+3304;txt;01
+Incohérence de version de Sandboxie :
+
+Sandboxie Control : Version %2
+Service (SbieSvc) : Version %3
+Pilote (SbieDrv) : Version %4
+
+Réinstallez Sandboxie pour résoudre le problème.
+
+Abandon.
+.
+
+3306;txt;01
+Ne plus montrer ce message
+.
+
+# 3307;txt;01
+# Entrer le nom du programme
+# .
+
+# translate text but keep hash signs (#)
+3308;txt;01
+Programmes#*.EXE#Tous les fichiers#*.*##
+.
+
+3309;txt;01
+  -  Effacer la Bac à sable
+.
+
+3311;txt;01
+Echec à l'enregistrement de la configuration %3 en section %2 :  %4
+.
+
+3312;txt;01
+Vous n'êtes pas autorisé à mettre à jour la configuration en section %2
+.
+
+3313;txt;01
+Utilisateur inconnu, la configuration ne peut être sauvée
+.
+
+3314;txt;01
+Une erreur est survenue en appliquant les réglages par défaut au Bac à sable '%2'
+.
+
+# 3321;txt;01
+#   -  La session de connexion est sandboxé
+# .
+
+# 3322;txt;01
+# Votre session de connexion est en cours sous le contrôle de Sandboxie.
+# Effacer le contenu de la sandbox, va annuler toutes les modifications effectuées pendant la session.
+# 
+# Compte utilisateur : %2
+# Sandbox : %3
+# 
+# Etes-vous sur de vouloir effacer le contenu de la sandbox et de se déconnecter ?
+# .
+
+3351;txt;01
+&Retirer
+.
+
+3352;txt;01
+&Ajouter
+.
+
+3353;txt;01
+&Editer/Ajouter
+.
+
+3354;txt;01
+&Editer
+.
+
+3355;txt;01
+Ajout &Pgm
+.
+
+# 3356;txt;01
+# Ajout Par &Nom
+# .
+
+# 3357;txt;01
+# Ajout Par &Fichier
+# .
+
+3358;txt;01
+Ajout &Dossier
+.
+
+3359;txt;01
+Ajout &utilisateur
+.
+
+3360;txt;01
+Tout &sélectionner
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Menus
+#----------------------------------------------------------------------------
+
+3411;txt;01
+&Fichier
+.
+
+3412;txt;01
+Fermer &tous les programmes
+.
+
+3413;txt;01
+Désactiver les programmes &Forcés
+.
+
+3414;txt;01
+Exécuter comme Administrateur &UAC
+.
+
+3415;txt;01
+Cette &Fenêtre est-elle "Sandboxée" ?
+.
+
+3416;txt;01
+&Moniteur Accès Ressources
+.
+
+3417;txt;01
+&Quitter
+.
+
+3421;txt;01
+&Voir
+.
+
+3422;txt;01
+&Programmes
+.
+
+3423;txt;01
+&Fichiers et dossiers
+.
+
+3424;txt;01
+&Menu contextuel%2Shift+F10
+.
+
+3425;txt;01
+&Journal de récupération
+.
+
+3426;txt;01
+&Toujours au-dessus
+.
+
+3431;txt;01
+&Bac à sable
+.
+
+3432;txt;01
+Créer un nouveau Bac à sable
+.
+
+3433;txt;01
+Définir le dossier conteneur
+.
+
+3434;txt;01
+Révéler la sandbox cachée
+.
+
+3435;txt;01
+Définir la présentation et les groupes
+.
+
+3441;txt;01
+&Configurer
+.
+
+3442;txt;01
+Alertes &programme
+.
+
+3443;txt;01
+&Intégration Windows Shell
+.
+
+3501;txt;01
+Compatibilité avec les autres programmes
+.
+
+3444;txt;01
+Délaisser &messages cachés
+.
+
+3445;txt;02
+&Astuces
+.
+
+3502;txt;01
+Protection de la configuration
+.
+
+3446;txt;01
+&Editer la configuration
+.
+
+3447;txt;01
+Re&charger la configuration
+.
+
+3448;txt;01
+&Montrer toutes les astuces
+.
+
+3449;txt;01
+&Cacher toutes les astuces
+.
+
+3504;txt;01
+&Soutenir Sandboxie
+.
+
+3451;txt;01
+&Aide
+.
+
+3452;txt;01
+&Forums d'aide (Internet)
+.
+
+3453;txt;02
+&Tutoriel de prise en main
+.
+
+3454;txt;01
+Vérifier les &mises à jour
+.
+
+3455;txt;01
+&Enregistrer Sandboxie
+.
+
+3456;txt;01
+&A propos de Sandboxie
+.
+
+3457;txt;01
+&Forum Sandboxie (Internet)
+.
+
+3458;txt;01
+Autoriser l'accès direct au cache de polices de Windows
+.
+
+3459;txt;01
+Autoriser l'accès direct au pilote qWave (Google Hangouts)
+.
+
+3460;txt;01
+Personnalisation de l'accrochage aux fonctions
+.
+
+3461;txt;01
+&Exécuter "sandboxé"
+.
+
+3462;txt;01
+Exécuter le &navigateur Internet
+.
+
+3463;txt;01
+Exécuter le lecteur de &courrier
+.
+
+3464;txt;01
+Exécuter &un programme
+.
+
+3465;txt;01
+Exécuter dans le &menu Démarrer
+.
+
+3466;txt;01
+Exécuter l'Explorateur &Windows
+.
+
+3467;txt;01
+Passer à Sandboxie-Plus
+.
+
+3471;txt;01
+&Fermer les programmes
+.
+
+3472;txt;01
+&Récupérer rapidement
+.
+
+3473;txt;01
+&Effacer contenu
+.
+
+3474;txt;01
+E&xplorer contenu
+.
+
+3475;txt;01
+Configuration &Sandbox
+.
+
+3476;txt;01
+Re&nommer Sandbox
+.
+
+3477;txt;01
+Eff&acer Sandbox
+.
+
+3481;txt;01
+&Fermer programme
+.
+
+3482;txt;01
+Configuration P&rogramme
+.
+
+3483;txt;01
+Accès aux &ressources
+.
+
+3484;txt;01
+Accès aux ressources
+.
+
+3485;txt;01
+Montrer la fenêtre
+.
+
+3486;txt;01
+Cacher fenêtre
+.
+
+3487;txt;01
+&Montrer erreurs
+.
+
+# 3488;txt;01
+# &Effacer contenu de la sandbox et déconnexion
+# .
+
+3491;txt;01
+Récupére&r vers le même dossier
+.
+
+3492;txt;01
+Ré&cupérer vers un autre dossier
+.
+
+3493;txt;01
+A&jouter le dossier à  la Récupération Rapide
+.
+
+3494;txt;01
+E&ffacer le dossier de la Récupération Rapide
+.
+
+3495;txt;01
+Créer un raccourci vers le bureau
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Main Window
+#----------------------------------------------------------------------------
+
+3511;txt;01
+Sandboxie Control va maintenant cacher cette fenêtre
+mais restera actif. Pour montrer la fenêtre, double-cliquez
+sur l'icône jaune de Sandboxie dans la barre système.
+.
+
+3512;txt;01
+Editez le fichier de configuration Sandboxie.ini
+dans la fenêtre ouverte de l'éditeur de texte.
+
+La nouvelle configuration ne prendra effet 
+qu'après son rechargement.
+
+Généralement, la configuration sera rechargée
+automatiquement à la fermeture de la 
+fenêtre de l'éditeur de texte.
+
+Vous pouvez également forcer Sandboxie Control
+à recharger la configuration.
+.
+
+3513;txt;01
+La configuration de Sandboxie a été rechargée et
+s'appliquera au prochain programme lancé.
+
+Si un programme est déjà "sandboxé", 
+la configuration ne lui sera pas appliquée.
+.
+
+3514;txt;01
+Un problème a bloqué la lecture du fichier de configuration.
+La configuration de Sandboxie n'a pas été modifiée.
+.
+
+3515;txt;01
+Bac à sable %2
+.
+
+3516;txt;01
+Actif
+.
+
+3517;txt;01
+Nom du programme
+.
+
+3518;txt;01
+PID
+.
+
+3519;txt;01
+Titre de la fenêtre
+.
+
+3520;txt;01
+Fichiers Récupération Rapide
+.
+
+3521;txt;01
+Tous les fichiers et dossiers
+.
+
+3522;txt;01
+Lecteurs
+.
+
+3523;txt;01
+Réseau partagé
+.
+
+3524;txt;01
+Fichiers utilisateurs
+.
+
+3525;txt;01
+Personnel
+.
+
+3526;txt;01
+Tous les utilisateurs
+.
+
+3527;txt;01
+Veuillez effacer le contenu du Bac à sable %2 avant cette commande.
+.
+
+3528;txt;01
+Entrer le nom du nouveau Bac à sable
+.
+
+3529;txt;01
+Etes-vous sûr de vouloir effacer le Bac à sable %2 ?
+.
+
+3530;txt;01
+Il n'a pas de processus à terminer.
+.
+
+3531;txt;01
+ATTENTION : terminer le(s) processus ne permettra pas
+aux données d'être sauvegardées.
+
+Etes-vous sûr de fermer le(s) processus ?
+.
+
+3532;txt;01
+Dorénavant, fermer sans demander confirmation
+.
+
+3533;txt;01
+Vous pouvez copier ou couper des fichiers et dossiers de l'Explorateur Windows
+"sandboxé" et le coller directement dans un dossier non "sandboxé".
+.
+
+3534;txt;01
+Vous explorez le contenu du Bac à sable" dans une fenêtre
+non "sandboxée" de l'Explorateur Windows.
+
+Vous pouvez ouvrir des programmes ou des documents du Bac à sable.
+Le programme ou le document sera pris en charge par Sandboxie.
+
+Toutefois, il est conseillé de manipuler le contenu du Bac à sable par le biais
+de l'Explorateur Windows.  Pour cela, vous devez utiliser la commande :
+Sandbox -> Exécuter "sandboxé" -> Exécuter l'Explorateur Windows.
+.
+
+3535;txt;01
+Une erreur est survenue lors de l'accès au dossier Bac à sable.
+.
+
+3536;txt;01
+L'attribut "caché" est supprimé pour tous les messages.
+.
+
+3537;txt;01
+L'attribut "ne pas montrer ce message" est supprimé pour toutes les astuces.
+.
+
+3538;txt;01
+L'attribut "ne pas montrer ce message" est appliqué à toutes les astuces.
+.
+
+3539;txt;01
+La Sandbox '%2' a été créée, il y a %3 jour(s).
+
+Pensez à effacer le contenu de la sandbox de temps en temps.
+
+Pour configurer la suppression automatique, aller dans "Sandboxie control", "menu contextuel", "configuration sandbox"
+"Delete", "effacer invocation".
+.
+
+3540;txt;01
+La configuration du fichier "Sandboxie.ini" ne peut être éditée car elle est
+protégée par mot de passe. Pour la modifier, merci de vous rendre
+dans "lock configuration" et désactiver la protection par mot de passe.
+.
+
+3541;txt;01
+Public
+.
+
+# 3542;txt;01
+# Le mode "Experimental Protection" renforce la protection
+# offerte par la version 64-bit, cela apporte le même niveau de protection que la version 32-bit.
+#
+# IMPORTANT :  "Experimental Protection" utilise des fonctionnalités du kernel de Windows,
+# les fonctionnalités mises à jour de Windows peuvent interférer avec ce mode
+# et peuvent rendre votre système instable.
+#
+# SON UTILISATION EST DANGEREUSE.
+#
+# Pour activer ce mode, veuillez redémarrer votre pc.
+# .
+
+# 3543;txt;01
+# Pour désactiver ce mode, veuillez redémarrer votre pc.
+#
+# Notez que le paramètre des droits restreints
+# sera activé dans toutes les Sandboxes.
+# .
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Dialogs : About/Welcome
+#----------------------------------------------------------------------------
+
+3601;txt;01
+A propos de Sandboxie
+.
+
+# 3604;txt;01
+# Bienvenue dans Sandboxie
+# .
+
+# 3605;txt;01
+# 
+# Sandboxie lance vos applications dans un espace isolé et protégé appelé Bac à sable.
+# 
+# Les applications piégées dans le Bac à sable ne peuvent modifier ou endommager votre ordinateur.
+# 
+# Vous pouvez aussi utiliser le Bac à sable pour installer et tester vos nouvelles applications.
+# .
+
+# 3606;txt;01
+# Si vous êtes novice  avec Sandboxie,
+# prenez le temps de lire l'aide et les tutoriaux.
+# .
+
+# 3607;txt;01
+# &Bien démarrer avec Sandboxie
+# .
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Dialogs : Update
+#----------------------------------------------------------------------------
+
+3621;txt;01
+Vérifier les mises à jour
+.
+
+3622;txt;01
+Se connecter au site de Sandboxie pour vérifier si une nouvelle version est disponible ?
+.
+
+3623;txt;01
+&Maintenant
+.
+
+3624;txt;01
+&Semaine prochaine
+.
+
+3625;txt;01
+&Jamais
+.
+
+3626;txt;01
+Dorénavant, vérifier les mises à jour automatiquement
+.
+
+3627;txt;01
+Charte de confiance : vos coordonnées ne seront jamais transmises par Sandboxie.
+.
+
+3628;txt;01
+Mise à jour en cours, veuillez patienter.
+.
+
+3629;txt;01
+Le site Internet de Sandboxie n'indique aucune mise à jour du programme.
+.
+
+3630;txt;01
+Sandboxie %2 est disponible au téléchargement.
+.
+
+3631;txt;01
+Télécharger maintenant ?
+
+Note :  le téléchargement prend quelques minutes.
+Vous serez prévenu dès qu'il sera terminé.
+.
+
+3632;txt;01
+Pour télécharger et installer la nouvelle version, utiliser un compte
+avec les droits d'Administrateur et recommencez.
+.
+
+3633;txt;01
+Sandboxie %2 a été téléchargé à cet endroit :
+
+%3
+
+Cliquez sur OK pour commencer l'installation. Si des programmes
+fonctionnent "sandboxés", ils seront fermés.
+.
+
+3634;txt;01
+Echec de la mise à jour : une erreur est survenue lors de la communication avec le site de Sandboxie.
+.
+
+3635;txt;01
+Télécharger la nouvelle version
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Dialogs : Run Browser
+#----------------------------------------------------------------------------
+
+3641;txt;01
+Ouvrir le navigateur
+.
+
+3642;txt;01
+Sélectionnez l'opportunité d'ouvrir l'adresse Web suivante dans un navigateur "sandboxé" ou non.
+.
+
+3643;txt;01
+"&Sandboxé"
+.
+
+3644;txt;01
+&Non "sandboxé"
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Dialogs : Message Dialog
+#----------------------------------------------------------------------------
+
+3645;txt;01
+Messages de Sandboxie
+.
+
+3646;txt;01
+&Cacher
+.
+
+3647;txt;01
+Cacher un message et il n'apparaîtra plus dans le futur.
+Cacher le message ne résoudra pas le problème
+pour lequel il a été affiché.
+
+Etes-vous certain de ne plus recevoir l'avertissement %2 ?
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Dialogs : Disable Forced Programs
+#----------------------------------------------------------------------------
+
+3651;txt;01
+Désactiver temporairement les programmes forcés
+.
+
+3652;txt;01
+Désactiver les programmes forcés pendant
+.
+
+3653;txt;01
+secondes
+.
+
+3654;txt;01
+En cliquant sur OK, le mécanisme de forçage des programmes sera temporairement désactivé durant le temps spécifié ou jusqu'à ce que vous re-sélectionniez cette fonction.
+.
+
+3599;txt;01
+Vous pouvez désactiver le forçage d'un programme en maintenant enfoncé la touche "ctrl",
+"shift" et "la flèche du bas" quand vous cliquez sur "exécuter sandboxé" pour ce programme.
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Dialogs : Resource Access Monitor
+#----------------------------------------------------------------------------
+
+3655;txt;01
+Moniteur Accès Ressources
+.
+
+3656;txt;01
+Cet outil surveille les programmes qui sont exécutés sous la supervision de Sandboxie et affiche les ressources auxquelles ils ont accès. Veuillez consulter la documentation avant d'utiliser cet outil.
+.
+
+3657;txt;01
+Copier le contenu vers le Presse-papier et fermer la fenêtre
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Dialogs : Is Window Sandboxed
+#----------------------------------------------------------------------------
+
+3661;txt;01
+Cette fenêtre est-elle "sandboxée" ?
+.
+
+3662;txt;01
+Glissez l'outil Cible sur une fenêtre et relâchez le bouton pour savoir si cette fenêtre est "sandboxée".
+
+Pressez Echap pour annuler.
+.
+
+3663;txt;01
+La fenêtre sélectionnée fait partie du programme %2 du Bac à sable %3.
+.
+
+3664;txt;01
+La fenêtre sélectionnée ne fait partie d'aucune application "sandboxée".
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Dialogs : Create New Sandbox
+#----------------------------------------------------------------------------
+
+3665;txt;01
+Créer un nouveau Bac à sable
+.
+
+3666;txt;01
+Entrer le nom pour le nouveau Bac à sable.
+.
+
+3667;txt;01
+Erreur : nom invalide. N'utilisez que des lettres et des chiffres. Les espaces et autres caractères spéciaux ne sont pas supportés. Le nom ne doit pas dépasser 32 caractères.
+.
+
+3668;txt;01
+Erreur : nom déjà utilisé par un Bac à sable. Entrez un nouveau nom.
+.
+
+3669;txt;01
+Copier les paramètres du bac à sable existant
+.
+
+4665;txt;01
+Erreur : doublon du nom entré pour la sandbox. Le nom est déjà utilisé par une sandbox cachée. Utilisez la commande "Révéler la sandbox cachée" du menu de la sandbox.
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Dialogs : Set Container Folder
+#----------------------------------------------------------------------------
+
+3671;txt;01
+Définir le dossier conteneur
+.
+
+3672;txt;01
+Sélectionnez le lecteur où le Bac à sable sera créé et stocké.
+.
+
+3673;txt;01
+Pour une compatibilité maximale avec d'autres logiciels, il est recommandé de laisser le Bac à sable à l'emplacement par défaut dans le lecteur sélectionné.
+.
+
+3674;txt;01
+Toutefois, vous pouvez aussi utiliser la zone de modification ci-dessous pour remplacer l'emplacement par défaut :
+.
+
+3675;txt;01
+Note :  il est conseillé de supprimer le contenu de tous les Bacs à sable avant de changer le dossier conteneur.
+.
+
+3676;txt;01
+Lecteur %2
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Dialogs : Alerts
+#----------------------------------------------------------------------------
+
+3681;txt;01
+Alertes programme
+.
+
+3682;txt;01
+Lorsqu'un des programmes suivants est lancé en dehors du Bac à sable, Sandboxie délivrera le message SBIE1301.
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control Dialogs : Shell Integration
+#----------------------------------------------------------------------------
+
+3685;txt;01
+Intégration Windows Shell
+.
+
+3686;txt;01
+Démarrer Sandboxie Control
+.
+
+3687;txt;01
+Au démarrage de Windows
+.
+
+3688;txt;02
+Quand un programme "sandboxé" démarre
+.
+
+3689;txt;01
+Icônes raccourcis
+.
+
+3690;txt;01
+Ajouter un raccourci sur le bureau pour Exécuter le Navigateur Internet dans Sandboxie
+.
+
+3691;txt;01
+Raccourci dans la Barre de lancement rapide pour Exécuter le Navigateur Internet dans Sandboxie
+.
+
+3692;txt;01
+Cliquez pour ajouter plus de raccourcis sur le bureau :
+.
+
+3693;txt;01
+&Ajouter icônes raccourcis
+.
+
+3694;txt;01
+Actions "Exécuter sandboxé"
+.
+
+3695;txt;01
+Ajouter "Exécuter Sandboxé" au menu contextuel des fichiers et dossiers
+.
+
+3696;txt;01
+Ajouter "Bacs à sable" au menu "Envoyer vers"
+.
+
+3697;txt;01
+Le menu démarrer de Sandboxie sera maintenant affiché.
+Sélectionnez une application du menu et Sandboxie créera
+un nouveau raccourci sur votre bureau réel, celui que vous
+utilisez pour Exécuter l'application sous la supervision de
+Sandboxie.
+.
+
+3698;txt;01
+Lien Navigateur Internet Sandboxé
+.
+
+3699;txt;01
+Exécuter &Sandboxé
+.
+
+4491;txt;01
+Ouvrir %2 dans la sandbox %3
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Delete Sandbox / Quick Recovery / Immédiate Recovery
+#----------------------------------------------------------------------------
+
+3711;txt;01
+Effacer Bac à sable|Récupération Rapide
+.
+
+3712;txt;01
+Les fichiers suivants sont éligibles pour une Récupération Rapide. Sélectionnez un fichier ou dossier et cliquez sur l'un des boutons ci-dessous pour le récupérer.
+.
+
+3713;txt;01
+Cliquez sur Supprimer Bac à sable mettre fin à tout processus en cours d'exécution dans le Bac à sable, et supprimer son contenu.
+.
+
+3714;txt;01
+&Effacer Bac à sable
+.
+
+3715;txt;01
+Récupération Immédiate
+.
+
+3716;txt;02
+Les fichiers suivants sont éligibles pour une Récupération Rapide et peuvent être enlevés du bac à sable
+.
+
+3717;txt;01
+Sélectionnez les fichiers suivants puis choisissez un dossier de destination.
+.
+
+3718;txt;01
+&Récupérer
+.
+
+3719;txt;01
+Ne &pas relancer avant que tous les programmes "sandboxés" soient arrêtés
+.
+
+3720;txt;01
+Ré&cupérer vers
+le même dossier
+.
+
+3721;txt;01
+Récupérer vers
+Ch&aque dossier
+.
+
+3722;txt;01
+Il y a %2 fichiers et %3 dossiers dans le Bac à sable, occupant %4 bytes d'espace disque.
+.
+
+3723;txt;01
+Sélectionnez un dossier dans lequel le fichier ou le dossier sera récupéré.
+.
+
+3724;txt;01
+Ou sélectionnez le dossier d'un précédent recouvrement.
+.
+
+3725;txt;01
+Conserver les dossiers sélectionnés pour une utilisation ultérieure
+.
+
+3726;txt;01
+Sélectionnez un dossier à ajouter à la liste des dossiers de Récupération Rapide.
+.
+
+3727;txt;01
+Le dossier a été ajouté à la liste des dossiers de Récupération Rapide.
+
+Toutefois, à ce point, il n'y a pas d'objets "sandboxés"
+qui peuvent être récupérés à partir du dossier.
+.
+
+3728;txt;01
+Aucun fichier n'a été sélectionné pour le recouvrement.
+.
+
+3729;txt;01
+Echec de récupération.  L'objet suivant ne peut être déplacé hors du Bac à sable :
+.
+
+3730;txt;01
+Ce Bac à sable est vide. Il n'y a rien à effacer.
+.
+
+3731;txt;01
+Des programmes "sandboxés" n'ont pu être arrêtés. Le Bac à sable ne sera pas supprimé.
+.
+
+3732;txt;01
+Il n'y a pas de fichiers à récupérer à ce point.
+.
+
+3733;txt;01
+Le fichier ne peut pas être récupéré car le nom du dossier de destination est trop long.
+Sélectionner un autre dossier de destination.
+.
+
+3734;txt;01
+Pour avoir plus d'option, effectuez un clic-droit sur la liste des dossiers
+.
+
+3735;txt;02
+Remplacer tous les fichiers sans demandes supplémentaires
+.
+
+3736;txt;01
+&Récupérer&& Explorer
+.
+
+3737;txt;01
+&Récupérer&& Exécuter
+.
+
+3981;txt;01
+&Ouvrir le dossier dans l'explorateur de Windows en dehors du bac à sable
+.
+
+3982;txt;01
+Retirer ce dossier de la liste
+.
+
+3983;txt;01
+Retirer tous les dossiers de la liste
+.
+
+3986;txt;01
+Journal de récupération
+.
+
+3987;txt;01
+Les fichiers suivants ont étés récemment récupérés et enlevés des Bacs à sable.
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Program Settings
+#----------------------------------------------------------------------------
+
+3741;txt;01
+Paramètres programme
+.
+
+3742;txt;01
+Bac à sable :
+.
+
+3743;txt;01
+Programme :
+.
+
+3744;txt;01
+Vue Page 1
+.
+
+3745;txt;01
+Vue Page 2
+.
+
+3751;txt;01
+Démarrage programme
+.
+
+3752;txt;01
+Chaque fois que ce programme démarre à l'extérieur du Bac à sable :
+.
+
+3753;txt;01
+Message d'alerte SBIE1301
+.
+
+3754;txt;01
+Forcer le programme à démarrer dans ce Bac à sable
+.
+
+3755;txt;01
+Arrêt programme
+.
+
+3756;txt;01
+Arrêtez ce programme s'il persiste dans le Bac à sable alors que les autres programmes sont fermés
+.
+
+3757;txt;01
+Arrêter les autres programmes après que ce programme leader soit fermé
+.
+
+3761;txt;01
+Restrictions Internet
+.
+
+3762;txt;01
+Tout programme qui s'exécute dans ce Bac à sable peut se connecter à l'Internet...
+.
+
+3763;txt;01
+Programmes qui peuvent se connecter à Internet dans ce Bac à sable :
+.
+
+3764;txt;01
+Activer les Restrictions et autoriser ce programme à se connecter à Internet.
+.
+
+3765;txt;01
+Démarrer/Exécuter les Restrictions
+.
+
+3766;txt;01
+Tous les programmes peuvent démarrer dans ce Bac à sable.
+.
+
+3767;txt;01
+Programmes qui peuvent être lancés dans ce Bac à sable :
+.
+
+3768;txt;01
+Activer les Restrictions et autoriser ce logiciel à démarrer.
+.
+
+3769;txt;01
+(Aucun)
+.
+
+3770;txt;01
+Les nouveaux paramètres ne s'appliquent pas
+au programme "sandboxé" en cours d'exécution.
+Les paramètres s'appliqueront au prochain démarrage
+du programme.
+.
+
+3771;txt;01
+(Cette option n'est valable que pour la version enregistrée de Sandboxie)
+.
+
+3772;txt;02
+Etes-vous sûr vous voulez mettre %2 en programme forcé ?
+.
+
+3773;txt;02
+Etes-vous sûr vous voulez mettre %2 en programme forcé ?
+.
+
+# 3774;txt;02
+# Etes-vous sûr vous voulez mettre %2 en utilisateur forcé ?
+# .
+
+3775;txt;02
+Vous avez fait un changement qui peut ne pas être facile à défaire.
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Sandbox Settings
+#----------------------------------------------------------------------------
+
+3801;txt;01
+Paramètres Sandbox - %2
+.
+
+3802;txt;01
+Cette page est laissée vierge intentionnellement
+.
+
+3803;txt;01
+Vous devez appliquer les modifications à cette page avant de pouvoir procéder.
+.
+
+3804;txt;01
+Appliquer les modifications lors du passage à une autre page.
+.
+
+3805;txt;01
+Tous les programmes
+.
+
+3806;txt;02
+La liste ci-dessous s'applique à :
+.
+
+3807;txt;01
+Sélectionnez un fichier ou un dossier à ajouter à la liste des accès exclus.
+.
+
+3808;txt;01
+Ajouter nom de ressource
+.
+
+3809;txt;01
+Editer nom de ressource
+.
+
+3551;txt;01
+(Tous les programmes, sauf %2)
+.
+
+3552;txt;01
+Inverser la sélection courante
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Sandbox Settings :  Appearance
+#----------------------------------------------------------------------------
+
+3811;txt;01
+Apparence
+.
+
+3812;txt;01
+Les programmes exécutés sous la supervision de Sandboxie auront [#] dans le titre de la fenêtre.
+.
+
+3813;txt;01
+Si vous activez le réglage suivant, la fenêtre comportera aussi le nom du Bac à sable.
+.
+
+3814;txt;01
+Montrer le nom du Bac à sable dans le titre de la fenêtre
+.
+
+3815;txt;01
+Ne pas montrer l'indicateur Sandboxie dans le titre de la fenêtre
+.
+
+3816;txt;01
+Sandboxie peut afficher un cadre autour de la fenêtre d'un programme "sandboxé".
+.
+
+3817;txt;01
+Afficher un cadre autour de la fenêtre
+.
+
+3818;txt;01
+Cliquer pour changer la couleur de la bordure
+.
+
+3819;txt;01
+Afficher bordures quand le curseur de la souris est dans le titre de la fenêtre
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Sandbox Settings :  Recovery
+#----------------------------------------------------------------------------
+
+# 3821;txt;01
+# Récupération::Récupération Rapide
+# .
+
+3821;txt;02
+Récupération
+.
+
+3822;txt;01
+Récupération Rapide
+.
+
+3823;txt;01
+Avant que le Bac à sable soit effacé, ou si vous lancez manuellement Récupération Rapide, le contenu "sandboxé" des dossiers suivants sera vérifié. Si des fichiers y sont trouvés, vous aurez une chance de les récupérer facilement du Bac à sable.
+.
+
+# 3831;txt;01
+# Récupération::Récupération Immédiate
+# .
+
+3832;txt;01
+La Récupération Immédiate de la Récupération Rapide utilise la fonction de récupération dès que les fichiers sont créés.
+.
+
+3833;txt;01
+Activer la Récupération Immédiate
+.
+
+3834;txt;01
+Les dossiers suivants et types de fichiers (extension) seront exclus de la Récupération Immédiate.
+.
+
+3835;txt;01
+Ajouter &Type
+.
+
+3836;txt;01
+Sélectionner un dossier à exclure de la Récupération Immédiate.
+.
+
+3837;txt;01
+Entrez un Type de fichier (Extension) à exclure de la Récupération Immédiate
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Sandbox Settings :  Delete
+#----------------------------------------------------------------------------
+
+# 3841;txt;01
+# Effacer::Invocation
+# .
+
+3841;txt;02
+Effacer
+.
+
+3842;txt;01
+Effacer Invocation
+.
+
+3843;txt;01
+Le contenu de ce Bac à sable peut être automatiquement supprimé lorsque le dernier programme "sandboxé" se termine et le Bac à sable devient inactif.
+.
+
+3844;txt;01
+Effacer automatiquement le contenu du Bac à sable
+.
+
+3845;txt;01
+Si des fichiers "sandboxés" sont éligibles à la récupération, la Récupération Rapide sera préférée à l'effacement automatique.
+.
+
+3846;txt;01
+Sinon, ce Bac à sable peut être protégé contre la suppression, à la fois manuelle et automatique, initiée par Sandboxie.
+.
+
+3847;txt;01
+Ne jamais effacer ce Bac à sable ou son contenu
+.
+
+# 3851;txt;01
+# Effacer::Commande
+# .
+
+3852;txt;01
+Commande Effacer
+.
+
+3853;txt;01
+Pour la suppression automatique et manuelle, la commande suivante sera utilisée pour supprimer le contenu du Bac à sable. Si laissée vierge, la commande système sera RMDIR (effacer répertoire).
+.
+
+3854;txt;01
+Si vous changez ce réglage, ajoutez le texte "%%SANDBOX%%" (avec les guillemets). Lorsque la commande sera exécutée, le texte sera remplacé par l'emplacement du dossier Bac à sable.
+.
+
+3855;txt;01
+Ou sélectionnez un préréglage commande effacer :
+.
+
+3856;txt;01
+La commande d'effacement ne spécifie pas "%%SANDBOX%%" (avec les guillemets).
+Etes-vous sûr d'accepter cette commande d'effacement ?
+.
+
+3857;txt;01
+Veuillez parcourir et sélectionner le programme - %2
+.
+
+#----------------------------------------------------------------------------
+# Program Groups
+#----------------------------------------------------------------------------
+
+3971;txt;01
+Groupes de programmes
+.
+
+3972;txt;01
+Vous pouvez réunir des programmes ensemble et leurs donner un nom de groupe.
+Les groupes de programmes peuvent être utilisés avec certains des paramètres
+qui acceptent les noms de programmes.
+.
+
+3974;txt;01
+Ajout &Groupe
+.
+
+3975;txt;01
+Enter un nom pour le groupe
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Sandbox Settings :  Forced Folders/Programs
+#----------------------------------------------------------------------------
+
+# 3861;txt;01
+# Démarrage programme::Dossiers forcés
+# .
+
+3861;txt;02
+Démarrage programme
+.
+
+3862;txt;01
+Dossiers forcés
+.
+
+3863;txt;01
+Si un programme démarre non "sandboxé" d'un des dossiers suivants, il sera forcé de s'exécuter dans ce Bac à sable. Ceci n'est pas valable si le programme est exécuté dans un autre Bac à sable.
+.
+
+3864;txt;01
+Vous pouvez forcer le démarrage automatique Windows des CD/DVD dans un Bac à sable en incluant les lettres de vos CD-ROM et DVD-ROM dans la liste suivante.
+.
+
+3865;txt;01
+Les dossiers forcés sont prioritaires aux programmes forcés.
+.
+
+3866;txt;01
+Sélectionnez un dossier à ajouter à la liste des dossiers forcés.
+.
+
+# 3871;txt;01
+# Démarrage programme::Programmes forcés
+# .
+
+3872;txt;01
+Programmes forcés
+.
+
+3873;txt;01
+Si un des programmes suivants démarre non "sandboxé", il sera forcé de démarrer dans ce Bac à sable. Ceci ne s'applique pas si un programme doit explicitement démarrer dans un autre Bac à sable.
+.
+
+# 3962;txt;01
+# Uilisateurs forcés
+# .
+
+# 3963;txt;01
+# Si l'un des utilisateurs se connecte à ce pc, la session s'exécutera dans la sandbox.
+# .
+
+# 3964;txt;01
+# Pour effacer une sandbox associée à un compte d'utilisateur forcé,
+# Connectez-vous comme utilisateur et utiliser "Sandboxie Control" pour effacer la sandbox.
+# .
+
+# 3965;txt;01
+# Les utilisateurs forcés prennent l'ascendant sur les programmes et les dossier forcés.
+# .
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Sandbox Settings :  Linger/Leader Programs
+#----------------------------------------------------------------------------
+
+# 3881;txt;01
+# Arrêt programme::Programmes persistants
+# .
+
+3881;txt;02
+Arrêt programme
+.
+
+3882;txt;01
+Programmes persistants
+.
+
+3883;txt;01
+Les programmes suivants seront automatiquement terminés s'ils continuent de s'exécuter dans ce Bac à sable après
+que les autres programmes soient fermés.
+.
+
+# 3891;txt;01
+# Arrêt programme::Programmes leaders
+# .
+
+3892;txt;01
+Programmes leaders
+.
+
+3893;txt;01
+Les programmes suivants sont considérés essentiels dans ce Bac à sable. Terminer ces programmes causera la fermeture des autres programmes s'exécutant dans ce Bac à sable.
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Sandbox Settings :  File Migration
+#----------------------------------------------------------------------------
+
+3901;txt;01
+Migration fichiers
+.
+
+3903;txt;01
+Les fichiers doivent être migrés (copiés) dans le Bac à sable avant qu'ils puissent être modifiés par les programmes qui sont exécutés dans ce Bac à sable. Toutefois, pour les très gros fichiers, le processus de migration prend beaucoup de temps.
+.
+
+3904;txt;01
+Le nombre suivant détermine le volume maximal d'un fichier à migrer. Des fichiers de plus de ce volume ne seront jamais migrés dans le Bac à sable, et ne seront pas modifiables par les programmes en cours d'exécution dans le Bac à sable.
+.
+
+3905;txt;01
+Ne pas migrer les fichiers supérieurs à
+.
+
+3906;txt;01
+kilobytes
+.
+
+3907;txt;01
+Lorsqu'un fichier est trop gros pour être migré, le message SBIE2102 sera affiché, à moins que l'option suivante ne soit cochée.
+.
+
+3908;txt;01
+Ne pas afficher d'avertissement si le fichier est trop gros pour migrer
+.
+
+3909;txt;01
+Le réglage du fichier de migration limite la taille maximale d'un fichier pouvant être copié dans le bac à sable.
+
+Le réglage par défaut est de %3 kilobytes dans le bac à sable '%2'.
+
+Cliquer sur ok pour régler cette limite de taille sur %4 kilobytes.
+
+La modification de cette limite peut se faire aussi en ouvrant la fenêtre des paramètres du bac à sable et en parcourant la page des paramètres de migration fichier.
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Sandbox Settings :  Internet/Start Restrictions
+#----------------------------------------------------------------------------
+
+# 3911;txt;01
+# Restrictions::Accès Internet
+# .
+
+3911;txt;02
+Restrictions :
+.
+
+3912;txt;01
+Accès Internet
+.
+
+3913;txt;01
+Les programmes suivants seront les seuls de ce Bac à sable à pouvoir accéder à Internet.
+.
+
+3914;txt;01
+Quand cette option est activée, les programmes qui sont installés (ou téléchargés) dans ce Bac à sable n'auront jamais accès à Internet, même s'ils correspondent aux noms définis ci-dessus.
+.
+
+3915;txt;01
+Message affiché SBIE%2 lorsque l'accès est refusé 
+.
+
+3916;txt;01
+&Bloquer tous les programmes
+.
+
+3917;txt;01
+&Autoriser tous les programmes
+.
+
+3918;txt;01
+Tous les programmes peuvent accéder à Internet
+.
+
+3919;txt;01
+Aucun programme ne peut accéder à Internet
+.
+
+3920;txt;01
+Les Restrictions d'accès à internet sont activées dans le bac à sable '%2', et évite à ce programme d'accéder à internet.
+
+Cliquez sur OK pour ajouter le programme '%3' aux restrictions d'accès à internet dans le bac à sable '%2'.
+
+Pour gérer les restrictions d’accès à internet, ouvrir la fenêtre des paramètres du bac à sable et parcourir le groupe des paramètres de Restriction.
+.
+
+# 3921;txt;01
+# Restrictions::Démarrage/Exécuter accès
+# .
+
+3922;txt;01
+Démarrage/Exécuter accès
+.
+
+3923;txt;01
+Les programmes suivants seront les seuls dans ce Bac à sable à pouvoir démarrer et s'exécuter.
+.
+
+3924;txt;01
+Lorsque cette option est activée, les programmes qui sont installés (ou téléchargés) dans ce Bac à sable ne seront jamais autorisés à démarrer ou s'exécuter, même s'ils correspondent aux noms définis ci-dessus.
+.
+
+3928;txt;01
+Tous les programmes peuvent démarrer et s'exécuter
+.
+
+3930;txt;01
+Les Restrictions d'accès à démarrer/exécuter sont activées dans le bac à sable '%2', et évite à ce programme de démarrer ou de s’exécuter.
+
+Cliquez sur OK pour ajouter le programme '%3' aux restrictions d'accès à Démarrer/exécuter dans le bac à sable '%2'.
+
+Pour gérer les restrictions d'accès à démarrer/exécuter, ouvrir la fenêtre des paramètres du bac à sable et parcourir le groupe des paramètres de Restriction.
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Sandbox Settings :  Low Level Access / Hardware Access
+#----------------------------------------------------------------------------
+
+# 3931;txt;01
+# Restrictions::Accès Bas-niveau
+# .
+
+# 3932;txt;01
+# Accès Bas-niveau
+# .
+
+# 3933;txt;01
+# Les paramètres suivants déterminent essentiellement la protection offerte par Sandboxie. Activer un ou tous ces réglages n'est pas recommandé.
+# .
+
+# 3934;txt;01
+# Autoriser les programmes de ce Bac à sable à charger les pilotes noyaux dans le système d'exploitation.
+# .
+
+# 3935;txt;01
+# Autoriser les programmes de ce Bac à sable à charger l'application surveillée (Win32) dans d'autres programmes.
+# .
+
+# 3936;txt;01
+# Autoriser les programmes de ce Bac à simuler l'entrée du clavier et de la souris.
+# .
+
+# 3937;txt;01
+# Autoriser les programmes de cette sandbox à modifier l'arrière-plan du bureau et d'autres paramètres systèmes.
+# .
+
+# 3938;txt;01
+# Autoriser les programmes de cette sandbox à gérer la configuration des périphériques matériels.
+# .
+
+# 3952;txt;01
+# Accès matériel
+# .
+
+# 3953;txt;01
+# Autoriser les programmes de cette sandbox à modifier le mot de passe du compte utilisateur
+# .
+
+# 3954;txt;01
+# Autoriser les programmes à modifier les paramètres du réseau et du pare-feu
+# .
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Sandbox Settings :  Drop Rights
+#----------------------------------------------------------------------------
+
+# 3941;txt;01
+# Restrictions::Droits restreints
+# .
+
+3942;txt;01
+Droits restreints
+.
+
+3943;txt;01
+Sandboxie a désactivé seulement quelques droits en matière de sécurité des programmes qu'il supervise afin de garantir l'isolement.
+.
+
+3944;txt;01
+Toutefois, si vous utilisez un compte Administratif ou Super Utilisateur, Sandboxie peut désactiver plus de droits de sécurité, semblable à l'effet de l'utilitaire DropMyRights.
+.
+
+3945;txt;01
+Restreindre les droits des groupes Administrateurs et Super Utilisateurs
+.
+
+# 3946;txt;01
+# Il est conseillé de garder ce paramètre activé pour compenser le fait que certaines fonctions ne sont pas disponibles dans la version 64 bit
+# .
+
+# 3947;txt;01
+# Pour activer la protection renforcée sur 64-bit, utilisez le mode "Experimental Protection" en allant dans le menu de configuration.
+# .
+
+3949;txt;01
+Le paramètre droits restreints est activé dans le bac à sable '%2', elle empêche l'utilisation des droits administrateur.
+
+Cliquez sur OK pour désactiver les droits restreints dans le bac à sable '%2', et autoriser l'utilisation des droits administrateur dans le bac à sable.
+
+Vous pouvez toujours modifier les droits restreints en passant par la fenêtre de configuration du bac à sable et en parcourant le groupe des paramètres des restrictions.
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control:  Sandbox Settings:  Print Spooler
+#----------------------------------------------------------------------------
+
+3950;txt;01
+Spouleur d'impression
+.
+
+3951;txt;01
+Le Spouleur d'impression de Windows fonctionne en dehors de la supervision de Sandboxie.  Une application sandboxée qui demande au Spouleur d'impression d'imprimer dans un fichier sera bloquée car ce fichier sera écrit en dehors du bac à sable.
+.
+
+3952;txt;01
+Si vous souhaitez autoriser le Spouleur d'impression à imprimer dans un fichier, vous pouvez activer ce paramètre. Il est recommandé d'activer cette option uniquement en cas de besoin.
+.
+
+3953;txt;01
+Autoriser le Spouleur d'impression de Windows à imprimer vers un fichier.
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control:  Sandbox Settings:  Network Files
+#----------------------------------------------------------------------------
+
+3955;txt;01
+Fichiers en réseau
+.
+
+3956;txt;01
+Les dossiers et fichiers en réseau sont normalement visibles aux applications dans les Bacs à sable.
+.
+
+3957;txt;01
+Si vous souhaitez empêcher les applications des Bacs à sable d'accéder aux fichiers et aux dossiers sur votre réseau, vous pouvez activer ce paramètre. Il est possible d'autoriser l'accès à des fichiers et dossiers spécifiques en les ajoutant via Accès aux ressources -> Ajouter un fichier ou dossier.
+.
+
+3958;txt;01
+Bloquer les fichiers et dossiers du réseau, sauf s'ils sont spécifiquement autorisés.
+.
+
+#---------------------------------------------------------------------------
+# Sandboxie Control :  Sandbox Settings :  Resource Access
+#----------------------------------------------------------------------------
+
+4001;txt;01
+Accès ressource::Accès fichiers::Accès direct
+.
+
+4002;txt;01
+Accès direct au fichier (OpenFilePath)
+.
+
+4003;txt;01
+Les fichiers et dossiers suivants seront directement accessibles aux programmes s'exécutant dans ce Bac à sable, sans effets de "sandboxage".
+.
+
+4004;txt;01
+Cela ne s'applique pas aux programmes installés ou téléchargés dans le Bac à sable.
+Voir aussi :  Réglage Accès total.
+.
+
+4011;txt;01
+Accès ressource::Accès fichiers::Accès total
+.
+
+4012;txt;01
+Accès total au fichier (OpenPipePath)
+.
+
+4013;txt;01
+Les fichiers et dossiers suivants seront directement accessibles aux programmes s'exécutant dans ce Bac à sable, sans effets de "sandboxage".
+.
+
+4014;txt;01
+Contrairement à la mise en Accès direct, ce paramètre s'applique à tous les programmes, y compris ceux installés ou téléchargés dans le Bac à sable.
+.
+
+4021;txt;01
+Accès ressource::Accès fichiers::Accès Bloqué
+.
+
+4022;txt;01
+Accès bloqué au fichier (ClosedFilePath)
+.
+
+4023;txt;01
+Les dossiers et fichiers suivants seront inaccessibles à tous les programmes s'exécutant dans ce Bac à sable.
+.
+
+4024;txt;01
+Si un fichier ou un dossier figure dans la liste Accès autorisés mais aussi dans la liste Accès bloqués, le paramètre Accès bloqué sera prioritaire.
+.
+
+4025;txt;01
+Le partage des fichiers Windows peut être utilisé pour contourner les paramètres d'accès aux fichiers bloqués.
+Par conséquent, une option a été ajoutée pour bloquer l'accès au service de partage des fichiers de Windows.
+.
+
+4031;txt;01
+Accès ressource::Accès fichiers::Accès Lecture seule
+.
+
+4032;txt;01
+Accès lecture seule au fichier (ReadFilePath)
+.
+
+4033;txt;01
+Les dossiers et fichiers suivants ne seront pas modifiables par les programmes s'exécutant dans ce Bac à sable.
+.
+
+4111;txt;01
+Accès ressource::Accès fichiers::Accès en écriture seule
+.
+
+4112;txt;01
+Accès du fichier en écriture seule (chemin du fichier en écriture)
+.
+
+4113;txt;01
+Les dossiers suivants seront en apparence vides pour les programmes en cours, mais ces programmes pourront créer des nouveaux fichiers dans cette sandbox.
+.
+
+4041;txt;01
+Accès ressource::Accès Registre::Accès direct
+.
+
+4042;txt;01
+Accès direct au Registre (OpenKeyPath)
+.
+
+4043;txt;01
+Les clés de Registre suivantes seront directement accessibles aux programmes s'exécutant dans ce Bac à sable, sans effets de "sandboxage".
+.
+
+4044;txt;01
+Cela ne s'applique pas aux programmes installés ou téléchargés dans le Bac à sable.
+.
+
+4051;txt;01
+Accès ressource::Accès Registre::Accès bloqué
+.
+
+4052;txt;01
+Accès bloqué au Registre (ClosedKeyPath)
+.
+
+4053;txt;01
+Les clés de Registre suivantes ne seront pas accessibles aux programmes s'exécutant dans ce Bac à sable.
+.
+
+4054;txt;01
+Si une clé Registre figure dans la liste Accès autorisés mais aussi dans la liste Accès bloqués, le paramètre Accès bloqué sera prioritaire.
+.
+
+4061;txt;01
+Accès ressource::Accès Registre::Accès en Lecture seule
+.
+
+4062;txt;01
+Accès Registre en Lecture seule (ReadKeyPath)
+.
+
+4063;txt;01
+Les clés de Registre suivantes ne seront pas modifiables aux programmes s'exécutant dans ce Bac à sable.
+.
+
+4121;txt;01
+Accès ressource::Accès Registre::Accès en écriture seule
+.
+
+4122;txt;01
+Accès du registre en écriture seule (WriteKeyPath)
+.
+
+4123;txt;01
+Les clés du registre suivantes seront en apparence vides pour les programmes en cours, mais ces programmes pourront écrire des nouvelles données dans cette sandbox.
+.
+
+4071;txt;01
+Accès ressource::Accès IPC::Accès direct
+.
+
+4072;txt;01
+Accès direct IPC (OpenIpcPath)
+.
+
+4073;txt;01
+Les objets NT IPC suivants seront directement accessibles aux programmes s'exécutant dans ce Bac à sable, sans effets de "sandboxage".
+.
+
+4074;txt;01
+Ce paramètre s'applique à tous les programmes, y compris ceux installés ou téléchargés dans le Bac à sable.
+.
+
+4081;txt;01
+Accès ressource::Accès IPC::Accès bloqué
+.
+
+4082;txt;01
+Accès bloqué IPC  (ClosedIpcPath)
+.
+
+4083;txt;01
+Les objets NT IPC suivants ne seront pas accessibles aux programmes s'exécutant dans ce Bac à sable.
+.
+
+4084;txt;01
+Si un objet NT IPC figure dans la liste Accès autorisés mais aussi dans la liste Accès bloqués, le paramètre Accès bloqué sera prioritaire.
+.
+
+4091;txt;01
+Accès ressource::Accès fenêtre
+.
+
+4092;txt;01
+Accès fenêtre (OpenWinClass)
+.
+
+4093;txt;01
+Les programmes "sandboxés" ne peuvent pas communiquer avec les fenêtres qui appartiennent à des programmes s'exécutant à l'extérieur du Bac à sable, à moins que la fenêtre n'ait été créée avec l'une des classes de fenêtre suivantes.
+.
+
+4101;txt;01
+Accès ressource::Accès COM
+.
+
+4102;txt;01
+Accès COM (OpenClsid)
+.
+
+4103;txt;01
+Les programmes "sandboxés" ne peuvent pas communiquer avec les objets COM qui appartiennent à des programmes s'exécutant à l'extérieur du Bac à sable, à moins qu'ils correspondent à l'un des identifiants de la classe suivants.
+.
+
+4104;txt;01
+Accès aux ressources::Accès réseaux
+.
+
+4105;txt;01
+Accès réseaux (pare-feu)
+.
+
+#----------------------------------------------------------------------------
+# Applications - General
+#----------------------------------------------------------------------------
+
+4201;txt;01
+Applications
+.
+
+4202;txt;01
+&Afficher le code
+.
+
+4203;txt;01
+Ouvrir site web
+.
+
+4204;txt;01
+Créer &nouveau
+.
+
+4205;txt;01
+Cette configuration de l'application n'inclue pas une adresse web.
+.
+
+4206;txt;01
+Divers
+.
+
+4207;txt;01
+Améliorer l'utilisation de Sandboxie avec d'autres applications en les sélectionnant dans la liste suivante.
+.
+
+4209;txt;01
+Dossiers
+.
+
+4210;txt;01
+Déterminer les emplacements des dossiers utilisés par vos autres applications.
+.
+
+4211;txt;01
+Sélection du dossier pour
+.
+
+4212;txt;01
+Emplacement par défaut :
+.
+
+4213;txt;01
+Autre emplacement :
+.
+
+4214;txt;02
+Un autre emplacement pour '%2'
+Devra contenir le fichier suivant :
+
+%3
+
+L'emplacement sélectionné ne contient pas ce fichier.
+
+Choisir un dossier qui contient ce fichier.
+.
+
+4215;txt;01
+Sélectionner le dossier utilisé par %2.
+.
+
+4216;txt;01
+Les paramètres ci-dessous règle la configuration de l'application '%2'.
+.
+
+4217;txt;01
+Déterminer où coller les paramètres, cliquez sur ok pour créer une nouvelle configuration
+pour l'application locale.
+.
+
+4218;txt;01
+Local
+.
+
+4219;txt;01
+Vos configurations des applications locales.
+.
+
+4220;txt;01
+Le code entré contient une ou plusieurs erreurs.
+Impossible de créer la configuration de l'application.
+.
+
+4221;txt;01
+Pour déterminer les emplacements de tes dossiers pour tes applications, voir la page des dossiers.
+.
+
+4222;txt;02
+Ce paramètre ne peut être supprimé ou modifié
+car c'est une partie de la configuration de l'application :
+
+%2
+
+Pour enlever la configuration de l'application de la sandbox,
+voir les pages "applications" dans les paramètres de la sandbox.
+.
+
+4223;txt;01
+La configuration de l'application locale '%2' est maintenant enlevée de toutes les sandboxes.
+Voulez-vous entièrement effacer la configuration de cette application ?
+.
+
+4224;txt;01
+PDF/Imprimer
+.
+
+4226;txt;02
+Sécurité/Privé
+.
+
+4228;txt;01
+Utilitaires de bureau
+.
+
+4230;txt;01
+Gestionnaires de téléchargement
+.
+
+4288;txt;01
+Toutes les applications
+.
+
+4289;txt;01
+Liste de toutes les configurations des applications, triée par ordre alphabétique. La liste ne contient pas les configurations de vos applications locales (non-officiel).
+.
+
+4291;txt;01
+Les exclusions par défaut pour la récupération immédiate
+.
+
+4292;txt;01
+La liste par défaut des programmes persistants
+.
+
+4293;txt;01
+La liste par défaut des ports tcp/udp bloqués
+.
+
+4294;txt;01
+Autoriser à mettre à jour les "jump lists" (menus flèches dans le menu démarrer) dans la barre des tâches de Windows 7.
+.
+
+4295;txt;01
+Exclusions par défaut des préréglages de migration de fichier
+.
+
+4296;txt;01
+Bindings par défaut des ports RPC
+.
+
+4297;txt;01
+Ouvrir les ports RPC pour le Bluetooth
+.
+
+4298;txt;01
+Ouvrir les ports RPC pour les cartes à puce
+.
+
+4299;txt;01
+Ouvrir les ports RCP pour Simple Service Discovery Protocol (SSDP, UPnP)
+.
+
+4300;txt;01
+Ouvrir des ports RPC additionnels
+.
+
+#----------------------------------------------------------------------------
+# Applications - Software Compatibility
+#----------------------------------------------------------------------------
+
+4251;txt;01
+Compatibilité avec les autres applications
+.
+
+4252;txt;01
+Sandboxie a trouvé les applications suivantes sur ton système.
+.
+
+4253;txt;01
+Cliquez sur OK et appliquer les paramètres de configuration
+qui vont améliorer la compatibilité avec ces applications.
+.
+
+4254;txt;01
+Ces paramètres de configuration prendront effet dans toutes sandboxes existantes
+et nouvelles.
+.
+
+4255;txt;01
+A l'avenir, ne pas vérifier la compatibilité du logiciel
+.
+
+4256;txt;01
+Cette configuration de l'application ne peut être enlevée 
+car elle est appliquée à toutes les sandboxes.
+Pour la modifier, utiliser l'outil de compatibilité du logiciel dans le menu configuration.
+.
+
+4257;txt;01
+Enlever &anciens réglages
+.
+
+4258;txt;01
+Les paramètres de compatibilité suivants ne sont plus en cours d'utilisation :
+
+%2
+
+Cliquez sur OK pour rejeter ces paramètres de compatibilité.
+.
+
+4451;txt;01
+Sandboxie a détecté des conflits avec l'application ci-dessous dans votre système.
+Cela peut perturber le bon fonctionnement de Sandboxie.
+
+%2
+
+La consultation de la page "conflits connus" vous permettra
+de résoudre le problème.
+
+Voulez-vous ouvrir la page "conflits connus", maintenant ?
+.
+
+4452;txt;01
+&Conflits connus
+.
+
+#----------------------------------------------------------------------------
+# Lock Configuration
+#----------------------------------------------------------------------------
+
+4261;txt;01
+Protection de la configuration
+.
+
+4262;txt;01
+Sandboxie peut protéger l'ensemble des modifications non autorisées,
+il suffit d'activer ou de désactiver les modes de protections.
+.
+
+4263;txt;01
+Seuls les comptes d'utilisateurs en mode administrateur peuvent effectuer des changements.
+.
+
+4264;txt;01
+&Un mot de passe doit être entré pour permettre des modifications.
+.
+
+4265;txt;01
+Oublier le &mot de passe quand la fenêtre "Sandboxie Control" est cachée
+.
+
+4266;txt;01
+&Changer mot de passe
+.
+
+4267;txt;01
+Seuls les comptes d'utilisateurs en mode administrateur peuvent utiliser la commande "désactiver les programmes forcés"
+.
+
+4269;txt;01
+Merci de prendre le temps de lire la page de la documentation de Sandboxie
+concernant la protection de la configuration. Voulez-vous la lire ?
+.
+
+4271;txt;01
+La configuration de Sandboxie est protégée par un mot de passe. Veuillez entrer ce mot de passe.
+.
+
+4272;txt;01
+Entrer un nouveau mot de passe qui va protéger la configuration.
+.
+
+4273;txt;01
+Entrer le même mot de passe pour le confirmer.
+.
+
+4274;txt;01
+Mot de passe erroné.  Recommencer ?
+.
+
+#----------------------------------------------------------------------------
+# Program Selector
+#----------------------------------------------------------------------------
+
+4281;txt;01
+Définir un nom de programme
+.
+
+4282;txt;01
+Définir un nom de programme ou un groupe de programme
+.
+
+4283;txt;01
+Les programmes qui ont été récemment démarrés
+.
+
+4284;txt;01
+Les programmes qui apparaissent dans les paramètres de la sandbox
+.
+
+4285;txt;01
+Groupes de programme
+.
+
+4286;txt;01
+Sélectionner ou &entrer un programme :
+.
+
+4287;txt;01
+Ouvrir/ Sélectionner &Fichier
+.
+
+#----------------------------------------------------------------------------
+# Applications - Accessibility
+#----------------------------------------------------------------------------
+
+# 4301;txt;01
+# Applications::Accessibilité
+# .
+
+4302;txt;01
+Accessibilité
+.
+
+4303;txt;01
+Les paramètres suivants permettent d'utiliser Sandboxie en combinaison avec un logiciel d'accessibilité. Veuillez noter que certaines mesures de protection de Sandboxie sont nécessairement perdues quand ces paramètres sont en vigueur.
+.
+
+4304;txt;01
+Pour compenser la perte de protection, veuillez consulter la page paramètres des Droits limités dans le groupe Restrictions.
+.
+
+4305;txt;03
+Lecteur d'écran :  %2
+.
+
+#----------------------------------------------------------------------------
+# Applications - Web Browser and Email Reader
+#----------------------------------------------------------------------------
+
+4321;txt;01
+Navigateur Internet
+.
+
+4322;txt;01
+Les exclusions suivantes permettent au Navigateur Internet s'exécutant dans ce Bac à sable d'apporter des modifications à l'extérieur du Bac à sable, donc un petit échange de mesure de sécurité et de confidentialité pour plus de commodité.
+.
+
+4323;txt;01
+Forcer %2 à s'exécuter dans cette sandbox
+.
+
+4324;txt;02
+Autoriser l'accès direct de %2 à la synchronisation des données.
+.
+
+4325;txt;02
+Permet un accès direct aux %2 flux
+.
+
+4326;txt;02
+Autoriser l'Accès direct aux Favoris d'%2
+.
+
+4327;txt;01
+Ajout les favoris de Internet Explorer à la récupération des dossiers immédiates
+.
+
+4328;txt;01
+Permet un accès direct aux %2 cookies
+.
+
+4329;txt;01
+Sauvegarde en dehors de la sandbox : Historique de recherche
+.
+
+4330;txt;01
+Sauvegarde en dehors de la sandbox : informations sur les comptes hotmail et messenger
+.
+
+4331;txt;01
+Permet un accès direct aux %2 mots de passes
+.
+
+4336;txt;02
+Permet un accès direct aux %2 signets et à la base de données historique
+.
+
+4337;txt;02
+Permet un accès direct à la %2 base de données d'hameçonnage 
+.
+
+4338;txt;02
+Permet un accès direct au %2 dossier du profil
+.
+
+4339;txt;02
+Permet un accès direct aux %2 préférences
+.
+
+4340;txt;01
+Autoriser l'accès direct à la gestion des sessions de %2
+.
+
+4341;txt;01
+Autoriser l'accès direct aux Notes de %2
+.
+
+4356;txt;02
+Autoriser l'Accès direct aux Signets d'%2
+.
+
+4357;txt;02
+Autres
+.
+
+4358;txt;02
+Extensions
+.
+
+4391;txt;01
+Lecteur de courrier
+.
+
+4392;txt;01
+Les exclusions suivantes permettent aux lecteurs de messagerie s'exécutant dans ce Bac à sable d'accéder à des fichiers à l'extérieur de ce Bac à sable.
+.
+
+4393;txt;01
+Lecteurs multimédias
+.
+
+4394;txt;01
+Les exclusions suivantes permettent aux lecteurs multimédias tournant dans ce Bac à sable d'accéder aux fichiers hors du bac.
+.
+
+4395;txt;01
+Autoriser l'accès direct au dossier Photo/Images à %2 pour simplifier la capture d'écran.
+.
+
+4396;txt;01
+Clients de torrent
+.
+
+4397;txt;01
+Les exclusions suivantes permettent aux clients de torrent tournant dans ce Bac à sable d'accéder aux fichiers hors du bac.
+.
+
+4398;txt;01
+Autoriser l'accès direct au dossier Musique à %2 pour simplifier la gestion de la bibliothèque musicale.
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Sandbox Settings :  User Accounts
+#----------------------------------------------------------------------------
+
+5101;txt;01
+Comptes des utilisateurs
+.
+
+5102;txt;01
+Ajouter des comptes et des groupes d'utilisateurs sur la liste suivante pour limiter l'utilisation de la sandbox à ces comptes seuls.
+Si la liste est vide, la sandbox peut être utilisée pour tous les comptes des utilisateurs.
+.
+
+5103;txt;01
+Remarque : la configuration des programmes et des dossiers forcés pour une sandbox ne sont pas applicables aux comptes des utilisateurs qui ne peuvent pas utiliser la sandbox.
+.
+
+# 5105;txt;01
+# Ajouter &utilisateur
+# .
+
+5107;txt;01
+L'utilisation de cette sandbox a été restreinte par votre compte utilisateur, et
+la sandbox ne sera plus visible.
+
+Pour rendre la sandbox utilisable et visible, Utiliser la commande "Révéler la sandbox cachée"
+du menu de la sandbox
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Reveal Hidden Sandbox
+#----------------------------------------------------------------------------
+
+5122;txt;01
+Votre compte utilisateur est exclu de toutes les sandboxes listées ci-dessous.
+.
+
+5123;txt;01
+Les comptes des utilisateurs suivants ont maintenant la permission d'utiliser la sandbox sélectionnée.
+.
+
+5124;txt;01
+Cliquer sur le bouton "OK" pour ajouter votre compte d'utilisateur '%2' à la sandbox et celle-ci va apparaitre sur la fenêtre principale.
+.
+
+#----------------------------------------------------------------------------
+# Sandboxie Control :  Set Layout and Groups
+#----------------------------------------------------------------------------
+
+5142;txt;01
+Regrouper les sandboxes et personnaliser l'ordre dans lequel, celles-ci sont listées. Utiliser "le clic-droit" sur la sandbox pour gérer sa position dans l'arborescence ci-dessous.
+.
+
+5143;txt;01
+(Début)
+.
+
+5145;txt;01
+&Restaurer la présentation par défaut
+.
+
+5146;txt;01
+Insérer un &Groupe
+.
+
+5147;txt;01
+&Renommer
+.
+
+5148;txt;01
+&Effacer
+.
+
+5151;txt;01
+&Déplacer
+.
+
+5152;txt;01
+&Remonter
+.
+
+5153;txt;01
+&Descendre
+.
+
+5154;txt;01
+&Déplacer vers
+.
+
+#----------------------------------------------------------------------------
+# Plus Tips
+#----------------------------------------------------------------------------
+
+6001;txt;01
+L'interface utilisateur classique de Sandboxie (SbieCtrl.exe) a des capacités
+de surveillance des ressources et des événements très limitées.
+
+Pour un dépannage optimal, il est fortement conseillé
+d'installer la nouvelle interface utilisateur, Sandboxie-Plus (SandMan.exe),
+qui offre d'excellentes capacités de suivi et de surveillance.
+
+Voulez-vous télécharger Sandboxie-Plus ?
+.
+
+6002;txt;01
+Visitez <a ID="whats_new">sandboxie-plus.com</a> pour découvrir les nouvelles fonctionnalités de Sandboxie-Plus
+ou cliquez directement <a ID="upgrade">ici</a> pour télécharger le dernier installateur de Sandboxie-Plus.
+.
+
+6003;txt;01
+L'ancienne interface utilisateur de Sandboxie classic ne prend pas en charge la fonctionnalité de pare-feu réseau.
+
+Vous pouvez cependant configurer la fonctionnalité prise en charge par les composants de base en utilisant le fichier ini, les règles sont structurées comme suit :
+NetworkAccess=iexplorer.exe,Allow; Port=80,443; Address=192.168.0.1-192.168.100.255; Protocol=TCP
+
+Si vous préférez utiliser une interface utilisateur pour contrôler ces options, veuillez passer à Sandboxie-Plus, qui offre un support complet de toutes les nouvelles fonctionnalités.
+.
+
+6004;pop;err;01
+La configuration de la boîte sélectionnée n'est pas autorisée.
+.
+
+6005;txt;01
+Note : sans privilèges administrateurs, les installateurs ne pourront pas démarrer dans le Bac à sable. Sandboxie-Plus offre une option pour que de nombreux installateurs réussissent sans ces privilèges. Vous pouvez également activer cette option manuellement dans la version classique, en ajoutant "FakeAdminRights=y" à la section ini du bac à sable.
+.
+
+6006;txt;01
+L'ancienne interface utilisateur de Sandboxie classic ne prend en charge que quelques options de restriction.
+
+Des options supplémentaires comme "ClosePrintSpooler=y", "OpenClipboard=n", "BlockNetParam=n" et bien d'autres peuvent être définies dans la section ini du bac.
+L'interface utilisateur moderne (SandMan.exe) offre également plus d'options de personnalisation pour le démarrage/exécution et les restrictions d'accès à Internet.
+
+Si vous préférez utiliser une interface utilisateur pour contrôler ces options, veuillez passer à Sandboxie-Plus, qui offre un support complet de toutes les nouvelles fonctionnalités.
+.
+
+6007;txt;01
+Sandboxie Plus renforce la confidentialité en passant d'un mode liste noire (accès en lecture à l'ensemble du disque sauf si une règle spécifique d’un dossier l’empêche) à un mode liste blanche (les programmes "sandboxés" ne sont autorisés à lire que les emplacements génériques du système et l'accès en lecture à la plupart des données de l'utilisateur doit être explicitement accordé).
+
+L'interface utilisateur de Sandboxie classic ne prend pas en charge ce mode de fonctionnement. Bien qu'il soit possible de le configurer à l'aide du fichier ini, il est recommandé d'utiliser l'interface moderne Sandboxie-Plus (SandMan.exe) si vous souhaitez utiliser des Bacs à sable à confidentialité renforcée.
+.
+
+#----------------------------------------------------------------------------
+# Getting Started Wizard
+#----------------------------------------------------------------------------
+
+7850;txt;01
+Tutoriel de prise en main - Sandboxie
+.
+
+7851;txt;01
+Démarrer avec Sandboxie
+.
+
+7852;txt;01
+Bienvenue dans Sandboxie !
+
+Sandboxie exécute vos programmes dans un environnement isolé qui les empêchent de modifier de façon permanente d'autres programmes et des données dans votre pc.
+
+Ce tutoriel explique brièvement les principes de base pour utiliser Sandboxie.
+.
+
+7853;txt;01
+Note : ce tutoriel est conçu pour une utilisation avec la sandbox par défaut, DefaultBox.
+.
+
+7854;txt;01
+Comment Sandboxie fonctionne (illustration)
+.
+
+7855;txt;01
+Démarrez votre navigateur web sous Sandboxie
+.
+
+7856;txt;01
+Trouvez le raccourci sur votre bureau et effectuez un double-clic sur le raccourci pour démarrer votre navigateur web dans la sandbox par défaut, DefaultBox.
+.
+
+7857;txt;01
+Cliquez ici pour cacher cette fenêtre et montrer le bureau
+.
+
+7858;txt;01
+Votre navigateur est en cours d'exécution à l'intérieur de la sandbox
+.
+
+7859;txt;01
+Les programmes dans la sandbox peuvent seulement modifier les contenus de cette sandbox.
+
+Lorsque vous enregistrez ou téléchargez des fichiers, ils vont dans le bac à sable. Si vous enregistrez un fichier sur votre bureau, des documents ou des dossiers de Téléchargements, Sandboxie propose de déplacer le fichier à l'extérieur du bac à sable.
+
+Essayez dès maintenant : téléchargez un fichier de votre navigateur vers votre dossier de bureau (dans le bac à sable) et récupérez le fichier sur votre bureau réel.
+.
+
+7860;txt;01
+Effacez les contenus de votre sandbox
+.
+
+7861;txt;01
+Vous pouvez imaginer que la sandbox est comme un morceau de papier transparent placé entre le programme et votre pc. Effacer les contenus de la sandbox, c'est comme jeter un morceau de papier utilisé et le remplacer par un propre
+.
+
+7862;txt;01
+Essayez dès maintenant : supprimer les contenus de votre sandbox "DefaultBox". Trouvez l'icône jaune Sandboxie dans le coin de votre écran en surbrillance, puis cliquez sur :
+.
+
+7863;txt;01
+Cliquez droit sur l'icône jaune de Sandboxie,
+
+sélectionnez "DefaultBox", et sélectionnez "effacer les contenus".
+.
+
+7864;txt;01
+Prêt à l'emploi !
+.
+
+7865;txt;01
+Merci d'avoir pris le temps de regarder ce tutoriel. Vous pouvez visiter le site web de Sandboxie pour plus de tutoriels et d'astuces.
+
+La configuration par défaut dans Sandboxie fournit une protection complète, mais vous pouvez passer en revue les commandes de configuration de la sandbox dans le menu "bac à sable" à l'intérieur de la fenêtre du programme "Sandboxie control".
+.
+
+# 7866;txt;01
+# Pour les systèmes en 64 bits, vous devrez activer "Experimental Protection". Voir le menu "configurer" dans "Sandboxie Control".
+# .
+
+#----------------------------------------------------------------------------
+# licence Manager
+#----------------------------------------------------------------------------
+
+7901;txt;01
+Sandboxie licence Manager
+.
+
+7902;txt;01
+Code système %2
+.
+
+7903;txt;01
+Dans l'avenir, activer la licence sans demander.
+.
+
+#----------------------------------------------------------------------------
+
+7921;txt;01
+Sandboxie est enregistré et la licence est activée.
+.
+
+7922;txt;01
+Sandboxie est enregistré mais la licence doit être réactivée.
+.
+
+7923;txt;01
+Copie non enregistrée. Enregistrez-la aujourd'hui !
+.
+
+7924;txt;01
+La licence de Sandboxie devra être réactivée dans %2 jours.
+.
+
+7925;txt;01
+La licence de Sandboxie est activée.
+.
+
+7926;txt;01
+La date d'expiration de votre clé du produit est %2.
+.
+
+7927;txt;01
+Votre clé de produit n'a pas de date d'expiration.
+.
+
+#----------------------------------------------------------------------------
+
+7931;txt;01
+Votre copie de Sandboxie est enregistrée avec une clé d'enregistrement obsolète.
+.
+
+7932;txt;01
+Merci de laisser le "licence Manager" se connecter au serveur afin de mettre à jour votre clé d'enregistrement.
+Cette opération est gratuite.
+.
+
+7933;txt;01
+Votre clé d'enregistrement n'est pas reconnue par le serveur de licence.
+.
+
+7934;txt;01
+Si vous avez utilisé une clef d'enregistrement valide, pour laquelle vous avez payé ou qui vous a été fourni comme cadeau
+ou comme une sorte de promotion, veuillez envoyer un mail à :
+.
+
+7935;txt;01
+Votre nouvelle clé de produit est :
+.
+
+7936;txt;01
+Pensez à garder votre clé de produit dans un endroit sûr pour la retrouver en cas de besoin.
+Utilisez le bouton ci-dessous pour copier votre clé de produit, vous pourrez ensuite la coller dans un document et l'imprimer.
+.
+
+7937;txt;01
+&Mise à jour de la clé d'enregistrement pour la clé du produit 
+.
+
+#----------------------------------------------------------------------------
+
+7941;txt;01
+L'enregistrement de Sandboxie se fait par un site de paiement tierce-partie.  Commencer le processus d'enregistrement en suivant le lien suivant.
+.
+
+7942;txt;01
+Pour activer votre licence pour Sandboxie, entrer la clé de produit qui apparaît sur votre reçu de paiement,
+cliquer sur le bouton pour activer votre licence.
+.
+
+7943;txt;01
+Voulez-vous entrer une nouvelle clé de produit ?
+.
+
+7944;txt;01
+&Activer la licence
+.
+
+7945;txt;01
+Votre copie de Sandboxie est maintenant enregistrée.
+.
+
+7946;txt;01
+Merci de votre support à Sandboxie !
+.
+
+#----------------------------------------------------------------------------
+
+7951;txt;01
+Voulez-vous activer la licence dès à présent ?
+.
+
+7952;txt;01
+Veuillez visiter le site web de Sandboxie via le lien ci-dessous pour commander une nouvelle clef de produit.
+.
+
+7961;txt;01
+Effacer les informations de la licence.
+.
+
+7962;txt;01
+Etes-vous sûr de vouloir effacer les informations de la licence de Sandboxie ?
+
+Vous pourrez activer votre licence à n'importe quel moment, il suffira d'entrer une clé de produit.
+.
+
+#----------------------------------------------------------------------------
+
+7971;txt;01
+Ce n'est pas une clé de produit valide.
+.
+
+7972;txt;01
+Ce n'est pas un code système valide.
+.
+
+7973;txt;01
+Ce n'est pas une clé d'activation valide.  [%2]
+.
+
+7974;txt;01
+Réponse invalide du serveur qui fournit la licence.
+.
+
+7975;txt;01
+L'activation du produit a échoué :
+.
+
+7976;txt;01
+Voulez-vous faire un autre essai ?
+.
+
+7977;txt;01
+Si vous avez besoin d'activer votre Sandboxie sur un ordinateur et que vous ne possédez pas d'accès à internet,
+rendez-vous sur "the Sandboxie Licensing FAQ" pour avoir des informations sur l'activation hors-ligne.
+.
+
+7978;txt;01
+La date actuelle (%2) est plus récente que la date fournie par le serveur de licence (%3).
+.
+
+7982;txt;01
+Le serveur de licence n'a pas donné de raison pour expliquer l'échec de l'activation.
+.
+
+7983;txt;01
+La clé de produit n'est pas reconnue par le serveur de licence.
+.
+
+7984;txt;01
+La clé de produit ne peut plus être utilisée au-delà de sa date d'expiration du %2.
+.
+
+7985;txt;01
+La clé de produit a été activée sur trop d'ordinateurs.
+.
+
+7986;txt;01
+Clé de produit annulée car elle a été rendue publique sur internet.
+.
+
+7987;txt;01
+Clé de produit annulée car la commande a été remboursée.
+.
+
+#----------------------------------------------------------------------------
+# SandboxieInstall
+#----------------------------------------------------------------------------
+
+8001;ins;01
+Sélectionnez le type d'installation
+.
+
+8002;ins;01
+Sélectionnez Ecraser ou Mode désinstallation.
+.
+
+8003;ins;01
+Démarrer
+.
+
+8004;ins;01
+Vous avez une installation existante de Sandboxie dans le dossier suivant :
+.
+
+8005;ins;01
+Veuillez sélectionner la démarche à suivre :
+.
+
+8006;ins;01
+Ecraser (mise à niveau) l'installation existante
+.
+
+8007;ins;01
+Désinstaller (supprimer) l'installation existante et ses réglages
+.
+
+8008;ins;01
+Cliquez sur Démarrer lorsque vous êtes prêt à procéder.
+.
+
+8009;ins;01
+Avant de désinstaller, utilisez Sandboxie Control pour effacer le contenu du Bac à sable.
+.
+
+8010;ins;01
+Installation du Pilote
+.
+
+8011;ins;01
+Veuillez relire les informations ci-dessous.
+.
+
+8012;ins;01
+Cliquez sur suivant pour installer et activer le pilote Sandboxie au niveau Système. Ce pilote est le cœur de l'application Sandboxie.
+.
+
+8013;ins;01
+Vous devrez peut-être désactiver temporairement tout système de protection qui empêcherait l'installation du pilote au niveau Système.
+.
+
+8014;ins;02
+Si cette étape échoue et que votre ordinateur se bloque ou redémarre, redémarrez votre pc en mode sans échec,
+vous pourrez ré-exécuter le programme d'installation pour supprimer Sandboxie.
+.
+
+8015;ins;01
+Le pilote s'installe correctement sur la plupart des systèmes.
+.
+
+8016;ins;01
+Veuillez patienter pendant que Sandboxie est désinstallé.
+.
+
+8021;ins;01
+Exécuter un programme sandboxé.lnk
+.
+
+8022;ins;01
+ Exécuter un programme sous la supervision de Sandboxie
+.
+
+8023;ins;01
+Exécuter dans le menu Démarrer.lnk
+.
+
+8024;ins;01
+Choisissez un programme du menu Démarrer pour s'exécuter sous le contrôle de Sandboxie
+.
+
+8025;ins;01
+Exécuter le Navigateur Internet sandboxé.lnk
+.
+
+8026;ins;01
+Exécuter le Navigateur Internet par défaut sous la supervision de Sandboxie
+.
+
+8027;ins;01
+Exécuter l'Explorateur Windows sandboxé.lnk
+.
+
+8028;ins;01
+Explorer le Bureau et l'ordinateur sous la supervision de Sandboxie
+.
+
+8029;ins;01
+Sandboxie Control.lnk
+.
+
+8030;ins;01
+Ouvrir le panneau de contrôle de Sandboxie
+.
+
+8031;ins;01
+Désinstaller Sandboxie.lnk
+.
+
+8032;ins;01
+Désinstaller Sandboxie
+.
+
+8033;ins;01
+=copy:3698
+.
+
+8041;ins;01
+Sandboxie ne peut être installé que sur les versions suivantes de Microsoft Windows :
+.
+
+8042;ins;01
+Sandboxie doit être installé à partir d'un compte
+ayant les droits d'Administrateur.
+
+Si vous utilisez Windows Vista avec User Accounts Control (UAC)
+activé, assurez-vous de démarrer l'installation en utilisant la 
+commande Exécuter en tant qu'Administrateur.
+.
+
+8043;ins;01
+La version Sandboxie 32-bit ne peut être installé sur un Système d'exploitation 64-bit.
+.
+
+8044;ins;01
+La version Sandboxie 64-bit ne peut être installé sur un Système d'exploitation 32-bit.
+.
+
+8051;ins;01
+Le programme Sandboxie est en cours d'exécution.
+
+Cliquez sur OK pour le fermer et continuer l'installation.
+
+Cliquez sur Annuler pour arrêter l'installation.
+.
+
+8052;ins;01
+Impossible de créer ou mettre à jour le fichier programme Sandboxie.
+
+Veuillez vous assurer que Sandboxie Control n'est pas démarré,
+et qu'aucun programme 'sandboxés' ne soit en cours d'exécution.
+
+Alors Cliquez sur OK pour poursuivre l'installation.
+
+Sinon, cliquez sur Annuler pour arrêter l'installation.
+.
+
+8053;ins;01
+*** KmdUtil  a échoué. L'installation ou la désinstallation ne peut être effectuée avec succès. ***
+.
+
+8054;ins;01
+Voulez-vous sauvegarder la configuration de votre fichier Sandboxie.ini ?
+
+Sélectionner 'oui' pour garder les paramètres de configuration dans le fichier Sandboxie.ini.
+
+Sélectionner 'non' pour effacer le fichier Sandboxie.ini et perdre tes paramètres de configuration.
+.
+
+#----------------------------------------------------------------------------
+# KmdUtil
+#----------------------------------------------------------------------------
+
+8101;txt;01
+Impossible d'installer le pilote à cet instant.
+
+Veuillez redémarrer votre ordinateur,
+puis relancer la procédure d'installation.
+
+Fonction en échec : %2
+.
+
+8102;txt;01
+Impossible d'arrêter le service à ce point.
+Le service '%2'  est occupé.
+
+Cliquez OK pour recommencer.
+.
+
+8103;txt;01
+Ceci est la première des trois tentatives.
+.
+
+8104;txt;01
+Ceci est la deuxième des trois tentatives.
+.
+
+8105;txt;01
+Ceci est la troisième et dernière tentative.
+.
+
+8106;txt;02
+Les programmes suivants doivent être fermés pour que l'installation puisse continuer.
+Cliquez sur OK pour fermer ces programmes et pour continuer. Cliquez sur Annuler pour interrompre l'installation.
+.

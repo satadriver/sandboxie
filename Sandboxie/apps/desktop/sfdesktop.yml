@@ -1,0 +1,62 @@
+Version: 1
+
+Veracrypt:
+  Size: 5
+  Path: "X:/"
+
+Box:
+  -
+    Name: 'OA'
+    Path: OA
+    Launch: true
+  -
+    Name: 'DEV'
+    Path: DEV
+    Launch: true
+    
+Process:
+
+    - DibTest.exe
+
+Screenshot:true
+    
+Watermark:true
+    
+Network:
+  Intranet:true
+  IPV4: 
+    Src: 
+      - 192.168.100.140
+      - 192.168.100.141
+      - 192.168.100.*
+
+    Dst:
+      - 192.168.100.142
+      - 192.168.100.143
+
+  Port: 
+    Src: 
+      - 65535
+      - 65534
+    Dst:
+      - 65533
+      - 65532
+  Dns: 
+    - www.sina.com.cn
+    - *.sogou.com
+    - *.alipay.com
+    - *.sina.com
+  Url:
+    - /cloudquery.php
+    - /favicon.ico
+    
+  Process:
+    - feishu.exe
+    - wechat.exe
+    - qq.exe
+    - iexplore.exe
+      
+    
+    
+    
+    
