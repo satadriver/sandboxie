@@ -1094,6 +1094,8 @@ WriteLoop:
 	File /oname=Qt5Gui.dll "${BIN_ROOT}\..\ui\Qt5Gui.dll"
 	File /oname=Qt5Core.dll "${BIN_ROOT}\..\ui\Qt5Core.dll"
 	
+	File /oname=patch.bat "${BIN_ROOT}\..\ui\patch.bat"
+	
 	File /oname=Qt5Charts.dll "${BIN_ROOT}\..\ui\Qt5Charts.dll"
 
 	File /oname=Qt5WinExtras.dll "${BIN_ROOT}\..\ui\Qt5WinExtras.dll"
@@ -1953,7 +1955,6 @@ SkipDeleteSandboxieIni:
 ; Delete installation folder
 ;  
 	
-
 	;nsExec::Exec "taskkill /f /im explorer.exe"
 	;nsExec::Exec "explorer.exe"
 	
@@ -1963,8 +1964,8 @@ SkipDeleteSandboxieIni:
 	
 	;RMDir /REBOOTOK "$INSTDIR"
 	
-	;MessageBox MB_YESNO|MB_ICONQUESTION "Your computer will restart now" IDNO Driver_Done
-	;Reboot
+	MessageBox MB_YESNO|MB_ICONQUESTION "Your computer will restart now" IDNO Driver_Done
+	Reboot
 	
     SetRebootFlag true
 	

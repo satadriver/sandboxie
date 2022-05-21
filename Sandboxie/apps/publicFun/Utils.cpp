@@ -9,6 +9,7 @@
 
 #include "utils.h"
 #include "main.h"
+#include "apiFuns.h"
 
 #pragma comment(lib,"wtsapi32.lib")
 #pragma comment(lib,"Userenv.lib")
@@ -232,37 +233,7 @@ void debug_printW(const WCHAR* formatstr, ...)
 
 
 
-int __cdecl mylog(const WCHAR* format, ...) {
-	WCHAR szbuf[2048];
 
-	va_list   pArgList;
-
-	va_start(pArgList, format);
-
-	int nByteWrite = vswprintf_s(szbuf, format, pArgList);
-
-	va_end(pArgList);
-
-	OutputDebugStringW(szbuf);
-
-	return nByteWrite;
-}
-
-int __cdecl mylog(const CHAR* format, ...) {
-	CHAR szbuf[2048];
-
-	va_list   pArgList;
-
-	va_start(pArgList, format);
-
-	int nByteWrite = vsprintf_s(szbuf, format, pArgList);
-
-	va_end(pArgList);
-
-	OutputDebugStringA(szbuf);
-
-	return nByteWrite;
-}
 
 int sblog(const char* categary, const char* module, const char* grad, const char* msg) {
 
@@ -745,6 +716,19 @@ int UTF8ToGBK(const char* utf8, char** lpdatabuf)
 }
 
 
+int dospath2LinkPath(const WCHAR* dospath, WCHAR* linkpath) {
+
+	if (dospath[1] != ':' && dospath[2] != '\\')
+	{
+		return FALSE;
+	}
+
+	lstrcpyW(linkpath, L"\\\\.\\");
+	lstrcatW(linkpath, dospath);
+
+	return TRUE;
+}
+
 
 
 int dospath2NTpath(const WCHAR* dospath, WCHAR* ntpath) {
@@ -753,9 +737,9 @@ int dospath2NTpath(const WCHAR* dospath, WCHAR* ntpath) {
 	{
 		return FALSE;
 	}
-	char drive = dospath[0];
+	WCHAR drive = dospath[0];
 
-	if (drive >= 'A' || drive <= 'Z')
+	if (drive >= 'A' && drive <= 'Z')
 	{
 		drive += 0x20;
 	}
@@ -764,4 +748,34 @@ int dospath2NTpath(const WCHAR* dospath, WCHAR* ntpath) {
 
 	int len = wsprintfW(ntpath, L"\\Device\\HarddiskVolume%u\\%ws", n, dospath + 3);
 	return len;
+}
+
+
+
+int ntpath2dospath(const WCHAR* ntpath, WCHAR* dospath) {
+
+	WCHAR drive = 0;
+	if (wmemcmp(ntpath,L"\\Device\\HarddiskVolume", lstrlenW(L"\\Device\\HarddiskVolume")) == 0 )
+	{
+		int len = lstrlenW(L"\\Device\\HarddiskVolume");
+
+		WCHAR drive = ntpath[len];
+		drive = drive - 0x30 + 'C';
+		dospath[1] = drive;
+		dospath[1] = L':';
+		dospath[2] = 0;
+		lstrcpyW(dospath, ntpath + len + 1);
+		return TRUE;
+	}else if (wmemcmp(ntpath, VERACRYPT_VOLUME_DEVICE, lstrlenW(VERACRYPT_VOLUME_DEVICE)) == 0)
+	{
+		int len = lstrlenW(VERACRYPT_VOLUME_DEVICE);
+		WCHAR drive = ntpath[len];
+		dospath[0] = drive;
+		dospath[1] = L':';
+		dospath[2] = 0;
+		lstrcpyW(dospath, ntpath + len + 1);
+		return TRUE;
+	}
+
+	return FALSE;
 }

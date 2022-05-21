@@ -1,6 +1,6 @@
 
 #include <windows.h>
-
+#include "sbieapi.h"
 #include "printer.h"
 
 
@@ -81,8 +81,8 @@ BOOL WINAPI Gdi_OpenPrinterA(
 
 	OutputDebugStringW(L"OpenPrinterA enter\r\n");
 
-	int result = 0;
-	if (g_printerControl)
+	int result = SbieApi_QueryPrinter();
+	if (result == BASIC_DISABLE_STATE)
 	{
 		if (phPrinter)
 		{
@@ -107,8 +107,8 @@ BOOL WINAPI Gdi_OpenPrinter2A(
 	_In_opt_    LPPRINTER_DEFAULTSA pDefault, _In_opt_ PPRINTER_OPTIONSA       pOptions) {
 
 	OutputDebugStringW(L"OpenPrinter2A enter\r\n");
-	int result = 0;
-	if (g_printerControl)
+	int result = SbieApi_QueryPrinter();
+	if (result == BASIC_DISABLE_STATE)
 	{
 		if ( phPrinter)
 		{
@@ -133,8 +133,8 @@ BOOL WINAPI Gdi_OpenPrinterW(
 	_In_opt_    LPPRINTER_DEFAULTSW pDefault) {
 
 	OutputDebugStringW(L"OpenPrinterW enter\r\n");
-	int result = 0;
-	if (g_printerControl)
+	int result = SbieApi_QueryPrinter();
+	if (result == BASIC_DISABLE_STATE)
 	{
 		if ( phPrinter)
 		{
@@ -153,10 +153,10 @@ BOOL WINAPI Gdi_OpenPrinterW(
 	return FALSE;
 }
 
-BOOL Gdi_OpenPrinter2W(void* pPrinterName, HANDLE* phPrinter, void* pDefault, void* pOptions) {
+BOOL Gdi_OpenPrinter2W(LPWSTR pPrinterName, HANDLE* phPrinter, void* pDefault, void* pOptions) {
 	OutputDebugStringW(L"OpenPrinter2W enter\r\n");
-	int result = 0;
-	if (g_printerControl)
+	int result = SbieApi_QueryPrinter();
+	if (result == BASIC_DISABLE_STATE)
 	{
 		if (phPrinter)
 		{

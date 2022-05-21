@@ -84,11 +84,11 @@ ALIGNED BOOLEAN Kmd_Stop_SbieDrv(void)
 
         rc = SbieApi_Call(API_UNLOAD_DRIVER, 0);
         if (rc == STATUS_CONNECTION_IN_USE) {
-            Sleep(2500);
+            Sleep(1000);
             rc = SbieApi_Call(API_UNLOAD_DRIVER, 0);
         }
         if (rc == STATUS_CONNECTION_IN_USE) {
-            Sleep(2500);
+            Sleep(1000);
             rc = SbieApi_Call(API_UNLOAD_DRIVER, 0);
         }
     }

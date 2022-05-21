@@ -32,6 +32,10 @@
 #pragma comment(lib,"shlwapi.lib")
 
 
+#define GET_BOXPATH_SYMBOLINK	0
+#define GET_BOXPATH_DEVICE		1
+#define CREATE_BOX_SUBPATH		2
+
 
 const WCHAR* g_filename_sufix[] =
 { L".html",L".htm",L".docx",L".doc",L".xls",L".xlsx",L".ppt",L".pptx",L".rtf",L".txt",L".bmp",L".jpg",L".jpeg",L".png",0 };
@@ -76,6 +80,7 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 
 DWORD startBoxProcess(const wchar_t* runfilename,const wchar_t* boxname,int isadmin) {
+
 	int result = 0;
 
 	wchar_t szparam[1024];
@@ -90,11 +95,11 @@ DWORD startBoxProcess(const wchar_t* runfilename,const wchar_t* boxname,int isad
 
 	mylog(L"startBoxProcess:%ws", runfilename);
 
-	int filepathlen = lstrlenW(runfilename);
+	int runfilenamelen = lstrlenW(runfilename);
 
-	if (runfilename[0] == '\"' && runfilename[filepathlen - 1] == '\"') {
+	if (runfilename[0] == '\"' && runfilename[runfilenamelen - 1] == '\"') {
 		lstrcpyW(filename, runfilename + 1);
-		filename[filepathlen - 2] = 0;
+		filename[runfilenamelen - 2] = 0;
 	}
 	else {
 		lstrcpyW(filename, runfilename);
@@ -102,16 +107,18 @@ DWORD startBoxProcess(const wchar_t* runfilename,const wchar_t* boxname,int isad
 	translateQuota(filename);
 	_wcslwr(filename);
 
-	if (memcmp(filename + filepathlen - 4, L".txt", 4) == 0)
+	int filepathlen = lstrlenW(filename);
+
+	if (wmemcmp(filename + filepathlen - 4, L".txt", 4) == 0)
 	{
 		filetype = FILE_TYPE_TEXT;
 	}
-	else if (memcmp(filename + filepathlen - 4, L".bmp", 4) == 0 || memcmp(filename + filepathlen - 4, L".jpg", 4) == 0 ||
-		memcmp(filename + filepathlen - 4, L".png", 4) == 0 || memcmp(filename + filepathlen - 5, L".jpeg", 5) == 0)
+	else if (wmemcmp(filename + filepathlen - 4, L".bmp", 4) == 0 || wmemcmp(filename + filepathlen - 4, L".jpg", 4) == 0 ||
+		wmemcmp(filename + filepathlen - 4, L".png", 4) == 0 || wmemcmp(filename + filepathlen - 5, L".jpeg", 5) == 0)
 	{
-		filetype = FILE_TYPE_PIC;
+		//filetype = FILE_TYPE_PIC;     // 图片类型和视频类型已在 ModifyCmdLinePassUwpApp() 中处理
 	}
-	else if (memcmp(filename + filepathlen - 5, L".html", 5) == 0 || memcmp(filename + filepathlen - 4, L".htm", 4) == 0 )
+	else if (wmemcmp(filename + filepathlen - 5, L".html", 5) == 0 || wmemcmp(filename + filepathlen - 4, L".htm", 4) == 0 )
 	{
 		filetype = FILE_TYPE_HTML;
 	}
@@ -209,6 +216,7 @@ DWORD startBoxProcess(const wchar_t* runfilename,const wchar_t* boxname,int isad
 					{
 						wsprintf(filepath, L"\"%s\" \"%s\"", L"c:\\windows\\system32\\mspaint.exe", filename);
 						//wsprintf(filepath, L"\"rundll32.exe shimgvw.dll,ImageView_Fullscreen %ws\"", filename);
+						//mylog("[LYSM] filepath[2]:%S ", filepath);
 					}
 					else if (version >= 10 && filetype == FILE_TYPE_HTML)
 					{
@@ -488,6 +496,74 @@ int translatePath(const WCHAR* filename,WCHAR * filepath) {
 }
 
 
+#define MY_DELETE_FILE 1
+
+int traversalPath(WCHAR* path,int flag) {
+
+	int result = 0;
+
+	int pathlen = lstrlenW(path);
+	if (path[pathlen - 1] == L'\\')
+	{
+
+	}
+	else {
+		lstrcatW(path, L"\\");
+	}
+
+	const WCHAR* allfiles = L"*.*";
+	WCHAR searchpath[MAX_PATH];
+	lstrcpyW(searchpath, path);
+	lstrcatW(searchpath, allfiles);
+	int cnt = 0;
+
+	WIN32_FIND_DATAW finddata;
+	HANDLE hf = FindFirstFileW(searchpath, &finddata);
+	if (hf == INVALID_HANDLE_VALUE)
+	{
+		mylog(L"traversalPath FindFirstFileW:%ws all files result:%d,error code:%x", searchpath, result, GetLastError());
+		return FALSE;
+	}
+
+	
+	do 
+	{
+		if (finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{
+			if (lstrcmpiW(finddata.cFileName,L".") == 0 || lstrcmpiW(finddata.cFileName, L"..") == 0)
+			{
+				
+			}
+			else {
+				WCHAR nextpath[MAX_PATH];
+				lstrcpyW(nextpath, path);
+				lstrcatW(nextpath, finddata.cFileName);
+				
+				cnt += traversalPath(nextpath,flag);
+
+				mylog(L"traversalPath traversalPath:%ws all files result:%d,error code:%x", nextpath, result, GetLastError());
+			}
+		}else if (finddata.dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE)
+		{
+			if (flag == MY_DELETE_FILE)
+			{
+				WCHAR filename[MAX_PATH];
+				lstrcpyW(filename, path);
+				lstrcatW(filename, finddata.cFileName);
+				result = DeleteFileW(filename);
+
+				mylog(L"traversalPath DeleteFileW:%ws all files result:%d,error code:%x", filename, result, GetLastError());
+			}
+			cnt++;
+		}
+
+		result = FindNextFileW(hf, &finddata);
+	} while (result);
+
+	FindClose(hf);
+	return cnt;
+}
+
 
 int emptyRecycleFiles(const WCHAR* boxname) {
 	int result = 0;
@@ -501,10 +577,11 @@ int emptyRecycleFiles(const WCHAR* boxname) {
 	lstrcatW(recyclepath, L"\\");
 	lstrcatW(recyclepath, username);
 	lstrcatW(recyclepath, VERAVOLUME_RECYCLE_PATH);
+	result = traversalPath(recyclepath, MY_DELETE_FILE);
 
-	WCHAR cmd[1024];
-	wsprintfW(cmd, L"cmd /c RMDIR /s /q %ws", recyclepath);
-	ShellExecuteW(0, L"open", cmd, 0, 0, SW_HIDE);
+	//WCHAR cmd[1024];
+	//wsprintfW(cmd, L"cmd /c RMDIR /s /q %ws", recyclepath);
+	//ShellExecuteW(0, L"open", cmd, 0, 0, SW_HIDE);
 
 	WCHAR cfgpath[MAX_PATH];
 	lstrcpyW(cfgpath, VERACRYPT_DISK_VOLUME);
@@ -513,31 +590,17 @@ int emptyRecycleFiles(const WCHAR* boxname) {
 	lstrcatW(cfgpath, username);
 	lstrcatW(cfgpath, VERAVOLUME_RECYCLE_INFO_PATH);		//without last slash,this function will create path without last folder 
 
-	wsprintfW(cmd, L"cmd /c RMDIR /s /q %ws", cfgpath);
-	ShellExecuteW(0, L"open", cmd, 0, 0, SW_HIDE);
+	//wsprintfW(cmd, L"cmd /c RMDIR /s /q %ws", cfgpath);
+	//ShellExecuteW(0, L"open", cmd, 0, 0, SW_HIDE);
+	result = traversalPath(cfgpath, MY_DELETE_FILE);
+
+	mylog(L"emptyRecycleFiles:%ws all files result:%d,error code:%x",boxname, result, GetLastError());
 	return 0;
 }
 
 
 
-int deleteLocalFiles(const WCHAR* filename) {
-	int result = 0;
-	HMODULE h = LoadLibraryW(SBIEDLL L".dll");
-	if (h == 0 )
-	{
-		mylog(L"LoadLibraryW SfDeskDll error\r\n");
-		return FALSE;
-	}
 
-	typedef int (*ptrfun)(const WCHAR* filename);
-	ptrfun func = (ptrfun)GetProcAddress(h, "SbieApi_DeleteFile");
-	if (func)
-	{
-		result = func(filename);
-	}
-
-	return result;
-}
 
 
 
@@ -604,12 +667,31 @@ int restoreRecycleFiles(const WCHAR* filepath) {
 	return result;
 }
 
+int deleteLocalFiles(const WCHAR* filename) {
+	int result = 0;
+	HMODULE h = LoadLibraryW(SBIEDLL L".dll");
+	if (h == 0)
+	{
+		mylog(L"LoadLibraryW SfDeskDll error\r\n");
+		return FALSE;
+	}
+
+	typedef int (*ptrfun)(const WCHAR* filename);
+	ptrfun deletefunc = (ptrfun)GetProcAddress(h, "SbieApi_DeleteFile");
+	if (deletefunc)
+	{
+		result = deletefunc(filename);
+	}
+
+	return result;
+}
+
 
 int deleteBoxedFiles(const WCHAR* filename,WCHAR * boxname) {
 	int result = 0;
 
 	WCHAR realpath[MAX_PATH];
-	result = translateBoxedpath2Realpath(filename, boxname, realpath,TRUE);
+	result = translateBoxedpath2Realpath(filename, boxname, realpath, GET_BOXPATH_DEVICE);
 
 	HMODULE h = LoadLibraryW(SBIEDLL L".dll");
 	if (h == 0)
@@ -618,24 +700,36 @@ int deleteBoxedFiles(const WCHAR* filename,WCHAR * boxname) {
 		return FALSE;
 	}
 
+	typedef  int (*ptrkeepFilesToRecycle)(WCHAR* CopyPath,WCHAR * boxname,WCHAR * username, int FileType);
+	ptrkeepFilesToRecycle keepfiles2recycle = (ptrkeepFilesToRecycle)GetProcAddress(h, "keepFilesToRecycle");
+	int filetype = GetFileAttributesW(realpath);
+
+	WCHAR username[MAX_PATH];
+	DWORD usernamelen = MAX_PATH;
+	result = GetUserNameW(username, &usernamelen);
+	username[usernamelen] = 0;
+
+// 	WCHAR dllboxname[MAX_PATH];
+// 	wsprintfW(dllboxname, L"%ws%lc\\%ws\\%ws", VERACRYPT_VOLUME_DEVICE, VERACRYPT_DISK_VOLUME[0], boxname, username);
+	result = keepfiles2recycle(realpath,boxname, username, filetype);
 
 	typedef int (*ptrSbieApi_DeleteFile)(const WCHAR * srcpath);
-	ptrSbieApi_DeleteFile func = (ptrSbieApi_DeleteFile)GetProcAddress(h, "SbieApi_DeleteFile");
-	if (func)
+	ptrSbieApi_DeleteFile deletefunc = (ptrSbieApi_DeleteFile)GetProcAddress(h, "SbieApi_DeleteFile");
+	if (deletefunc)
 	{
-		mylog(L"deleteBoxedFiles:%ws", realpath);
-		result = func(realpath);
+		result = deletefunc(realpath);
 	}
 
+	mylog(L"deleteBoxedFiles:%ws result:%d,error code:%d", realpath, result, GetLastError());
 	return result;
 }
 
 
-int moveFilesIntoBox(const WCHAR* filename, const WCHAR* boxname) {
+int  moveFilesIntoBox(const WCHAR* filename, const WCHAR* boxname,WCHAR * returnpath) {
 	int result = 0;
 
 	WCHAR realpath[MAX_PATH];
-	result = translateBoxedpath2Realpath(filename, boxname, realpath, TRUE);
+	result = translateBoxedpath2Realpath(filename, boxname, realpath, GET_BOXPATH_DEVICE | CREATE_BOX_SUBPATH);
 
 	HMODULE h = LoadLibraryW(SBIEDLL L".dll");
 	if (h == 0)
@@ -648,12 +742,16 @@ int moveFilesIntoBox(const WCHAR* filename, const WCHAR* boxname) {
 	ptrcopyfile copyfile = (ptrcopyfile)GetProcAddress(h, "SbieApi_CopyFile");
 	if (copyfile)
 	{
-		//lstrcpyW(realpath, L"X:\\ts\\123456.txt");
 		result = copyfile(filename,realpath);
-
-		mylog(L"moveFilesIntoBox from:%ws to:%ws result:%d", filename, realpath,result);
 	}
 
+	if (wmemcmp(realpath, VERACRYPT_VOLUME_DEVICE,lstrlenW(VERACRYPT_VOLUME_DEVICE)) == 0)
+	{
+		lstrcpyW (returnpath ,VERACRYPT_DISK_VOLUME);
+		lstrcatW(returnpath, realpath + lstrlenW(VERACRYPT_VOLUME_DEVICE) + 1 + 1);
+	}
+
+	mylog(L"moveFilesIntoBox from:%ws to:%ws result:%d", filename, returnpath, result);
 	return result;
 }
 
@@ -669,7 +767,7 @@ int renameBoxedFile(WCHAR *srcfilename,WCHAR *boxname,WCHAR * dstfilename) {
 	}
 
 	WCHAR realpath[MAX_PATH];
-	result = translateBoxedpath2Realpath(srcfilename, boxname, realpath, TRUE);
+	result = translateBoxedpath2Realpath(srcfilename, boxname, realpath, GET_BOXPATH_DEVICE|CREATE_BOX_SUBPATH );
 	if (result == FALSE)
 	{
 		return FALSE;
@@ -740,7 +838,7 @@ int getVeraDiskInfo(ULONGLONG *freesize, ULONGLONG* leastsize, ULONGLONG* totals
 	ULARGE_INTEGER litotal;
 	ULARGE_INTEGER lileast;
 	int result = 0;
-	//result = GetDiskFreeSpaceExW(L"c:\\", &lileast, &litotal, &lifree);
+
 	result = GetDiskFreeSpaceExW(VERACRYPT_DISK_VOLUME, &lileast, &litotal, &lifree);
 	*freesize = lifree.QuadPart;
 	*leastsize = litotal.QuadPart - lileast.QuadPart;
@@ -754,6 +852,16 @@ int getVeraDiskInfo(ULONGLONG *freesize, ULONGLONG* leastsize, ULONGLONG* totals
 
 int translateBoxedpath2Realpath(const WCHAR* filepath, const WCHAR* boxname, WCHAR* realpath,int isdevice) {
 	int result = 0;
+
+	HMODULE hdll = LoadLibraryW(SBIEDLL L".dll");
+	if (hdll == 0)
+	{
+		mylog(L"LoadLibraryW SfDeskDll error\r\n");
+		return FALSE;
+	}
+
+	typedef  int (*ptrSbie_createSubPath)(WCHAR* srcfilepath, WCHAR* appendpath);
+	ptrSbie_createSubPath createpath = (ptrSbie_createSubPath)GetProcAddress(hdll, "Sbie_createSubPath");
 
 	WCHAR filename[MAX_PATH];
 	lstrcpyW(filename, filepath);
@@ -776,7 +884,7 @@ int translateBoxedpath2Realpath(const WCHAR* filepath, const WCHAR* boxname, WCH
 	}
 
 	WCHAR veracryptpath[64];
-	if (isdevice)
+	if (isdevice& GET_BOXPATH_DEVICE)
 	{
 		wsprintfW(veracryptpath, L"%ws%lc\\", VERACRYPT_VOLUME_DEVICE, VERACRYPT_DISK_VOLUME[0]);
 	}
@@ -788,38 +896,78 @@ int translateBoxedpath2Realpath(const WCHAR* filepath, const WCHAR* boxname, WCH
 	{
 		if (filename[0] == sysdir[0] && wmemcmp(filename + 1, L":\\Users\\", 8) == 0) {
 
-			wsprintfW(realpath, L"%ws%ws\\%ws\\user\\", veracryptpath, boxname, username);
+			WCHAR* subuserpath ;
+
+			wsprintfW(realpath, L"%ws%ws\\%ws\\", veracryptpath, boxname, username);
+
+			if (isdevice & CREATE_BOX_SUBPATH) {
+				result = createpath(realpath,(WCHAR*) L"\\user\\");
+				//mylog("createpath:%ws subpath:%ws result:%d,error code:%d", realpath, L"user", result, GetLastError());
+			}
+
+			lstrcatW(realpath, L"user\\");
+
 			if (wmemcmp(filename + 9, username, usernamelen - 1) == 0)
 			{
-				lstrcatW(realpath, L"current\\");
+				//lstrcatW(realpath, L"current\\");
+
+				subuserpath =(WCHAR*) L"current\\";
 			}
 			else if (wmemcmp(filename + 9, L"All Users", lstrlenW(L"All Users")) == 0) {
-				lstrcatW(realpath, L"all\\");
+				//lstrcatW(realpath, L"all\\");
+				subuserpath = (WCHAR*)L"all\\";
 			}
 			else if (wmemcmp(filename + 9, L"Public", lstrlenW(L"Public")) == 0) {
-				lstrcatW(realpath, L"public\\");
+				//lstrcatW(realpath, L"public\\");
+				subuserpath = (WCHAR*)L"public\\";
 			}
 			else if (wmemcmp(filename + 9, L"Default", lstrlenW(L"Default")) == 0) {
-				lstrcatW(realpath, L"default\\");
+				//lstrcatW(realpath, L"default\\");
+
+				subuserpath = (WCHAR*)L"default\\";
 			}
 			else {
-				lstrcatW(realpath, L"all\\");
+				//lstrcatW(realpath, L"all\\");
+
+				subuserpath = (WCHAR*)L"all\\";
 			}
+
+			if (isdevice & CREATE_BOX_SUBPATH) {
+				result = createpath(realpath, subuserpath);
+				//mylog("createpath:%ws subpath:%ws result:%d,error code:%d", realpath, subuserpath, result, GetLastError());
+			}
+			lstrcatW(realpath, subuserpath );
+			//lstrcatW(realpath, L"\\");
 
 			WCHAR* pos = wcschr((WCHAR*)filename + 9, '\\');
 			if (pos)
 			{
+				if (isdevice & CREATE_BOX_SUBPATH) {
+					result = createpath(realpath, pos + 1);
+					//mylog("createpath result:%d,error code:%d", result, GetLastError());
+				}
 				lstrcatW(realpath, pos + 1);
 			}
 		}
 		else
 		{
 			wsprintfW(realpath, L"%ws%ws\\%ws\\%ws\\%lc\\", veracryptpath, boxname, username, L"drive", filename[0]);
+
+			if (isdevice & CREATE_BOX_SUBPATH) {
+				result = createpath(realpath, filename + 3);
+				//mylog("createpath result:%d,error code:%d", result, GetLastError());
+			}
+
 			lstrcatW(realpath, filename + 3);
 		}
 	}
 	else {
-		wsprintfW(realpath,		L"%ws%ws\\%ws\\%ws\\%lc\\windows\\system32\\", veracryptpath, boxname, username, L"drive", sysdir[0]);
+		wsprintfW(realpath,	L"%ws%ws\\%ws\\%ws\\%lc\\windows\\system32\\", veracryptpath, boxname, username, L"drive", sysdir[0]);
+		if (isdevice & CREATE_BOX_SUBPATH) {
+			
+			result = createpath(realpath, filename);
+			//mylog("createpath result:%d,error code:%d", result, GetLastError());
+		}
 		lstrcatW(realpath, filename);
 	}
 
@@ -833,12 +981,24 @@ int getBoxedFile(const WCHAR* filename,const WCHAR * boxname, WCHAR* dospath) {
 
 	mylog(L"getBoxedFile  start\r\n"); 
 
-	BOOLEAN exportFlag = SbieApi_QueryFileExport();
+	DWORD exportFlag = SbieApi_QueryFileExport();
 	if (exportFlag != BASIC_ENABLE_STATE)
 	{
 		mylog(L"exportFlag:%d is not permitted to export file", exportFlag);
 		return FALSE;
 	}
+
+	FILEEXPORT_PROHIBIT_PARAM param;
+	char str_srcfilename[256];
+	char str_boxname[256];
+	char str_dstfilename[256];
+	WideCharToMultiByte(CP_ACP, 0, filename, -1, str_srcfilename, sizeof(str_srcfilename), 0, 0);
+	WideCharToMultiByte(CP_ACP, 0, boxname, -1, str_boxname, sizeof(str_boxname), 0, 0);
+	WideCharToMultiByte(CP_ACP, 0, dospath, -1, str_dstfilename, sizeof(str_dstfilename), 0, 0);
+	param.boxname = str_boxname;
+	param.srcfn = str_srcfilename;
+	param.dstfn = str_dstfilename;
+	alarmWarning(FILEEXPORT_WARNING,&param);
 
 	if ( (filename[0] <= 'Z' && filename[0] >= 'C') || (filename[0] <= 'z' && filename[0] >= 'c') || filename[1] != ':')
 	{
@@ -853,13 +1013,11 @@ int getBoxedFile(const WCHAR* filename,const WCHAR * boxname, WCHAR* dospath) {
 		return FALSE;
 	}
 
-	//WCHAR realpath[MAX_PATH];
-
 	int result = 0;
 
 	WCHAR realpath[MAX_PATH];
 
-	result = translateBoxedpath2Realpath(filename, boxname, realpath,TRUE);
+	result = translateBoxedpath2Realpath(filename, boxname, realpath, GET_BOXPATH_DEVICE | CREATE_BOX_SUBPATH);
 
 	HMODULE hdll = LoadLibraryW(SBIEDLL L".dll");
 	if (hdll == 0)
@@ -872,24 +1030,17 @@ int getBoxedFile(const WCHAR* filename,const WCHAR * boxname, WCHAR* dospath) {
 	ptrSbieApi_CopyFile copyfile = (ptrSbieApi_CopyFile)GetProcAddress(hdll, "SbieApi_CopyFile");
 	if (copyfile )
 	{
-// 		WCHAR ntpath[MAX_PATH];
-// 		if (dospath[0] == 0)
-// 		{
-// 			dospath2NTpath(L"c:\\Users\\Admin\\Desktop\\mycopyfiletest.txt", ntpath);
-// 		}
-// 		else {
-// 			dospath2NTpath(dospath, ntpath);
-// 		}
-// 		ptrSbieApi_CopyFile veracopyfile = (ptrSbieApi_CopyFile)GetProcAddress(hdll, "SbieApi_VERACYPT_CopyFile");
-// 		if (veracopyfile)
-// 		{
-// 			result = veracopyfile(realpath, ntpath);
-// 		}
-// 		else {
-// 			mylog(L"not found SbieApi_VERACYPT_CopyFile");
-// 		}
-// 		return result;
+		WCHAR ntpath[MAX_PATH];
+		//应用曾不能打开形如:/Device/HarddiskVolume1/xxx之类的设备
+		//dospath2NTpath(dospath, ntpath);
+		//dospath2LinkPath(dospath, ntpath);
+		lstrcpyW(ntpath, dospath);
+		
+		result = copyfile(realpath, ntpath);
+		mylog(L"ptrSbieApi_CopyFile from:%ws to:%ws result:%d", realpath, ntpath, result);		
+		return result == 0;
 
+		/*
 		WCHAR username[MAX_PATH];
 		DWORD usernamelen = MAX_PATH;
 		result = GetUserNameW(username, &usernamelen);
@@ -914,21 +1065,8 @@ int getBoxedFile(const WCHAR* filename,const WCHAR * boxname, WCHAR* dospath) {
 
 		mylog(L"ptrSbieApi_CopyFile from:%ws to:%ws result:%d", realpath, copypath,result);
 		return result == 0;
-
-// 		HANDLE hf = CreateFileW(realpath, GENERIC_READ, 0, 0, OPEN_EXISTING, 0, 0);
-// 		if (hf != INVALID_HANDLE_VALUE)
-// 		{
-// 			CloseHandle(hf);
-// 
-// 			result = copyfile(realpath, dstpath);
-// 			return result == 0;
-// 		}
-// 		else {
-// 			result = copyfile(filename, dstpath);
-// 			return result == 0;
-// 		}
+		*/
 	}
-
 
 	return FALSE;
 }
@@ -998,4 +1136,107 @@ int Get_Default_Browser(WCHAR* pgmname)
 
 	return TRUE;
 }
+
+
+
+/*
+#define STATUS_ACCESS_DENIED             ((NTSTATUS)0xC0000022L)
+#define STATUS_OBJECT_NAME_NOT_FOUND     ((NTSTATUS)0xC0000034L)
+#define STATUS_OBJECT_PATH_INVALID       ((NTSTATUS)0xC0000039L)
+#define STATUS_OBJECT_PATH_NOT_FOUND     ((NTSTATUS)0xC000003AL)
+#define STATUS_OBJECT_PATH_SYNTAX_BAD    ((NTSTATUS)0xC000003BL)
+*/
+
+
+int strreplace(const WCHAR* str,const WCHAR* substr,const WCHAR * replace, WCHAR * dststr) {
+
+	//__debugbreak();
+
+	mylog(L"str:%ws substr:%ws replace:%ws dststr:%ws",str,substr,replace,dststr);
+
+	int replace_len = lstrlenW(replace);
+	int substr_len = lstrlenW(substr);
+	int len = 0;
+	WCHAR* hdr = wcsstr((WCHAR*)str, substr);
+	if (hdr)
+	{
+		len += hdr - str;
+		wmemcpy(dststr, str, len);
+		dststr[len] = 0;
+
+		hdr += substr_len;
+	}
+	else {
+		return FALSE;
+	}
+
+	lstrcatW(dststr, replace);
+
+	lstrcatW(dststr, hdr);
+	return TRUE;
+}
+
+
+
+int interchangeFiles(const WCHAR * srcfilename,const WCHAR *srcboxname,const WCHAR * dstboxname,WCHAR * filename,WCHAR * outbox_dst_fn) {
+	int result = 0;
+
+	//__debugbreak();
+
+	WCHAR* subpath = wcschr((WCHAR*)srcfilename, L'\\');
+	if (subpath)
+	{
+		subpath++;
+		subpath = wcschr(subpath, L'\\');
+		if (subpath)
+		{
+			subpath++;
+			subpath = wcschr(subpath, L'\\');
+			if (subpath)
+			{
+				subpath++;
+			}
+		}
+	}
+
+	WCHAR username[64];
+	DWORD usernamelen = sizeof(username) / 2;
+	result = GetUserNameW(username, &usernamelen);
+	if (result)
+	{
+		username[usernamelen] = 0;
+	}
+
+	//WCHAR filename[MAX_PATH];
+	wsprintfW(filename, L"%ws%lc\\%ws\\%ws\\%ws", VERACRYPT_VOLUME_DEVICE, VERACRYPT_DISK_VOLUME[0], dstboxname, username,subpath);
+
+	HMODULE hdll = LoadLibraryW(SBIEDLL L".dll");
+	if (hdll == 0)
+	{
+		mylog(L"LoadLibraryW SfDeskDll error\r\n");
+		return FALSE;
+	}
+
+	WCHAR realpath[MAX_PATH];
+	result = translateBoxedpath2Realpath(srcfilename, srcboxname, realpath, GET_BOXPATH_DEVICE | CREATE_BOX_SUBPATH);
+	if (result == FALSE)
+	{
+		return FALSE;
+	}
+
+	typedef int (*ptrcopyfile)(const WCHAR* srcpath, const WCHAR* dstpath);
+	ptrcopyfile copyfun = (ptrcopyfile)GetProcAddress(hdll, "SbieApi_CopyFile");
+	
+	result = copyfun(realpath, filename);
+
+	result = strreplace(realpath, srcboxname, dstboxname, outbox_dst_fn);
+
+	mylog(L"source file:%ws realpath:%ws dstfilename:%ws outboxfilename:%ws result:%d", srcfilename, realpath,filename, outbox_dst_fn, result);
+
+	ntpath2dospath(filename, outbox_dst_fn);
+
+	return result;
+}
+
+
 

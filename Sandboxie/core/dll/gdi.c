@@ -977,11 +977,10 @@ _FX BOOLEAN Gdi_Init_Spool(HMODULE module)
 
 	void* OpenPrinter2A = (void*)__sys_OpenPrinter2A;
 
-// 	SBIEDLL_HOOK(Gdi_, OpenPrinterW);
-// 	SBIEDLL_HOOK(Gdi_, OpenPrinter2W);
-// 
-// 	SBIEDLL_HOOK(Gdi_, OpenPrinter2A);
-// 	SBIEDLL_HOOK(Gdi_, OpenPrinterA);
+	SBIEDLL_HOOK(Gdi_, OpenPrinterW);
+	SBIEDLL_HOOK(Gdi_, OpenPrinter2W);
+	SBIEDLL_HOOK(Gdi_, OpenPrinter2A);
+	SBIEDLL_HOOK(Gdi_, OpenPrinterA);
 
     return TRUE;
 }

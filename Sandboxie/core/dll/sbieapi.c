@@ -934,6 +934,13 @@ _FX DWORD SbieApi_QueryScreenshot()
 }
 
 
+
+
+
+
+
+
+
 _FX LONG SbieApi_ResetProcessMonitor()
 {
 	NTSTATUS status;
@@ -1897,6 +1904,13 @@ void* SbieDll_GetSysFunction(const WCHAR* name)
 #include "myfile.h"
 
 
+void* SbieDll_GetNtFunctions( char* name)
+{
+	HANDLE h = LoadLibraryW(L"ntdll.dll");
+	P_NtCreateFile fun = (P_NtCreateFile)GetProcAddress(h,name);
+	return fun;
+}
+
 
 
 SBIEAPI_EXPORT LONG SbieApi_VERACYPT_CopyFile(const WCHAR* srcpath,const WCHAR * dstpath)
@@ -1970,7 +1984,14 @@ void initOutsideBoxFileApis() {
 	}
 	if (__sys_NtCreateFile == 0)
 	{
-		__sys_NtCreateFile = NtCreateFile;
+		OutputDebugStringW(L"__sys_NtCreateFile null");
+
+		__sys_NtCreateFile = SbieDll_GetNtFunctions(L"NtCreateFile");
+		if (__sys_NtCreateFile == 0)
+		{
+			OutputDebugStringW(L"__sys_NtCreateFile SbieDll_GetSysFunction NtCreateFile error");
+			__sys_NtCreateFile = NtCreateFile;
+		}	
 	}
 	if (__sys_NtQueryInformationFile == 0)
 	{
@@ -1981,6 +2002,9 @@ void initOutsideBoxFileApis() {
 		__sys_NtClose = NtClose;
 	}
 }
+
+
+
 
 
 SBIEAPI_EXPORT int SbieApi_DeleteSingleFile(const WCHAR* filename) {
@@ -2140,6 +2164,9 @@ SBIEAPI_EXPORT int SbieApi_DeleteFile(const WCHAR* filepath) {
 	return STATUS_UNSUCCESSFUL;
 }
 
+extern int __CRTDECL Sbie_snwprintf(wchar_t* _Buffer, size_t Count, const wchar_t* const _Format, ...);
+
+extern int __CRTDECL Sbie_snprintf(char* _Buffer, size_t Count, const char* const _Format, ...);
 
 int SbieApi_CopyFile(const WCHAR* srcpath, const WCHAR* dstpath) {
 
@@ -2159,11 +2186,16 @@ int SbieApi_CopyFile(const WCHAR* srcpath, const WCHAR* dstpath) {
 	if (dstpath[1] == L':' && (dstpath[2] == L'\\' || dstpath[2] == L'/'))
 	{
 		wcscpy(dstfile, L"\\??\\");
+		//wcscpy(dstfile, L"\\DosDevices\\");
 		wcscat(dstfile, dstpath);
+
+		//wcscpy(dstfile, dstpath);
 	}
 	else {
 		wcscpy(dstfile, dstpath);
 	}
+
+	WCHAR szinfo[1024];
 
 	NTSTATUS status = STATUS_SUCCESS;
 	OBJECT_ATTRIBUTES oa;
@@ -2193,6 +2225,11 @@ int SbieApi_CopyFile(const WCHAR* srcpath, const WCHAR* dstpath) {
 			status = copypath(srcfile, dstfile, FALSE);
 			return status;
 		}
+	}
+	else {
+		Sbie_snwprintf(szinfo, sizeof(szinfo) / sizeof(WCHAR),
+			L"SbieApi_CopyFile __sys_NtQueryFullAttributesFile error code:%x,result:%x,file:%ws", GetLastError(), status, srcfile);
+		OutputDebugStringW(szinfo);
 	}
 	return STATUS_UNSUCCESSFUL;
 }
@@ -2250,6 +2287,110 @@ BOOL SbieDll_RunStartExe(const WCHAR* cmd, const wchar_t* boxname)
 }
 
 
+
+//srcpath must be end with \\,append must not be end with "\\"
+SBIEAPI_EXPORT int Sbie_createSubPath(WCHAR* srcfilepath, WCHAR* appendpath) {
+
+	return TRUE;
+
+	//__debugbreak();
+
+	WCHAR srcpath[MAX_PATH];
+
+	lstrcpyW(srcpath, srcfilepath);
+	int lenth = lstrlenW(srcpath);
+	if (srcpath[lenth - 1] == '\\')
+	{
+		srcpath[lenth - 1] = 0;
+	}
+
+	WCHAR append[MAX_PATH];
+	if (appendpath[0] != '\\')
+	{
+		lstrcpyW(append, L"\\");
+		lstrcatW(append, appendpath);
+	}
+	else {
+		lstrcpyW(append, appendpath);
+	}
+
+	WCHAR* p = wcsrchr(append, L'\\');
+	if (p)
+	{
+		*(p + 1) = 0;
+	}
+
+// 	lenth = lstrlenW(append);
+// 	if (append[lenth - 1] != L'\\')
+// 	{
+// 		append[lenth ] = L'\\';
+// 		append[lenth + 1] = 0;
+// 	}
+
+	WCHAR outinfo[1024];
+
+	IO_STATUS_BLOCK iosb;
+	HANDLE hdir;
+
+	OBJECT_ATTRIBUTES next_oa;
+	UNICODE_STRING next_name;
+	InitializeObjectAttributes(&next_oa, &next_name, OBJ_CASE_INSENSITIVE, NULL, 0);
+
+	WCHAR* pos = append;
+
+	while (1)
+	{
+		WCHAR tmppath[256];
+		WCHAR* start = wcschr(pos, L'\\');
+		if (start)
+		{
+
+		}
+		else {
+			break;
+		}
+
+		WCHAR* end = wcschr(start + 1, L'\\');
+		if (end)
+		{
+			
+		}
+		else {
+			//end = append + lstrlenW(append);
+			break;
+		}
+
+		int len = (int)( end - start);
+		if (len <= 1)
+		{
+			break;
+		}
+		wmemcpy(tmppath, start, len);
+		tmppath[len] = 0;
+		lstrcatW(srcpath, tmppath);
+
+		pos = end;
+
+		NTSTATUS status = RtlInitUnicodeString(&next_name, srcpath);
+		status = __sys_NtCreateFile(&hdir, FILE_GENERIC_WRITE, &next_oa, &iosb, NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_VALID_FLAGS,
+			FILE_OPEN_IF, FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
+		if (!NT_SUCCESS(status))
+		{
+			Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR), L"Sbie_createSubPath create directory:%ws error code:%x,result:%x,path:%ws",
+				srcpath,GetLastError(), status, srcpath);
+			OutputDebugStringW(outinfo);
+			return FALSE;
+		}
+		else {
+			__sys_NtClose(hdir);
+		}
+	}
+
+	return TRUE;
+}
+
+
+
 #define OPERATION_READ		1
 #define OPERATION_WRITE		2
 #define TYPE_USERNAME		1
@@ -2295,4 +2436,165 @@ int LjgApi_getPath(WCHAR* path)
 	}
 
 	return status;
+}
+
+
+
+#define SCREENSHOT_WARNING	1
+#define PRINTER_WARNING		2
+#define WATERMARK_WARNING	3
+#define FILEEXPORT_WARNING	4
+
+int alarmWarning(int type) {
+
+	int result = 0;
+
+	WCHAR procboxname[64] = { 0 };
+	WCHAR procsid[MAX_PATH];
+	WCHAR procimage[MAX_PATH];
+	ULONG sessionid = 0;
+
+	HANDLE procid = (HANDLE)GetCurrentProcessId();
+	result = SbieApi_QueryProcess((HANDLE)procid, procboxname, procimage, procsid, &sessionid);
+	if (procboxname[0] == 0)
+	{
+		//mylog(L"process:%ws,pid:%d already in box:%ws\r\n", procimage, msg->process_id, procboxname);
+		return FALSE;
+	}
+
+	SYSTEMTIME syst;
+	GetLocalTime(&syst);
+	const CHAR* format = "%04d/%02d/%02d %02d:%02d:%02d";
+	char sztime[256];
+	int datasize = Sbie_snwprintf(sztime, sizeof(sztime), format, syst.wYear, syst.wMonth, syst.wDay, syst.wHour, syst.wMinute, syst.wSecond);
+
+	WCHAR* shortname = 0;
+	if (type == SCREENSHOT_WARNING)
+	{
+		shortname = (WCHAR*)L"screenshot.wrn";
+	}
+	else if (type == FILEEXPORT_WARNING)
+	{
+		shortname = (WCHAR*)L"fileexport.wrn";
+	}
+	else if (type == WATERMARK_WARNING)
+	{
+		shortname = (WCHAR*)L"watermark.wrn";
+	}
+	else if (type == PRINTER_WARNING)
+	{
+		shortname = (WCHAR*)L"printer.wrn";
+	}
+	else {
+		return FALSE;
+	}
+
+	WCHAR filename[MAX_PATH];
+
+	WCHAR username[64];
+	DWORD usernamelen = sizeof(username) / 2;
+
+	HANDLE hdll = LoadLibraryW(L"user32.dll");
+
+	typedef int(__stdcall* ptrGetUserNameW)(WCHAR* buf, DWORD* buflen);
+	ptrGetUserNameW getusername = (ptrGetUserNameW)GetProcAddress(hdll, "GetUserNameW");
+
+	result = getusername(username, &usernamelen);
+	if (result)
+	{
+		username[usernamelen] = 0;
+	}
+
+	WCHAR veracryptpath[64];
+	Sbie_snwprintf(veracryptpath, sizeof(veracryptpath), L"%ws%lc", VERACRYPT_VOLUME_DEVICE, VERACRYPT_DISK_VOLUME[0]);
+
+	Sbie_snwprintf(filename, sizeof(filename), L"%ws\\%ws\\%ws\\warning\\%ws", veracryptpath, procboxname, username, shortname);
+
+	result = Sbie_writeAlert(filename, sztime, datasize);
+	return result;
+}
+
+
+int Sbie_writeAlert(const WCHAR* dstfn,char * data,int datasize) {
+	NTSTATUS status;
+	HANDLE  hfdst;
+	OBJECT_ATTRIBUTES objattrs = { 0 };
+	UNICODE_STRING objname = { 0 };
+	IO_STATUS_BLOCK IoStatusBlock;
+
+	//__debugbreak();
+
+	InitializeObjectAttributes(&objattrs, &objname, OBJ_CASE_INSENSITIVE, NULL, Secure_NormalSD);
+
+	WCHAR outinfo[1024] = { 0 };
+
+	RtlInitUnicodeString(&objname, dstfn);
+	status = __sys_NtCreateFile(&hfdst, FILE_GENERIC_WRITE, &objattrs, &IoStatusBlock, NULL, FILE_ATTRIBUTE_NORMAL,
+		FILE_SHARE_READ | FILE_SHARE_WRITE, FILE_OVERWRITE_IF, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
+	if (!NT_SUCCESS(status))
+	{
+		Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR),
+			L"Sbie_writeAlert __sys_NtCreateFile:%ws error code:%x,result:%x", dstfn, GetLastError(), status);
+		OutputDebugStringW(outinfo);
+
+		status = createPathRecursive(dstfn);
+
+		RtlInitUnicodeString(&objname, dstfn);
+		status = __sys_NtCreateFile(&hfdst, FILE_GENERIC_WRITE, &objattrs, &IoStatusBlock, NULL, FILE_ATTRIBUTE_NORMAL,
+			FILE_SHARE_READ | FILE_SHARE_WRITE, FILE_OVERWRITE_IF, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
+
+		if (!NT_SUCCESS(status))
+		{
+			Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR), L"Sbie_writeAlert  __sys_NtCreateFile:%ws second error code:%x,result:%x",
+				dstfn, GetLastError(), status);
+			OutputDebugStringW(outinfo);
+
+			return status;
+		}
+	}
+
+	status = __sys_NtWriteFile(hfdst, NULL, NULL, NULL, &IoStatusBlock, data, datasize, NULL, NULL);
+
+	__sys_NtClose(hfdst);
+
+	return status;
+}
+
+
+
+DWORD SbieApi_SetPrinter(BOOLEAN enable)
+{
+	NTSTATUS status;
+	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS];
+	API_SET_PRINTER_ARGS* args = (API_SET_PRINTER_ARGS*)parms;
+
+	memset(parms, 0, sizeof(parms));
+	args->func_code = API_SET_PRINTER;
+	args->enable.val = (VOID*)enable;
+	status = SbieApi_Ioctl(parms);
+
+	if (!NT_SUCCESS(status)) {
+		OutputDebugStringW(L"SbieApi_SetPrinter error");
+	}
+
+	return status;
+}
+
+DWORD SbieApi_QueryPrinter()
+{
+	NTSTATUS status;
+	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS];
+	API_SET_PRINTER_ARGS* args = (API_SET_PRINTER_ARGS*)parms;
+
+	DWORD enable = 0;
+	memset(parms, 0, sizeof(parms));
+	args->func_code = API_QUERY_PRINTER;
+	args->enable.val = &enable;
+	status = SbieApi_Ioctl(parms);
+
+	if (!NT_SUCCESS(status)) {
+		OutputDebugStringW(L"SbieApi_QueryPrinter error");
+	}
+
+	return enable;
 }

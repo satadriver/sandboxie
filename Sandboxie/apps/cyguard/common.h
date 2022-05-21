@@ -10,4 +10,7 @@
 PCHAR rand_strA(PCHAR str, CONST INT len);
 PWCHAR rand_strW(PWCHAR str, CONST INT len);
 
+/* 判断系统位数
+*/
 BOOL Is64BitOS();
+

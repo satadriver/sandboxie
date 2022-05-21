@@ -712,7 +712,7 @@ BOOL Kmd_Stop_Service(
 
         if (retries) {
             if (retries <= 3) 
-                Sleep(2500 * retries);
+                Sleep(1000 * retries);
             else {
                 WCHAR Text[384];
 
@@ -1022,8 +1022,6 @@ int  deleteVeraVolume(const WCHAR * srcfilepath) {
 		}
 
 		WCHAR diskpath[MAX_PATH];
-		// 		lstrcpyW(diskpath, filepath);
-		// 		lstrcatW(diskpath, L"\\" VERACRYPT_FILENAME);
 		findValueInConfig(L"", VERACRYPT_PATH_KEYNAME, diskpath);
 		result = DeleteFileW(diskpath);
 
@@ -1032,7 +1030,7 @@ int  deleteVeraVolume(const WCHAR * srcfilepath) {
 		{
 			*pos = 0;
 		}
-		RemoveDirectoryA(diskpath);
+		RemoveDirectoryW(diskpath);
 
 		return result;
 	}

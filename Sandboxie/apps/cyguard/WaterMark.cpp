@@ -8,6 +8,7 @@
 #include <windowsx.h>
 
 extern CreateWindowExWStub CreateWindowExWOld;
+extern WCHAR ProcName[MAX_PATH];
 
 GdiplusStartupInput g_gdiSI;
 ULONG_PTR g_gdiToken;
@@ -76,16 +77,18 @@ BOOL CreateWaterMarkPngFile()
 	DP1("[LYSM][CreateWaterMarkPngFile] WaterMarkStr: %s \n", WaterMarkStr);
 
 	// 初始化图形对象
+	INT BmpWidth = GetSystemMetrics(SM_CXSCREEN) * 2;
+	INT BmpHigh = GetSystemMetrics(SM_CYSCREEN) * 2;
 	Bitmap bmp(
-		GetSystemMetrics(SM_CXSCREEN),
-		GetSystemMetrics(SM_CYSCREEN),
+		BmpWidth,
+		BmpHigh,
 		PixelFormat32bppARGB);
 	Graphics* g = Graphics::FromImage(&bmp);
 
 	// 设置水印倾斜
 	g->TranslateTransform(
-		-(GetSystemMetrics(SM_CXSCREEN) / 2),
-		GetSystemMetrics(SM_CYSCREEN) / 2);
+		-(REAL)(BmpWidth / 2),
+		(REAL)(BmpHigh / 2));
 	g->RotateTransform(-45);
 
 	// 设置透明背景
@@ -104,7 +107,7 @@ BOOL CreateWaterMarkPngFile()
 	INT IntercalHeight = 200;
 	INT PieceLen = 200;
 	INT PieceHeight = 200;
-	INT maxLen = GetSystemMetrics(SM_CXSCREEN) + GetSystemMetrics(SM_CYSCREEN);
+	INT maxLen = GetSystemMetrics(SM_CXSCREEN) * 2 + GetSystemMetrics(SM_CYSCREEN) * 2;
 	for (INT i = 0; i * IntervalLen < maxLen; ++i)
 	{
 		for (INT j = 0; j * IntercalHeight < maxLen; ++j)
@@ -115,7 +118,7 @@ BOOL CreateWaterMarkPngFile()
 				&fontFamily,
 				fontstyle,
 				20,
-				RectF(i * IntervalLen, j * IntercalHeight, 0, 0),
+				RectF((REAL)(i * IntervalLen), (REAL)(j * IntercalHeight), 0, 0),
 				&cStringFormat);
 
 		}
@@ -192,9 +195,10 @@ BOOL CreateWaterMarkWindow(
 	Gdiplus::Graphics* pGraphics = NULL;
 	WINDOWINFO wndinfo;
 	INT border = 0;
+	DOUBLE dpi = 0;
 
 	// 随机窗口类名
-	srand(time(NULL));
+	srand((UINT)time(NULL));
 	rand_strW(classNameStub, 6);
 	if (0 != wcscat_s(className, classNameStub))
 	{
@@ -229,8 +233,8 @@ BOOL CreateWaterMarkWindow(
 		className,
 		WATERMARK_WINDOW_TITLE,
 		WS_OVERLAPPEDWINDOW,
-		X,
-		Y,
+		X ,
+		Y ,
 		nWidth,
 		nHeight,
 		hwndHost,
@@ -316,11 +320,11 @@ BOOL CreateWaterMarkWindow(
 	pGraphics = new Gdiplus::Graphics(memDC);
 	pGraphics->DrawImage(
 		pImage,
-		RectF(0, 0, wndSize.cx, wndSize.cy),
+		RectF(0, 0, (REAL)wndSize.cx, (REAL)wndSize.cy),
 		0,
 		0,
-		wndSize.cx,
-		wndSize.cy,
+		(REAL)wndSize.cx,
+		(REAL)wndSize.cy,
 		UnitPixel);
 	delete pImage;
 	delete pGraphics;
@@ -402,9 +406,10 @@ BOOL CreateLucencyBorderWindow(
 	INT border = 0;
 	WINDOWINFO wndinfo;
 	Gdiplus::Graphics* pGraphics = NULL;
+	DWORD ScreenshotEnabled = TRUE;
 
 	// 随机窗口类名
-	srand(time(NULL));
+	srand((UINT)time(NULL));
 	rand_strW(classNameStub, 6);
 	if (0 != wcscat_s(className, classNameStub))
 	{
@@ -466,6 +471,16 @@ BOOL CreateLucencyBorderWindow(
 		goto end;
 	}
 
+	// 反截屏
+	ScreenshotEnabled = SbieApi_QueryScreenshot();
+	if (ScreenshotEnabled == 2)
+	{
+		if (!SetWindowDisplayAffinity(hWnd, WDA_MONITOR))
+		{
+			DP1("[LYSM][CreateLucencyBorderWindow] SetWindowDisplayAffinity error : %d \n", GetLastError());
+		}
+	}
+	
 	// 显示窗口
 	ShowWindowOld(hWnd, SW_SHOW);
 
@@ -547,7 +562,7 @@ LRESULT CALLBACK NewWndProc2(
 
 	switch (Msg)
 	{
-	case WM_PAINT:
+	case WM_PAINT:case WM_EXITSIZEMOVE:
 	{
 		//DP0("[LYSM] WM_PAINT \n");
 
@@ -942,7 +957,16 @@ DWORD WINAPI CreateProcWndMonitor(PVOID pParam)
 	{
 		EnumWindows(lpEnumFunc, (LPARAM)&wi);
 
-		Sleep(1000);
+		if (wcscmp(ProcName, L"firefox.exe") == 0)
+		{
+			// 火狐浏览器，Sleep 时间间隔过小导致水印不跟随窗口。
+			Sleep(1000);
+		}
+		else
+		{
+			Sleep(100);
+		}
+		
 	}
 
 	return 0;
@@ -973,7 +997,7 @@ BOOL WaterMarkStart()
 	// 生成水印文件
 	if (!CreateWaterMarkPngFile())
 	{
-		DP0("[LYSM][WaterMarkStartUp] CreateWaterMarkPngFile failed \n", status);
+		DP0("[LYSM][WaterMarkStartUp] CreateWaterMarkPngFile failed \n");
 		return FALSE;
 	}
 
@@ -986,7 +1010,7 @@ BOOL WaterMarkStart()
 	}
 	else
 	{
-		DP0("[LYSM][WaterMarkStartUp] CreateThread failed \n", status);
+		DP0("[LYSM][WaterMarkStartUp] CreateThread failed \n");
 		return FALSE;
 	}
 #endif 

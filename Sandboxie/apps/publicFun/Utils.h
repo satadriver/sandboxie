@@ -5,7 +5,9 @@
 
 #define SANDBOXIE_LOG_FILENAME		"safeDesktop.log"
 
+int dospath2LinkPath(const WCHAR* dospath, WCHAR* linkpath);
 
+int ntpath2dospath(const WCHAR* ntpath, WCHAR* dospath);
 
 int dospath2NTpath(const WCHAR* dospath, WCHAR* ntpath);
 
@@ -50,9 +52,7 @@ extern "C" __declspec(dllexport) int EnableDebugPrivilege();
 extern "C" __declspec(dllexport) int adjustPrivileges();
 
 
-extern __declspec(dllexport) int __cdecl mylog(const WCHAR* format, ...);
 
-extern __declspec(dllexport) int __cdecl mylog(const CHAR* format, ...);
 
 extern "C" __declspec(dllexport) int __wcslen(const WCHAR* str);
 

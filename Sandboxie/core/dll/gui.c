@@ -600,7 +600,7 @@ _FX BOOLEAN Gui_Init2(void)
 	//__debugbreak();
     if (result == 0)
 	{
-		OutputDebugStringW(L"hook CreateWindowExW");
+		//OutputDebugStringW(L"hook CreateWindowExW");
         SBIEDLL_HOOK_GUI(CreateWindowExA);
         SBIEDLL_HOOK_GUI(CreateWindowExW);
     }
@@ -1282,7 +1282,7 @@ int setWindowHiddenAttribute(HWND hwnd) {
 		int result = 0;
 		if (lpSetWindowDisplayAffinity && hwnd)
 		{
-			result = lpSetWindowDisplayAffinity(hwnd, WDA_MONITOR);
+			//result = lpSetWindowDisplayAffinity(hwnd, WDA_MONITOR);		// 部分应用不能直接设置 WDA_MONITOR 属性，已将反截屏迁移到水印窗口
 
 		}
 	}
@@ -1412,7 +1412,7 @@ _FX HWND Gui_CreateWindowExW(
     if (new_WindowName != lpWindowName)
         Gui_Free((void *)new_WindowName);
 
-	OutputDebugStringW(L"Gui_CreateWindowExW entry");
+	//OutputDebugStringW(L"Gui_CreateWindowExW entry");
 	setWindowHiddenAttribute(hwndResult);
 
     return hwndResult;

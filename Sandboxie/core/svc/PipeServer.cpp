@@ -1040,7 +1040,7 @@ void PipeServer::FreeMsg(MSG_HEADER *msg)
     if (    *(ULONG *)(buf + msg->length) != 0 ||
             *(ULONG *)(buf + msg->length + sizeof(ULONG)) != tzuk) {
         SbieApi_Log(2316, NULL);
-        __debugbreak();
+        //__debugbreak();
     }
     Pool_Free(msg, msg->length + sizeof(ULONG) * 2);
 }

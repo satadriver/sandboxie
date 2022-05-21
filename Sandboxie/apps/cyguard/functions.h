@@ -3,9 +3,12 @@
 #include <fileapi.h >
 #include <unordered_map>
 
+#include "../../common/win32_ntddk.h"
+
 using namespace std;
 
 extern DWORD g_tlsIdx;
+
 
 typedef BOOL(WINAPI* ShowWindowStub)(
 	HWND hWnd,
@@ -210,7 +213,7 @@ typedef BOOL(*P_OpenPrinter2W)(void* pPrinterName, HANDLE* phPrinter, void* pDef
 
  BOOL WINAPI OpenPrinterWNew( LPWSTR pPrinterName,  LPHANDLE phPrinter,  LPPRINTER_DEFAULTSW pDefault);
 
- BOOL OpenPrinter2WNew(void* pPrinterName, HANDLE* phPrinter, void* pDefault, void* pOptions);
+ BOOL WINAPI OpenPrinter2WNew(WCHAR* pPrinterName, HANDLE* phPrinter, void* pDefault, void* pOptions);
 
 
  extern P_OpenPrinter2W                 __sys_OpenPrinter2W ;
@@ -227,3 +230,10 @@ typedef BOOL(*P_OpenPrinter2W)(void* pPrinterName, HANDLE* phPrinter, void* pDef
  HMODULE __stdcall lpLoadLibraryWNew(LPWSTR lpLibFileName);
 
  extern ptrLoadLibraryW lpLoadLibraryWOld;
+
+
+
+typedef NTSTATUS (__stdcall *ptrLdrLoadDll)(WCHAR* PathString,ULONG* Flags,UNICODE_STRING* ModuleName,HANDLE* ModuleHandle);
+
+extern ptrLdrLoadDll lpLdrLoadDllOld;
+NTSTATUS __stdcall lpLdrLoadDllNew(WCHAR* PathString, ULONG* Flags, UNICODE_STRING* ModuleName, HANDLE* ModuleHandle);

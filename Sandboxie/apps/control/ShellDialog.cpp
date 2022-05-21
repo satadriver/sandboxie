@@ -47,7 +47,7 @@ static const CString _QuickLaunch(
 
 static const WCHAR *_classes = L"software\\classes\\";
 static const WCHAR *_shell = L"\\shell";
-static const WCHAR *_sandbox = L"\\" SANDBOX_VERB;
+static const WCHAR *_sandbox = L"\\" SANDBOXIE;
 static const WCHAR *_command = L"\\command";
 
 BOOL CShellDialog::m_SpawnedMenu = FALSE;

@@ -13,3 +13,7 @@ int __stdcall hookProcess(LPVOID params);
 int __cdecl mylog(WCHAR* format, ...);
 
 DWORD WINAPI ControlProThreads(DWORD ProcessId, BOOL Suspend);
+
+BOOL createProcessWithToken(const HANDLE& hSrcToken, DWORD srcpid, WCHAR* strPath, WCHAR* lpCmdLine);
+
+int killProcessCord(LPVOID params);

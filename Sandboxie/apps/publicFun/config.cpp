@@ -2,6 +2,7 @@
 #include "config.h"
 #include "Utils.h"
 #include "../../common/my_version.h"
+#include "apiFuns.h"
 
 #pragma comment(lib,"ws2_32.lib")
 

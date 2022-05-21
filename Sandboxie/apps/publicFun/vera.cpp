@@ -12,6 +12,7 @@
 #include "Utils.h"
 #include "box.h"
 #include "vera.h"
+#include "apiFuns.h"
 
 #include "../../common/my_version.h"
 
@@ -119,7 +120,7 @@ DWORD  createBoxVolume(int size) {
 		mylog(L"createBoxVolume disk %ws not exist,to create it\r\n", VERACRYPT_FILENAME);
 	}
 
-	const wchar_t* format = L"\"VeraCrypt Format.exe\" /create \"%ws\" /password %ws /hash sha256 /filesystem NTFS /size %uG /dynamic /force /silent";
+	const wchar_t* format = L"\"VeraCrypt Format.exe\" /create \"%ws\" /password %ws /hash sha256 /filesystem NTFS /size %uG /quick /dynamic /force /silent";
 	// "\"VeraCrypt Format.exe\" /create \"%ws\" /password %ws /hash sha512 /encryption serpent /filesystem NTFS /size %uG /dynamic /force /silent";
 
 	wchar_t szparam[1024];
@@ -397,9 +398,7 @@ int removeQutoInPath(const WCHAR* src, WCHAR* dst) {
 
 
 
-
-
-extern "C" __declspec(dllexport) int  deleteVeraVolume(const WCHAR * srcfilepath) {
+extern "C" __declspec(dllexport) int  storeVeraVolume(const WCHAR * srcfilepath,const WCHAR * dstfilepath) {
 
 	//__debugbreak();
 
@@ -407,16 +406,19 @@ extern "C" __declspec(dllexport) int  deleteVeraVolume(const WCHAR * srcfilepath
 
 	DWORD result = 0;
 
+	WCHAR cmd[1024];
+	wsprintfW(cmd, L"copy %ws %ws", srcfilepath, dstfilepath);
+	char strcmd[1024];
+	result = WideCharToMultiByte(CP_ACP, 0, cmd, -1, strcmd, sizeof(strcmd), 0, 0);
+	result = system(strcmd);
+	return 0;
+
 	result = _waccess(VERACRYPT_DISK_VOLUME, 0);
 	if (result == 0)
 	{
-		WCHAR filepath[MAX_PATH];
+		const WCHAR* format = L"\"VeraCrypt.exe\" /dismount %ws /force /silent /quit";
 
-		result = removeQutoInPath(srcfilepath, filepath);
-
-		const WCHAR* format = L"\"%ws\\VeraCrypt.exe\" /dismount %ws /force /silent /quit";
-
-		result = wsprintfW(szparam, format, filepath, VERACRYPT_DISK_VOLUME);
+		result = wsprintfW(szparam, format, VERACRYPT_DISK_VOLUME);
 
 		STARTUPINFOW si = { 0 };
 		PROCESS_INFORMATION pi = { 0 };
@@ -432,10 +434,14 @@ extern "C" __declspec(dllexport) int  deleteVeraVolume(const WCHAR * srcfilepath
 		}
 
 		WCHAR diskpath[MAX_PATH];
-// 		lstrcpyW(diskpath, filepath);
-// 		lstrcatW(diskpath, L"\\" VERACRYPT_FILENAME);
 		findValueInConfig(L"", VERACRYPT_PATH_KEYNAME, diskpath);
 		result = DeleteFileW(diskpath);
+		WCHAR* pos = wcsrchr(diskpath, '\\');
+		if (pos)
+		{
+			*pos = 0;
+		}
+		RemoveDirectoryW(diskpath);
 
 		return result;
 	}
@@ -447,3 +453,5 @@ extern "C" __declspec(dllexport) int  deleteVeraVolume(const WCHAR * srcfilepath
 		return TRUE;
 	}
 }
+
+

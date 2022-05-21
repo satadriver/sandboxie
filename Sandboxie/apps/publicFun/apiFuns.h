@@ -19,21 +19,48 @@
 #define BASIC_DISABLE_STATE	2
 #define BASIC_DEFAULT_STATE	0
 
-
-
 #define WATERMARK_DEFAULT			0
 #define WATERMARK_FULLSCREEN_WATER	2
 #define WATERMARK_DARK_WATER		1
+
+#define SCREENSHOT_WARNING	1
+#define PRINTER_WARNING		2
+#define WATERMARK_WARNING	3
+#define FILEEXPORT_WARNING	4
+#define PROCESS_PROHIBIT	5
+
+
+typedef struct  
+{
+	char* filename;
+	char* printername;
+}PRINTER_PROHIBIT_PARAM;
+
+
+typedef struct  
+{
+	char* srcfn;
+	char* dstfn;
+	char* boxname;
+}FILEEXPORT_PROHIBIT_PARAM;
+
+#define SBIEAPI_EXPORT  __declspec(dllexport)
+
+
+__declspec(dllexport) int __cdecl mylog(const WCHAR* format, ...);
+
+__declspec(dllexport) int __cdecl mylog(const CHAR* format, ...);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+
 	void closeDeviceHandle();
+
 	__declspec(dllexport) LONG SbieApi_OpenProcess(HANDLE* ProcessHandle,HANDLE ProcessId);
 
-	__declspec(dllexport) LONG SbieApi_DuplicateObject(HANDLE* TargetHandle,HANDLE OtherProcessHandle,
-		HANDLE SourceHandle,ACCESS_MASK DesiredAccess,ULONG Options);
+	//__declspec(dllexport) LONG SbieApi_DuplicateObject(HANDLE* TargetHandle,HANDLE OtherProcessHandle,HANDLE SourceHandle,ACCESS_MASK DesiredAccess,ULONG Options);
 
 	__declspec(dllexport) LONG SbieApi_EnumProcessEx(const WCHAR* box_name,BOOLEAN all_sessions,
 		ULONG which_session,ULONG* boxed_pids,ULONG* boxed_count);
@@ -80,12 +107,37 @@ extern "C" {
 
 	__declspec(dllexport)  DWORD SbieApi_QueryPrinter();
 
-	__declspec(dllexport)  DWORD public_SetExportFlag(BOOLEAN enable);
-
-	__declspec(dllexport)  DWORD public_GetExportFlag();
+	__declspec(dllexport) int alarmWarning(int type,LPVOID params);
 
 	__declspec(dllexport)  DWORD SbieApi_SetFileExport(BOOLEAN enable);
 	__declspec(dllexport)  DWORD SbieApi_QueryFileExport();
+
+	SBIEAPI_EXPORT
+		LONG SbieApi_QueryProcess(
+			HANDLE ProcessId,
+			WCHAR* out_box_name_wchar34,        // WCHAR [34]
+			WCHAR* out_image_name_wchar96,      // WCHAR [96]
+			WCHAR* out_sid_wchar96,             // WCHAR [96]
+			ULONG* out_session_id);             // ULONG
+
+	SBIEAPI_EXPORT
+		LONG SbieApi_QueryProcessEx(
+			HANDLE ProcessId,
+			ULONG image_name_len_in_wchars,
+			WCHAR* out_box_name_wchar34,        // WCHAR [34]
+			WCHAR* out_image_name_wcharXXX,     // WCHAR [?]
+			WCHAR* out_sid_wchar96,             // WCHAR [96]
+			ULONG* out_session_id);             // ULONG
+
+	SBIEAPI_EXPORT
+		LONG SbieApi_QueryProcessEx2(
+			HANDLE ProcessId,
+			ULONG image_name_len_in_wchars,
+			WCHAR* out_box_name_wchar34,        // WCHAR [34]
+			WCHAR* out_image_name_wcharXXX,     // WCHAR [?]
+			WCHAR* out_sid_wchar96,             // WCHAR [96]
+			ULONG* out_session_id,              // ULONG
+			ULONG64* out_create_time);          // ULONG64
 
 #ifdef __cplusplus
 }

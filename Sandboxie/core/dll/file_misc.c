@@ -66,7 +66,27 @@ static BOOL File_WriteProcessMemory(
     SIZE_T nSize,
     SIZE_T * lpNumberOfBytesWritten);
 
+
+
+typedef HANDLE(__stdcall* P_FindFirstVolumeW)(LPWSTR lpszVolumeName, DWORD  cchBufferLength);
+typedef BOOL(__stdcall* P_FindNextVolumeW)(HANDLE hFindVolume, LPWSTR lpszVolumeName, DWORD  cchBufferLength);
+typedef DWORD(__stdcall* P_GetLogicalDriveStringsW)();
+typedef DWORD(__stdcall* P_GetLogicalDrives)();
+
+
+
 //---------------------------------------------------------------------------
+
+
+
+static P_GetLogicalDrives __sys_GetLogicalDrives;
+
+static P_GetLogicalDriveStringsW __sys_GetLogicalDriveStringsW;
+
+static P_FindNextVolumeW __sys_FindNextVolumeW;
+
+static P_FindFirstVolumeW __sys_FindFirstVolumeW;
+
 
 
 static P_MoveFileWithProgress       __sys_MoveFileWithProgressW     = NULL;
@@ -531,3 +551,179 @@ BOOL File_WriteProcessMemory(
 
     return __sys_WriteProcessMemory(hProcess, lpBaseAddress, lpBuffer, nSize, lpNumberOfBytesWritten);
 }
+
+
+
+
+
+
+
+int isVeracryptDisk(WCHAR* diskname) {
+
+	return FALSE;
+
+	int result = 0;
+	WCHAR devname[MAX_PATH];
+
+	result = QueryDosDeviceW(diskname, devname, MAX_PATH);
+	if (result)
+	{
+		if (wcsstr(devname, L"\\Device\\VeraCryptVolume"))
+		{
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+int isUsbStorage(WCHAR* diskname) {
+	int result = 0;
+	result = GetDriveTypeW(diskname);
+	if (result == DRIVE_REMOVABLE)
+	{
+		return TRUE;
+	}
+	return FALSE;
+}
+
+
+
+DWORD __stdcall File_GetLogicalDrives() {
+
+	int result = 0;
+	DWORD drives = __sys_GetLogicalDrives();
+	HMODULE hSfDeskDll = GetModuleHandle(L"SfDeskDll.dll");
+	DWORD mask = 0xffffffff;
+	WCHAR diskname[4];
+	diskname[1] = L':';
+	diskname[2] = 0;
+
+	for (int i = 0; i < 26; i++)
+	{
+		DWORD diskno = (drives >> i) & 1;
+		if (diskno)
+		{
+			diskname[0] = 0x41 + i;
+			int isvera = isVeracryptDisk(diskname);
+			if (isvera)
+			{
+				DWORD submask = ~(1 << i);
+				mask &= submask;
+			}
+
+
+			if (hSfDeskDll) {
+				int isusb = isUsbStorage(diskname);
+				if (isusb)
+				{
+					DWORD submask = ~(1 << i);
+					mask &= submask;
+				}
+			}
+		}
+	}
+
+	return drives & mask;
+}
+
+
+DWORD __stdcall File_GetLogicalDriveStringsW(DWORD  nBufferLength,LPWSTR strBuffer)
+{
+	DWORD len = __sys_GetLogicalDriveStringsW(nBufferLength, strBuffer);
+
+	if (len > 0 && len <= nBufferLength)
+	{
+		WCHAR* lpBuffer = strBuffer;
+		
+		DWORD offset = 0;
+
+		while (offset < len)
+		{
+			int itemsize = lstrlenW(lpBuffer) + 1;
+
+			WCHAR path[64];
+			lstrcpyW(path, lpBuffer + offset);
+
+			int isvera = isVeracryptDisk(path);
+			if (isvera)
+			{
+				wmemcpy(lpBuffer + offset, lpBuffer + offset + itemsize, len - offset - itemsize);
+				len -= itemsize;
+				continue;
+			}
+
+			int isusb = isUsbStorage(path);
+			if (isusb)
+			{
+				wmemcpy(lpBuffer + offset, lpBuffer + offset + itemsize, len - offset - itemsize);
+				len -= itemsize;
+				continue;
+			}
+
+			offset += itemsize;
+		}
+
+		lpBuffer[len] = 0;
+	}
+
+	return len;
+}
+
+
+
+HANDLE __stdcall File_FindFirstVolumeW(LPWSTR lpszVolumeName, DWORD  cchBufferLength) {
+
+	HANDLE handle = 0;
+	handle = __sys_FindFirstVolumeW(lpszVolumeName, cchBufferLength);
+
+	if (handle && *lpszVolumeName)
+	{
+		WCHAR tmpbuf[256];
+		lstrcpyW(tmpbuf, &lpszVolumeName[4]);
+		int tmpbuflen = lstrlenW(tmpbuf);
+		tmpbuf[tmpbuflen - 1] = 0;
+
+		int result = isVeracryptDisk(tmpbuf);
+		if (result)
+		{
+			lpszVolumeName[0] = 0;
+		}
+	}
+
+	return handle;
+}
+
+
+
+BOOL __stdcall File_FindNextVolumeW(
+	HANDLE hFindVolume,
+	LPWSTR lpszVolumeName,
+	DWORD  cchBufferLength
+) {
+
+	int lastresult = 0;
+	if (hFindVolume && hFindVolume != INVALID_HANDLE_VALUE)
+	{
+		lastresult = __sys_FindNextVolumeW(hFindVolume, lpszVolumeName, cchBufferLength);
+		if (lastresult)
+		{
+			WCHAR tmpbuf[256];
+			lstrcpyW(tmpbuf, &lpszVolumeName[4]);
+			int tmpbuflen = lstrlenW(tmpbuf);
+			tmpbuf[tmpbuflen - 1] = 0;
+
+			int bveracrypt = isVeracryptDisk(tmpbuf);
+			if (bveracrypt)
+			{
+				lpszVolumeName[0] = 0;
+			}
+		}
+	}
+
+	return lastresult;
+}
+
+
+
+
+

@@ -400,7 +400,41 @@ int createRecycleFolderInBox(const WCHAR* boxname) {
 		szbuf[len] = 0;
 		result = MakeSureDirectoryPathExists(szbuf);
 	}
-	
+
+
+	WCHAR userfolder[MAX_PATH];
+	lstrcpyW(userfolder, VERACRYPT_DISK_VOLUME);
+	lstrcatW(userfolder, boxname);
+	lstrcatW(userfolder, L"\\");
+	lstrcatW(userfolder, username);
+	lstrcatW(userfolder, L"\\user\\current\\");
+	len = WideCharToMultiByte(CP_ACP, 0, userfolder, -1, szbuf, MAX_PATH, 0, 0);
+	if (len > 0) {
+		szbuf[len] = 0;
+		result = MakeSureDirectoryPathExists(szbuf);
+	}
+
+	WCHAR drivefolder[MAX_PATH];
+	lstrcpyW(drivefolder, VERACRYPT_DISK_VOLUME);
+	lstrcatW(drivefolder, boxname);
+	lstrcatW(drivefolder, L"\\");
+	lstrcatW(drivefolder, username);
+	lstrcatW(drivefolder, L"\\drive\\");
+	len = WideCharToMultiByte(CP_ACP, 0, drivefolder, -1, szbuf, MAX_PATH, 0, 0);
+	if (len > 0) {
+		szbuf[len] = 0;
+		result = MakeSureDirectoryPathExists(szbuf);
+	}
+
+
+// 	WCHAR sharefolder[MAX_PATH];
+// 	lstrcpyW(sharefolder, VERACRYPT_DISK_VOLUME);
+// 	lstrcatW(sharefolder, L"warning\\");
+// 	len = WideCharToMultiByte(CP_ACP, 0, sharefolder, -1, szbuf, MAX_PATH, 0, 0);
+// 	if (len > 0) {
+// 		szbuf[len] = 0;
+// 		result = MakeSureDirectoryPathExists(szbuf);
+// 	}
 	return result;
 }
 

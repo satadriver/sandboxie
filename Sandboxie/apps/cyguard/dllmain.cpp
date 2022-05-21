@@ -14,6 +14,7 @@
 #pragma warning(disable:4005)
 
 HANDLE g_hMutex = 0;
+WCHAR ProcName[MAX_PATH] = { 0 };
 
 BOOL APIENTRY DllMain( HMODULE hModule,DWORD  ul_reason_for_call,LPVOID lpReserved)
 {
@@ -23,6 +24,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,DWORD  ul_reason_for_call,LPVOID lpReserv
 		case DLL_PROCESS_ATTACH:
 		{
 			//DP0("[LYSM] DLL_PROCESS_ATTACH\r\n");
+
+			// 获取进程名
+			if (!GetModuleBaseName(GetCurrentProcess(), NULL, ProcName, MAX_PATH))
+			{
+				DP1("[LYSM] GetModuleBaseName error:%d \n", GetLastError());
+			}
 
 			if (g_tlsIdx == 0)
 			{
@@ -169,10 +176,10 @@ extern "C" __declspec(dllexport) int __stdcall hookfunctions() {
 		lstrcmpiW(filename, L"cmd.exe") == 0 || lstrcmpiW(filename, L"powershell.exe") == 0
 		/*||lstrcmpiW(filename, EXPLORER_PROCESS_NAME_PLUSPLUS) == 0*/)
 	{
-		result = hook(L"kernelbase.dll", L"GetLogicalDrives", (LPBYTE)GetLogicalDrivesNew, (FARPROC*)&GetLogicalDrivesOld);
-		result = hook(L"kernelbase.dll", L"FindFirstVolumeW", (LPBYTE)FindFirstVolumeWNew, (FARPROC*)&FindFirstVolumeWOld);
-		result = hook(L"kernelbase.dll", L"FindNextVolumeW", (LPBYTE)FindNextVolumeWNew, (FARPROC*)&FindNextVolumeWOld);
-		result = hook(L"kernelbase.dll", L"GetLogicalDriveStringsW", (LPBYTE)GetLogicalDriveStringsWNew, (FARPROC*)&GetLogicalDriveStringsWOld);
+// 		result = hook(L"kernelbase.dll", L"GetLogicalDrives", (LPBYTE)GetLogicalDrivesNew, (FARPROC*)&GetLogicalDrivesOld);
+// 		result = hook(L"kernelbase.dll", L"FindFirstVolumeW", (LPBYTE)FindFirstVolumeWNew, (FARPROC*)&FindFirstVolumeWOld);
+// 		result = hook(L"kernelbase.dll", L"FindNextVolumeW", (LPBYTE)FindNextVolumeWNew, (FARPROC*)&FindNextVolumeWOld);
+// 		result = hook(L"kernelbase.dll", L"GetLogicalDriveStringsW", (LPBYTE)GetLogicalDriveStringsWNew, (FARPROC*)&GetLogicalDriveStringsWOld);
 		return FALSE;
 	}
 
@@ -199,12 +206,22 @@ extern "C" __declspec(dllexport) int __stdcall hookfunctions() {
 		{
 			DP0("[LYSM][DllMain] WaterMarkStart failed. \n");
 		}
-		
-		hook(L"kernelbase.dll", L"LoadLibraryW", (LPBYTE)lpLoadLibraryWNew, (FARPROC*)&lpLoadLibraryWOld);
 
-		hook(L"winspool.drv", L"OpenPrinterA", (LPBYTE)OpenPrinterANew, (FARPROC*)&__sys_OpenPrinterA);
-		hook(L"winspool.drv", L"OpenPrinterW", (LPBYTE)OpenPrinterWNew, (FARPROC*)&__sys_OpenPrinterW);
-		hook(L"winspool.drv", L"OpenPrinter2W", (LPBYTE)OpenPrinter2WNew, (FARPROC*)&__sys_OpenPrinter2W);
+		result = hook(L"kernelbase.dll", L"GetLogicalDrives", (LPBYTE)GetLogicalDrivesNew, (FARPROC*)&GetLogicalDrivesOld);
+		result = hook(L"kernelbase.dll", L"FindFirstVolumeW", (LPBYTE)FindFirstVolumeWNew, (FARPROC*)&FindFirstVolumeWOld);
+		result = hook(L"kernelbase.dll", L"FindNextVolumeW", (LPBYTE)FindNextVolumeWNew, (FARPROC*)&FindNextVolumeWOld);
+		result = hook(L"kernelbase.dll", L"GetLogicalDriveStringsW", (LPBYTE)GetLogicalDriveStringsWNew, (FARPROC*)&GetLogicalDriveStringsWOld);
+		//result = hook(L"kernelbase.dll", L"LoadLibraryW", (LPBYTE)lpLoadLibraryWNew, (FARPROC*)&lpLoadLibraryWOld);
+		// 这个 Hook 会导致 office 打印时进程崩溃
+
+		//result = hook(L"ntdll.dll", L"LdrLoadDll", (LPBYTE)lpLdrLoadDllNew, (FARPROC*)&lpLdrLoadDllOld);
+
+		// 禁止打印
+// 		hook(L"winspool.drv", L"OpenPrinterA", (LPBYTE)OpenPrinterANew, (FARPROC*)&__sys_OpenPrinterA);
+// 		hook(L"winspool.drv", L"OpenPrinter2A", (LPBYTE)OpenPrinter2ANew, (FARPROC*)&__sys_OpenPrinter2A);
+// 		hook(L"winspool.drv", L"OpenPrinterW", (LPBYTE)OpenPrinterWNew, (FARPROC*)&__sys_OpenPrinterW);
+// 		hook(L"winspool.drv", L"OpenPrinter2W", (LPBYTE)OpenPrinter2WNew, (FARPROC*)&__sys_OpenPrinter2W);
+
 	}
 	// 沙箱外
 	else

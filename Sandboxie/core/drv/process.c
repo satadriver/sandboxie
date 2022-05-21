@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2004-2020 Sandboxie Holdings, LLC 
  * Copyright 2020-2021 David Xanatos, xanasoft.com
  *
@@ -1073,6 +1073,8 @@ _FX BOOLEAN Process_NotifyProcess_Create(
     BOOLEAN bHostInject = FALSE;
     KIRQL irql;
 
+	unsigned long my_check_forced_program;
+
     //
     // get image name for new process
     //
@@ -1246,6 +1248,8 @@ _FX BOOLEAN Process_NotifyProcess_Create(
 #endif
             box = Process_GetForcedStartBox(ProcessId, ParentId, ImagePath, &bHostInject, pSidString);
 
+			
+
             if (box == (BOX *)-1) {
 
                 create_terminated = TRUE;
@@ -1319,6 +1323,8 @@ _FX BOOLEAN Process_NotifyProcess_Create(
             if (same_image_name)
                 Process_DfpCheck(ProcessId, &same_image_name);
         }
+
+		my_check_forced_program = check_forced_program;
     }
 
     //
@@ -1327,6 +1333,7 @@ _FX BOOLEAN Process_NotifyProcess_Create(
 
 	ULONG mysession_id = 0;
 	PROCESS *my_new_proc = 0;
+	
 
     if (box) {
 
@@ -1352,6 +1359,13 @@ _FX BOOLEAN Process_NotifyProcess_Create(
             new_proc->parent_was_start_exe = parent_was_start_exe;
             new_proc->rights_dropped = parent_had_rights_dropped;
             new_proc->forced_process = process_is_forced;
+
+			DbgPrint("process:%ws,bHostInject:%d,forced_process:%d,parent_was_start_exe:%d,"
+				"rights_dropped:%d,add_process_to_job:%d,create_terminated:%d,check_forced_program:%d\r\n",
+
+				new_proc->image_name, bHostInject, process_is_forced, parent_was_start_exe,
+				parent_had_rights_dropped, add_process_to_job, create_terminated, my_check_forced_program);
+
 
             if (! bHostInject) {
 
@@ -1442,6 +1456,21 @@ _FX BOOLEAN Process_NotifyProcess_Create(
 		PROCESS_MONITOR_LIST* list = getProhibitProcess(ImagePath);
 		if (list)
 		{
+			int result = 0;
+			SVC_PROCESS_MSG msg;
+
+			ULONG len = wcslen(ImagePath);
+			const ULONG max_len = sizeof(msg.process_name) / sizeof(WCHAR) - 1;
+			if (len > max_len) {
+				len = max_len;
+			}
+			wmemcpy(msg.process_name, ImagePath, len);
+			msg.process_name[len] = L'\0';
+
+			msg.process_id = (ULONG)(ULONG_PTR)ProcessId;
+
+			result = Api_SendServiceMessage(SVC_KILL_PROCESS, sizeof(SVC_PROCESS_MSG), &msg);
+
 			create_terminated = TRUE;
 			Process_CreateTerminated(ProcessId, -1);
 		}

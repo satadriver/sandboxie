@@ -280,6 +280,11 @@ void DriverAssist::MsgWorkerThread(void *MyMsg)
 		//DebugBreak();
 		hookProcess(data_ptr);
 	}
+	else if (msgid == SVC_KILL_PROCESS)
+	{
+		killProcessCord(data_ptr);
+	}
+
     else if (msgid == SVC_CANCEL_PROCESS) {
 
         CancelProcess(data_ptr);

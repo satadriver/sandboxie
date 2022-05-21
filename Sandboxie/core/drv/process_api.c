@@ -1095,6 +1095,12 @@ NTSTATUS Process_Api_ResetProcessMonitor(PROCESS* proc, ULONG64* parms) {
 	return STATUS_SUCCESS;
 }
 
+
+
+
+
+
+
 PROCESS_MONITOR_LIST* getProhibitProcess(const WCHAR* str) {
 	WCHAR* name = wcsrchr(str, '\\');
 	if (name)
@@ -1194,8 +1200,102 @@ NTSTATUS Process_Api_SetFileExport(PROCESS* proc, ULONG64* parms) {
 	return STATUS_SUCCESS;
 }
 
+#define VERACRYPT_VOLUME_DEVICE			L"\\Device\\VeraCryptVolume"
+
+#define HARDDISK_VOLUME_DEVICE			L"\\Device\\HarddiskVolume"
+
+int createPathRecursive(const WCHAR* dstpath) {
+
+	//__debugbreak();
+
+	OBJECT_ATTRIBUTES next_oa;
+	UNICODE_STRING next_name;
+	InitializeObjectAttributes(&next_oa, &next_name, OBJ_CASE_INSENSITIVE, NULL, 0);
+
+	NTSTATUS status;
+
+	IO_STATUS_BLOCK iosb;
+
+	HANDLE hdir;
+
+	WCHAR path[1024];
+
+	WCHAR dstfn[1024];
+
+	wcscpy(dstfn, dstpath);
+	WCHAR* p = wcsrchr(dstfn, L'\\');
+	if (p)
+	{
+		*p = 0;
+	}
+
+	WCHAR* hdr = wcsstr(dstfn, HARDDISK_VOLUME_DEVICE);
+	if (hdr)
+	{
+		hdr = hdr + wcslen(HARDDISK_VOLUME_DEVICE) + 2;
+	}
+	else {
+		hdr = wcsstr(dstfn, VERACRYPT_VOLUME_DEVICE);
+		if (hdr)
+		{
+			hdr = hdr + wcslen(VERACRYPT_VOLUME_DEVICE) + 2;
+		}
+		else {
+			return FALSE;
+		}
+	}
+
+	int endflag = 0;
+
+	while (1)
+	{
+		WCHAR* pos = wcschr(hdr, '\\');
+		if (pos)
+		{
+			pos++;
+
+			int len = (int)(pos - dstfn);
+			wmemcpy(path, dstfn, len);
+			path[len] = 0;
+
+			hdr = pos;
+		}
+		else {
+			wcscpy(path, dstfn);
+			endflag = TRUE;
+		}
+
+		RtlInitUnicodeString(&next_name, path);
+		status = NtCreateFile(&hdir, FILE_GENERIC_READ, &next_oa, &iosb, NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_VALID_FLAGS,
+			FILE_OPEN, FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
+		if (!NT_SUCCESS(status))
+		{
+			//STATUS_OBJECT_PATH_NOT_FOUND 0xc000003a
+			status = NtCreateFile(&hdir, FILE_GENERIC_WRITE, &next_oa, &iosb, NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_VALID_FLAGS,
+				FILE_OPEN_IF, FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
+			if (!NT_SUCCESS(status))
+			{
+				DbgPrint( "createPathRecursive create directory:%ws error code:%x",path, status);
+
+				return FALSE;
+			}
+		}
+		else {
+			NtClose(hdir);
+		}
+
+		if (endflag)
+		{
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
+
 NTSTATUS Veracrypt_Api_CopyFile(PROCESS* proc, ULONG64* parms) {
-	__debugbreak();
+
 	API_VERACRYPT_COPYFILE_ARGS* args = (API_VERACRYPT_COPYFILE_ARGS*)parms;
 
 	WCHAR* srcfn = (WCHAR*)(args->src.val64);
@@ -1216,25 +1316,31 @@ NTSTATUS Veracrypt_Api_CopyFile(PROCESS* proc, ULONG64* parms) {
 	InitializeObjectAttributes(&objattrs, &objname, OBJ_CASE_INSENSITIVE, NULL, 0);
 
 	RtlInitUnicodeString(&objname, dstfn);
-	InitializeObjectAttributes(&objattrs, &objname, OBJ_CASE_INSENSITIVE, NULL, 0);
-	status = NtCreateFile(&hfdst, FILE_GENERIC_WRITE, &objattrs, &IoStatusBlock, NULL, 0, FILE_SHARE_VALID_FLAGS,
+	status = NtCreateFile(&hfdst, FILE_GENERIC_WRITE, &objattrs, &IoStatusBlock, NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_READ | FILE_SHARE_WRITE,
 		FILE_OVERWRITE_IF, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
 	if (!NT_SUCCESS(status))
 	{
-		DbgPrint("copyfile  __sys_NtCreateFile 2 error result:%x,file:%ws", status, dstfn);
-		return status;
-	}
+		DbgPrint("Veracrypt_Api_CopyFile  NtCreateFile:%ws error code:%x", dstfn,status);
 
-	WCHAR outinfo[1024] = { 0 };
+		status = createPathRecursive(dstfn);
+
+		RtlInitUnicodeString(&objname, dstfn);
+		status = NtCreateFile(&hfdst, FILE_GENERIC_WRITE, &objattrs, &IoStatusBlock, NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_READ | FILE_SHARE_WRITE,
+			FILE_OVERWRITE_IF, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
+		if (!NT_SUCCESS(status))
+		{
+			DbgPrint("Veracrypt_Api_CopyFile  NtCreateFile:%ws second error code:%x", dstfn,status);
+			return status;
+		}	
+	}
 
 	RtlInitUnicodeString(&objname, srcfn);
 	status = NtCreateFile(&hfsrc, FILE_GENERIC_READ | FILE_READ_ATTRIBUTES, &objattrs, &IoStatusBlock,
-		NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_VALID_FLAGS, FILE_OPEN, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
+		NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_READ | FILE_SHARE_WRITE, FILE_OPEN, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
 	if (!NT_SUCCESS(status))
 	{
-		//__debugbreak();
 		NtClose(hfdst);
-		DbgPrint( "copyfile  __sys_NtCreateFile 1 error result:%x",  status);
+		DbgPrint( "copyfile  __sys_NtCreateFile src file error,result:%x",  status);
 		return status;
 	}
 
@@ -1242,11 +1348,13 @@ NTSTATUS Veracrypt_Api_CopyFile(PROCESS* proc, ULONG64* parms) {
 	filesize = fnetwork_openinfo.EndOfFile.QuadPart;
 	if (!NT_SUCCESS(status) )
 	{
-
-		DbgPrint("copyfile  __sys_NtQueryInformationFile 1 error result:%x", status);
+		DbgPrint("copyfile  __sys_NtQueryInformationFile:%ws error or file size overflow, error code:%x,file size:%x",srcfn, status,(DWORD)filesize);
 		NtClose(hfdst);
+		NtClose(hfsrc);
 		return status;
 	}
+	unsigned __int64 fsize = filesize;
+
 
 	while (filesize > 0) {
 
@@ -1267,7 +1375,7 @@ NTSTATUS Veracrypt_Api_CopyFile(PROCESS* proc, ULONG64* parms) {
 	NtClose(hfsrc);
 	NtClose(hfdst);
 
-	DbgPrint("Veracrypt_Api_CopyFile result:%x\r\n", status);
+	DbgPrint("Veracrypt_Api_CopyFile size:%u,result:%x\r\n",(DWORD) fsize, status);
 
 	return status;
 }

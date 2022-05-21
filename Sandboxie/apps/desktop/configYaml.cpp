@@ -17,6 +17,7 @@
 #include "../publicFun/vera.h"
 
 #include "../publicFun/configStrategy.h"
+#include "../publicFun/apiFuns.h"
 
 using namespace std;
 using namespace Yaml;

@@ -7,7 +7,7 @@ typedef struct _PRINTER_DEFAULTSW {
 	ACCESS_MASK DesiredAccess;
 } PRINTER_DEFAULTSW, * PPRINTER_DEFAULTSW, * LPPRINTER_DEFAULTSW;
 
-BOOL Gdi_OpenPrinter2W(void* pPrinterName, HANDLE* phPrinter, void* pDefault, void* pOptions);
+BOOL Gdi_OpenPrinter2W(LPWSTR pPrinterName, HANDLE* phPrinter, void* pDefault, void* pOptions);
 
 BOOL WINAPI Gdi_OpenPrinterW(
 	_In_opt_    LPWSTR             pPrinterName,

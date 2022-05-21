@@ -1,4 +1,4 @@
-
+﻿
 #include <windows.h>
 #include <map>
 #include "functions.h"
@@ -9,9 +9,6 @@
 #include "hookapi.h"
 
 DWORD g_tlsIdx = 0;
-
-
-
 
 ShowWindowStub ShowWindowOld = 0;
 BOOL WINAPI ShowWindowNew(
@@ -207,9 +204,10 @@ HDC __stdcall GetWindowDCNew(HWND hwnd)
 
 
 
-
 ptrGetLogicalDrives GetLogicalDrivesOld = 0;
 int isVeracryptDisk(WCHAR* diskname) {
+
+	return FALSE;
 
 	int result = 0;
 	WCHAR devname[MAX_PATH];
@@ -326,39 +324,49 @@ BOOL __stdcall FindNextVolumeWNew(
 
 
 ptrGetLogicalDriveStringsW GetLogicalDriveStringsWOld = 0;
+
+//If the buffer is not large enough, the return value is greater than nBufferLength. It is the size of the buffer required to hold the drive strings.
 DWORD __stdcall GetLogicalDriveStringsWNew(
 	DWORD  nBufferLength,
-	LPWSTR lpBuffer
+	LPWSTR strBuffer
 ) {
-	DWORD len = GetLogicalDriveStringsWOld(nBufferLength, lpBuffer);
-	int itemsize =  4;
+	DWORD len = GetLogicalDriveStringsWOld(nBufferLength, strBuffer);
+	
 	DWORD offset = 0;
 
-	while(offset < len)
+	if (len > 0 && len < nBufferLength )
 	{
-		WCHAR path[16];
-		lstrcpyW(path, lpBuffer + offset);
-		path[2] = 0;
-		int isvera = isVeracryptDisk(path);
-		if (isvera)
+		WCHAR * lpBuffer = strBuffer;
+
+		while (offset < len)
 		{
-			wmemcpy(lpBuffer + offset, lpBuffer + offset + itemsize,len - offset - itemsize);
-			len -= itemsize;
-			continue;
+			int itemsize = lstrlenW(lpBuffer) + 1;
+
+			WCHAR path[64];
+			lstrcpyW(path, lpBuffer + offset);
+			path[2] = 0;
+			int isvera = isVeracryptDisk(path);
+			if (isvera)
+			{
+				wmemcpy(lpBuffer + offset, lpBuffer + offset + itemsize, len - offset - itemsize);
+				len -= itemsize;
+				continue;
+			}
+
+			int isusb = isUsbStorage(path);
+			if (isusb)
+			{
+				wmemcpy(lpBuffer + offset, lpBuffer + offset + itemsize, len - offset - itemsize);
+				len -= itemsize;
+				continue;
+			}
+
+			offset += itemsize;
 		}
 
-		int isusb = isUsbStorage(path);
-		if (isusb)
-		{
-			wmemcpy(lpBuffer + offset, lpBuffer + offset + itemsize,len - offset - itemsize);
-			len -= itemsize;
-			continue;
-		}
-
-		offset += itemsize;
+		lpBuffer[len] = 0;
 	}
-
-	lpBuffer[len] = 0;
+	
 	return len;
 }
 
@@ -393,18 +401,41 @@ P_OpenPrinter2W  __sys_OpenPrinter2W = NULL;
 P_OpenPrinterW __sys_OpenPrinterW = 0;
 P_OpenPrinter2A __sys_OpenPrinter2A = NULL;
 P_OpenPrinterA __sys_OpenPrinterA = 0;
-BOOL newMessageBoxA(HWND    hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT   uType) {
+
+
+
+BOOL newMessageBoxA(CHAR * printername) {
 
 	int result = 0;
+
+	PRINTER_PROHIBIT_PARAM param;
+	param.filename = 0;
+	param.printername = printername;
+	alarmWarning(PRINTER_WARNING, &param);
 
 	if (g_msgboxPrompt == 0)
 	{
 		g_msgboxPrompt = TRUE;
-		result = MessageBoxA(hWnd, lpText, lpCaption, uType);
+
+		result = MessageBoxW(0, L"未授权使用打印机", L"未授权使用打印机", MB_OK);
 	}
 	
 	return result;
 }
+
+
+BOOL newMessageBoxW(WCHAR* wstrprintername) {
+
+	int result = 0;
+
+	CHAR printername[256];
+
+	WideCharToMultiByte(CP_ACP, 0, wstrprintername, -1, printername, sizeof(printername),0,0);
+
+	result = newMessageBoxA(printername);
+	return result;
+}
+
 BOOL WINAPI OpenPrinterANew(
 	_In_opt_    LPSTR             pPrinterName,
 	_Out_       LPHANDLE            phPrinter,
@@ -420,7 +451,7 @@ BOOL WINAPI OpenPrinterANew(
 			result = IsBadWritePtr((LPVOID)phPrinter, sizeof(HANDLE));
 			if (result == 0)
 			{
-				newMessageBoxA(0, "without permission to print document", "unauthorized printer", MB_OK);
+				newMessageBoxA(pPrinterName);
 				*phPrinter = 0;
 				return FALSE;
 			}
@@ -435,6 +466,7 @@ BOOL WINAPI OpenPrinter2ANew(
 	_In_opt_    LPPRINTER_DEFAULTSA pDefault, _In_opt_ PPRINTER_OPTIONSA       pOptions) {
 
 	OutputDebugStringW(L"OpenPrinter2A enter\r\n");
+
 	int result = SbieApi_QueryPrinter();
 	if (result == BASIC_DISABLE_STATE)
 	{
@@ -443,7 +475,7 @@ BOOL WINAPI OpenPrinter2ANew(
 			result = IsBadWritePtr((LPVOID)phPrinter, sizeof(HANDLE));
 			if (result == 0)
 			{
-				newMessageBoxA(0, "without permission to print document", "unauthorized printer", MB_OK);
+				newMessageBoxA((LPSTR)pPrinterName);
 				*phPrinter = 0;
 				return FALSE;
 			}
@@ -458,6 +490,7 @@ BOOL WINAPI OpenPrinterWNew(
 	_In_opt_    LPPRINTER_DEFAULTSW pDefault) {
 
 	OutputDebugStringW(L"OpenPrinterW enter\r\n");
+
 	int result = SbieApi_QueryPrinter();
 	if (result == BASIC_DISABLE_STATE)
 	{
@@ -466,7 +499,7 @@ BOOL WINAPI OpenPrinterWNew(
 			result = IsBadWritePtr((LPVOID)phPrinter, sizeof(HANDLE));
 			if (result == 0)
 			{
-				newMessageBoxA(0, "without permission to print document", "unauthorized printer", MB_OK);
+				newMessageBoxW(pPrinterName);
 				*phPrinter = 0;
 				return FALSE;
 			}
@@ -475,8 +508,9 @@ BOOL WINAPI OpenPrinterWNew(
 
 	return __sys_OpenPrinterW(pPrinterName, phPrinter, pDefault);
 }
-BOOL OpenPrinter2WNew(void* pPrinterName, HANDLE* phPrinter, void* pDefault, void* pOptions) {
+BOOL WINAPI OpenPrinter2WNew(WCHAR* pPrinterName, HANDLE* phPrinter, void* pDefault, void* pOptions) {
 	OutputDebugStringW(L"OpenPrinter2W enter\r\n");
+
 	int result = SbieApi_QueryPrinter();
 	if (result == BASIC_DISABLE_STATE)
 	{
@@ -485,7 +519,7 @@ BOOL OpenPrinter2WNew(void* pPrinterName, HANDLE* phPrinter, void* pDefault, voi
 			result = IsBadWritePtr((LPVOID)phPrinter, sizeof(HANDLE));
 			if (result == 0)
 			{
-				newMessageBoxA(0, "without permission to print document", "unauthorized printer", MB_OK);
+				newMessageBoxW(pPrinterName);
 				*phPrinter = 0;
 				return FALSE;
 			}
@@ -504,7 +538,50 @@ HMODULE __stdcall lpLoadLibraryWNew(LPWSTR lpLibFileName) {
 
 	if (hmodule)
 	{
-		if (lstrcmpiW(lpLibFileName, L"winspool.drv") == 0)
+		if (lpLibFileName)
+		{
+			int bret = IsBadReadPtr(lpLibFileName, sizeof(void*));
+			if (bret == 0)
+			{
+				if (lstrcmpiW(lpLibFileName, L"winspool.drv") == 0)
+				{
+					result += hook(L"winspool.drv", L"OpenPrinterA", (LPBYTE)OpenPrinterANew, (FARPROC*)&__sys_OpenPrinterA);
+					result += hook(L"winspool.drv", L"OpenPrinterW", (LPBYTE)OpenPrinterWNew, (FARPROC*)&__sys_OpenPrinterW);
+					result += hook(L"winspool.drv", L"OpenPrinter2W", (LPBYTE)OpenPrinter2WNew, (FARPROC*)&__sys_OpenPrinter2W);
+
+					log(L"winspool.drv loading and hook result:%d", result);
+				}
+			}
+		}
+	}
+
+	return hmodule;
+}
+
+
+int g_entry_lock = 0;
+
+ptrLdrLoadDll lpLdrLoadDllOld;
+
+
+NTSTATUS __stdcall lpLdrLoadDllNew(WCHAR* PathString, ULONG* Flags, UNICODE_STRING* ModuleName, HANDLE* ModuleHandle) {
+
+	log(L"LdrLoadDll PathString:%ws ModuleName:%ws", PathString, ModuleName);
+
+	int result = lpLdrLoadDllOld(PathString,Flags,ModuleName,ModuleHandle);
+
+	if (g_entry_lock == TRUE)
+	{
+		return result;
+	}
+
+	g_entry_lock = TRUE;
+
+	if (result == STATUS_SUCCESS )
+	{
+		const WCHAR* libname = L"winspool.drv";
+		int libnamelen = lstrlenW(libname);
+		if (ModuleName->Length = libnamelen && wmemcmp(ModuleName->Buffer, libname, libnamelen) == 0)
 		{
 			result += hook(L"winspool.drv", L"OpenPrinterA", (LPBYTE)OpenPrinterANew, (FARPROC*)&__sys_OpenPrinterA);
 			result += hook(L"winspool.drv", L"OpenPrinterW", (LPBYTE)OpenPrinterWNew, (FARPROC*)&__sys_OpenPrinterW);
@@ -514,7 +591,8 @@ HMODULE __stdcall lpLoadLibraryWNew(LPWSTR lpLibFileName) {
 		}
 	}
 
-	return hmodule;
+	g_entry_lock = FALSE;
+
+	return result;
+
 }
-
-

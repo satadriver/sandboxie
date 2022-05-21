@@ -264,6 +264,8 @@ int setJsonConfig(const WCHAR *filename,char * utf8data,int utf8size){
 
 extern "C" __declspec(dllexport) int configBox(const WCHAR* wstrusername, const WCHAR* wstrpassword, WCHAR * verapath,WCHAR * strverasize) {
 	int result = 0;
+	mylog(L"username:%ws,password:%ws", wstrusername, wstrpassword);
+
 	if (wstrusername == 0 || wstrpassword == 0)
 	{
 		return FALSE;
@@ -277,6 +279,8 @@ extern "C" __declspec(dllexport) int configBox(const WCHAR* wstrusername, const 
 		WideCharToMultiByte(CP_ACP, 0, wstrpassword, -1, (char*)szpassword, sizeof(szpassword), 0, 0);
 		getMD5(szpassword, md5);
 		MultiByteToWideChar(CP_ACP, 0, (char*)md5, -1, VERACRYPT_PASSWORD, sizeof(VERACRYPT_PASSWORD)/sizeof(WCHAR));
+
+		lstrcpyW(VERACRYPT_PASSWORD, L"VERACRYPTPASSWORD");
 	}
 
 	WCHAR curdir[MAX_PATH];
@@ -342,7 +346,10 @@ extern "C" __declspec(dllexport) int configBox(const WCHAR* wstrusername, const 
 		mylog("veracrypt size set to %d\r\n", DEFAULT_VERACRYPT_SIZE);
 		verasize = DEFAULT_VERACRYPT_SIZE;
 	}
+
+	mylog(L"initVeraDisk before");
 	result = initVeraDisk(verasize);
+	mylog(L"initVeraDisk end");
 
 	CHAR* utf8data = 0;
 	int utf8size = 0;
@@ -394,6 +401,8 @@ extern "C" __declspec(dllexport) int configBox(const WCHAR* wstrusername, const 
 
 	Json::Value data = root["data"];
 	int datacnt = data.size();
+
+	//Json::Value spaceinfo = data["spaceInfo"];
 
 
 	for (int i = 0;i < datacnt;i ++)

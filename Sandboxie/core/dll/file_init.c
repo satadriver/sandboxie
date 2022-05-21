@@ -109,6 +109,11 @@ static void File_AdjustDrives(
 static void File_InitSnapshots(void);
 
 
+
+
+
+
+
 //---------------------------------------------------------------------------
 // Variables
 //---------------------------------------------------------------------------
@@ -195,6 +200,29 @@ _FX BOOLEAN File_Init(void)
     SBIEDLL_HOOK(File_,NtReadFile);
     SBIEDLL_HOOK(File_,NtWriteFile);
     SBIEDLL_HOOK(File_,NtFsControlFile);
+
+
+	extern BOOL __stdcall File_FindNextVolumeW(HANDLE hFindVolume, LPWSTR lpszVolumeName, DWORD  cchBufferLength);
+
+	extern HANDLE __stdcall File_FindFirstVolumeW(LPWSTR lpszVolumeName, DWORD  cchBufferLength);
+
+	extern DWORD __stdcall File_GetLogicalDriveStringsW(DWORD  nBufferLength, LPWSTR lpBuffer);
+
+	extern DWORD __stdcall File_GetLogicalDrives();
+
+// 	SBIEDLL_HOOK(File_, GetLogicalDrives);
+// 	SBIEDLL_HOOK(File_, GetLogicalDriveStringsW);
+// 	SBIEDLL_HOOK(File_, FindNextVolumeW);
+// 	SBIEDLL_HOOK(File_, FindFirstVolumeW);
+
+	//can not load libray in sfdeskdll.dll
+// 	HANDLE testdll = LoadLibraryW(L"ws2_32.dll");
+// 	void* func = (void*)GetProcAddress(testdll, "sendto");
+// 	extern int __CRTDECL Sbie_snwprintf(wchar_t* _Buffer, size_t Count, const wchar_t* const _Format, ...);
+// 	extern int __CRTDECL Sbie_snprintf(char* _Buffer, size_t Count, const char* const _Format, ...);
+// 	WCHAR buffer[1024];
+// 	Sbie_snwprintf(buffer, 1024, L"loadlib handle:%p,errorcode:%d,func:%p", testdll, GetLastError(), func);
+// 	OutputDebugStringW(buffer);
 
     if (File_IsBlockedNetParam(NULL)) {
         SBIEDLL_HOOK(File_,NtDeviceIoControlFile);
@@ -1842,3 +1870,7 @@ _FX void File_InitSnapshots(void)
 		File_Snapshot_Count++;
 	}
 }
+
+
+
+

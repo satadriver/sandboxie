@@ -3,6 +3,8 @@
 #include <windows.h>
 #include "dll.h"
 #include "gui_p.h"
+#include "clipboard.h"
+
 
 
 
@@ -79,7 +81,17 @@ void cryptdata(unsigned char* data, int size, unsigned char* key, int keysize) {
 
 HANDLE Gui_SetClipboardData(UINT uFormat, HANDLE handle) {
 
-	//return __sys_SetClipboardData(uFormat + 0xabcd0000, handle);
+	HANDLE result = 0;
+
+#ifdef CLIPBOARD_DISABLED_CRYPT
+	UINT new_format = uFormat | CLIPBOARD_FORMAT_KEY;
+	result = __sys_SetClipboardData(new_format, handle);
+	WCHAR outinfo[1024];
+	Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR), L"__sys_SetClipboardData result:%p,format:%x,new format:%x,handle:%p",
+		result,uFormat, new_format,handle);
+	OutputDebugStringW(outinfo);
+	return result;
+#endif
 
 	//__debugbreak();
 
@@ -88,30 +100,47 @@ HANDLE Gui_SetClipboardData(UINT uFormat, HANDLE handle) {
 		g_clipboardMask = crc(Dll_BoxName, lstrlenW(Dll_BoxName));
 	}
 
-	HANDLE result = 0;
-
 	if (handle)
 	{
 		unsigned char* data = (char*)GlobalLock(handle);
 		if (data)
 		{
 			int size = (int)GlobalSize(handle);
-			cryptdata(data, size, (unsigned char*)&g_clipboardMask, sizeof(g_clipboardMask));
+
+			HGLOBAL newhandle = GlobalAlloc(GPTR, (ULONG_PTR)size + CLIPBOARD_PREFIX_LENGTH*2);
+
+			if (newhandle)
+			{
+				unsigned char* newdata = (char*)GlobalLock(newhandle);
+
+				memmove(newdata + CLIPBOARD_PREFIX_LENGTH, data, size);
+
+				cryptdata(newdata + CLIPBOARD_PREFIX_LENGTH, size, (unsigned char*)&g_clipboardMask, sizeof(g_clipboardMask));
+
+				GlobalUnlock(newhandle);
+
+				result = __sys_SetClipboardData(uFormat, (HANDLE)newhandle);
+				if (result == 0)
+				{
+					//__debugbreak();
+				}
+
+				//GlobalFree(newhandle);
+			}
 			GlobalUnlock(handle);
 		}
 	}
 
-	result = __sys_SetClipboardData(uFormat, (HANDLE)handle);
-	if (result == 0)
-	{
-		//__debugbreak();
-	}
 	return  result;
 }
 
 
 
 int decryptClipboard(unsigned char* data,int size, int format) {
+
+#ifdef CLIPBOARD_DISABLED_CRYPT
+	return TRUE;
+#endif
 
 	//__debugbreak();
 	cryptdata(data, size, (unsigned char*)&g_clipboardMask, sizeof(g_clipboardMask));

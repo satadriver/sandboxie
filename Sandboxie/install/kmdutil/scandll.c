@@ -33,7 +33,7 @@ typedef struct _PGM {
 
     ULONG process_id;
     ULONG session_id;
-    WCHAR image[128];
+    WCHAR image[256];
     BOOLEAN skip;
 
 } PGM;
@@ -106,6 +106,8 @@ _FX void Kmd_ScanDll(BOOLEAN silent)
     pids = HeapAlloc(GetProcessHeap(), HEAP_GENERATE_EXCEPTIONS, 262144);
     pgms = HeapAlloc(GetProcessHeap(), HEAP_GENERATE_EXCEPTIONS, 1048576);
 
+	int cnt = 0;
+
     while (exitcode == -1) {
 
         memzero(pids, 262144);
@@ -119,10 +121,17 @@ _FX void Kmd_ScanDll(BOOLEAN silent)
         pids[len] = -1;
         Kmd_ScanDll_2(pids, pgms);
 
-        if (pgms[0].process_id)
-            exitcode = Kmd_DoWindow((WCHAR *)pids, pgms, silent);
-        else
-            exitcode = 0;
+		if (pgms[0].process_id) {
+			exitcode = Kmd_DoWindow((WCHAR*)pids, pgms, silent);
+			cnt++;
+			if (cnt > 3)
+			{
+				//break;
+			}
+		}
+		else {
+			exitcode = 0;
+		}
     }
 
     HeapFree(GetProcessHeap(), 0, pgms);
@@ -143,11 +152,11 @@ _FX void Kmd_ScanDll_2(ULONG *pids, PGM *pgms)
     ULONG CurrentProcessId;
     HMODULE *mods;
     ULONG len;
-    WCHAR name[64];
+    WCHAR name[128];
 
     z = 0;
     CurrentProcessId = GetCurrentProcessId();
-    mods = HeapAlloc(GetProcessHeap(), HEAP_GENERATE_EXCEPTIONS, 262144);
+    mods = HeapAlloc(GetProcessHeap(), HEAP_GENERATE_EXCEPTIONS, 262144);	//262144 = 0x40000
 
     for (i = 0; pids[i] != -1; ++i) {
 
@@ -184,7 +193,7 @@ _FX void Kmd_ScanDll_2(ULONG *pids, PGM *pgms)
             len /= sizeof(HMODULE);
             for (j = 0; j < len; ++j) {
 
-                if (GetModuleBaseName(hProcess, mods[j], name, 60)) {
+                if (GetModuleBaseNameW(hProcess, mods[j], name, sizeof(name)/sizeof(WCHAR) - 4)) {
 
                     if (_wcsicmp(name, SBIEDLL L".dll") == 0 || _wcsicmp(name, CYGUARDDLL L".dll") == 0) {
 
@@ -194,8 +203,8 @@ _FX void Kmd_ScanDll_2(ULONG *pids, PGM *pgms)
                                 pgms[z].process_id, &pgms[z].session_id))
                             pgms[z].session_id = 0;
 
-                        if (! GetModuleBaseName(
-                                hProcess, mods[0], pgms[z].image, 124)) {
+                        if (! GetModuleBaseNameW(
+                                hProcess, mods[0], pgms[z].image, sizeof(pgms[z].image)/sizeof(WCHAR) - 4)) {
                             pgms[z].image[0] = L'?';
                             pgms[z].image[1] = L'\0';
                         }

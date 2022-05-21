@@ -1,4 +1,4 @@
-ï»¿#include "kernelstruct.h"
+#include "kernelstruct.h"
 #include "apcinject.h"
 #include "memory.h"
 #include "path.h"
@@ -31,10 +31,13 @@ PWCHAR WhiteApcProcessSystem[] =
 
 PWCHAR WhiteApcProcessSelf[] =
 {
+	L"ToDesk.exe",
+	L"ToDesk_Service.exe",
+
 	L"SafeDesktopInstall64.exe",
 	L"Start.exe",
 	L"desktop.exe",
-	L"sfDeskExplorer.exe",
+	//L"sfDeskExplorer.exe",
 	L"SafeDesktop.exe",
 	L"qsdpclient.exe",
 	L"sdptunnel.exe",
@@ -217,10 +220,10 @@ NTSTATUS GetNativeInjectCode(
 		ulAddMin = min((ULONG_PTR)NativeInjectApcEnd, (ULONG_PTR)NativeInjectApcDll);
 		functionSize = (SIZE_T)(ulAddMax - ulAddMin);
 
-		///> åŠ å…¥åˆå§‹ä»£ç éƒ¨åˆ†å¤§å°
+		///> ¼ÓÈë³õÊ¼´úÂë²¿·Ö´óĞ¡
 		sizeAlloc += (functionSize + ADDRESS_INTERVALSIZE);
 
-		///> åŠ å…¥å‚æ•°éƒ¨åˆ†å¤§å°ï¼ŒåŒ…æ‹¬KINJECTç»“æ„ä½“å’Œé¢å¤–æ•°æ®é•¿åº¦
+		///> ¼ÓÈë²ÎÊı²¿·Ö´óĞ¡£¬°üÀ¨KINJECT½á¹¹ÌåºÍ¶îÍâÊı¾İ³¤¶È
 		sizeAlloc += (sizeof(KINJECT) + uExtBufSize + ADDRESS_INTERVALSIZE);
 		sizeAlloc = MEMPAGE_ALIGNMENT(sizeAlloc);
 
@@ -254,7 +257,7 @@ NTSTATUS GetNativeInjectCode(
 
 		if (pExtBuffer && uExtBufSize > 0)
 		{
-			///> é™„åŠ æ•°æ®å†™å…¥
+			///> ¸½¼ÓÊı¾İĞ´Èë
 			RtlCopyMemory(
 				pArgBase->InjectInfo.extData,
 				pExtBuffer,
@@ -313,13 +316,13 @@ NTSTATUS GetWow64InjectCode(
 		0x8b, 0xec,             ///> mov     ebp, esp
 		0x83, 0xec, 0x10,       ///> sub     esp, 10h
 		0xc7, 0x45, 0xf4,       ///> mov     dword ptr[ebp - 0Ch], 0
-		0x00, 0x00, 0x00, 0x00, ///> æ¥ä¸Šä¸€è¡Œ
+		0x00, 0x00, 0x00, 0x00, ///> ½ÓÉÏÒ»ĞĞ
 		0x8b, 0x45, 0x08,       ///> mov     eax, dword ptr[ebp + 8]
 		0x89, 0x45, 0xfc,       ///> mov     dword ptr[ebp - 4], eax
 		0xc7, 0x45, 0xf8,       ///> mov     dword ptr[ebp - 8], 0C0000001h
-		0x01, 0x00, 0x00, 0xc0, ///> æ¥ä¸Šä¸€è¡Œ
+		0x01, 0x00, 0x00, 0xc0, ///> ½ÓÉÏÒ»ĞĞ
 		0xc7, 0x45, 0xf0,       ///> mov     dword ptr[ebp - 10h], 0
-		0x00, 0x00, 0x00, 0x00, ///> æ¥ä¸Šä¸€è¡Œ
+		0x00, 0x00, 0x00, 0x00, ///> ½ÓÉÏÒ»ĞĞ
 		0x83, 0x7d, 0xfc, 0x00, ///> cmp     dword ptr[ebp - 4], 0
 		0x74, 0x14,             ///> je      NativeInjectApcDll + 0x3b
 		0x8b, 0x4d, 0xfc,       ///> mov     ecx, dword ptr[ebp - 4]
@@ -391,10 +394,10 @@ NTSTATUS GetWow64InjectCode(
 
 		functionSize = sizeof(ShellCode);
 
-		///> åŠ å…¥åˆå§‹ä»£ç éƒ¨åˆ†å¤§å°
+		///> ¼ÓÈë³õÊ¼´úÂë²¿·Ö´óĞ¡
 		sizeAlloc += (functionSize + ADDRESS_INTERVALSIZE);
 
-		///> åŠ å…¥å‚æ•°éƒ¨åˆ†å¤§å°ï¼ŒåŒ…æ‹¬KINJECTç»“æ„ä½“å’Œé¢å¤–æ•°æ®é•¿åº¦
+		///> ¼ÓÈë²ÎÊı²¿·Ö´óĞ¡£¬°üÀ¨KINJECT½á¹¹ÌåºÍ¶îÍâÊı¾İ³¤¶È
 		sizeAlloc += (sizeof(KINJECT32) + uExtBufSize + ADDRESS_INTERVALSIZE);
 		sizeAlloc = MEMPAGE_ALIGNMENT(sizeAlloc);
 
@@ -424,7 +427,7 @@ NTSTATUS GetWow64InjectCode(
 
 		if (pExtBuffer && uExtBufSize > 0)
 		{
-			///> é™„åŠ æ•°æ®å†™å…¥
+			///> ¸½¼ÓÊı¾İĞ´Èë
 			RtlCopyMemory(
 				pArgBase->InjectInfo.extData,
 				pExtBuffer,
@@ -437,7 +440,7 @@ NTSTATUS GetWow64InjectCode(
 		usSizeWrite = pusPath->Length;
 		if (usSizeWrite >= MAX_PATH * sizeof(WCHAR))
 		{
-			///> é¿å…è¶Šç•Œ
+			///> ±ÜÃâÔ½½ç
 			usSizeWrite = (MAX_PATH - 1) * sizeof(WCHAR);
 		}
 
@@ -508,7 +511,7 @@ BOOLEAN GetInjectApcThread(
 		);
 		if (STATUS_INFO_LENGTH_MISMATCH == status)
 		{
-			///> ç¼“å†²åŒºå¤ªå°ï¼Œå¤§å°ç¿»å€
+			///> »º³åÇøÌ«Ğ¡£¬´óĞ¡·­±¶
 			ulSize = ulSize * SIZE_DOUBLE;
 			MemFree(pBuffer);
 			pBuffer = MemAllocNonPagePoolWithTag(
@@ -559,7 +562,7 @@ BOOLEAN GetInjectApcThread(
 			break;
 		}
 
-		///> å ä½ç¬¦è½¬æ¢çœŸæ­£çš„æ•°ç»„èµ·å§‹åœ°å€
+		///> Õ¼Î»·û×ª»»ÕæÕıµÄÊı×éÆğÊ¼µØÖ·
 		pThreadsAddr = (/*PSYSTEM_THREAD_INFORMATION*/SYSTEM_THREAD_INFORMATION*)(&pInfo->Threads);
 		for (uIndex = 0; uIndex < pInfo->/*NumberOfThreads*/ThreadCount; uIndex++)
 		{
@@ -743,23 +746,23 @@ VOID ApcInject_LoadImageNotify(
 
 	do
 	{
-		// è·å–è¿›ç¨‹ pid
+		// »ñÈ¡½ø³Ì pid
 		pid = HandleToULong(ProcessId);
 
-		// ä¸å¤„ç†ç³»ç»Ÿè¿›ç¨‹
+		// ²»´¦ÀíÏµÍ³½ø³Ì
 		if (pid <= MIN_USER_PROCESSID)
 		{
 			break;
 		}
 
-		// è·å–è¿›ç¨‹ EPROCESS 
+		// »ñÈ¡½ø³Ì EPROCESS 
 		status = PsLookupProcessByProcessId(ProcessId, &pEProcess);
 		if (!NT_SUCCESS(status))
 		{
 			break;
 		}
 
-		// åˆ¤è¯»æ˜¯å¦ä¸º WOW64 è¿›ç¨‹ï¼Œå†³å®šé€‰æ‹©å“ªä¸ªè·¯å¾„ä¸‹çš„ ntdll
+		// ÅĞ¶ÁÊÇ·ñÎª WOW64 ½ø³Ì£¬¾ö¶¨Ñ¡ÔñÄÄ¸öÂ·¾¶ÏÂµÄ ntdll
 #ifdef _WIN64
 		if (NULL != PsGetProcessWow64Process(pEProcess))
 		{
@@ -777,7 +780,7 @@ VOID ApcInject_LoadImageNotify(
 		}
 #endif
 
-		// åˆ¤æ–­åŠ è½½çš„æ¨¡å—æ˜¯å¦ä¸º ntdll
+		// ÅĞ¶Ï¼ÓÔØµÄÄ£¿éÊÇ·ñÎª ntdll
 		ulNtdllSize = (ULONG)wcslen(lpNtdllName) * sizeof(WCHAR);
 		if (FullImageName->Length < ulNtdllSize)
 		{
@@ -794,11 +797,11 @@ VOID ApcInject_LoadImageNotify(
 			break;
 		}
 
-		// é™„åŠ åˆ°è¿›ç¨‹
+		// ¸½¼Óµ½½ø³Ì
 		KeStackAttachProcess(pEProcess, &ApcState);
 		bAttach = TRUE;
 
-		// è·å–è¿›ç¨‹ peb
+		// »ñÈ¡½ø³Ì peb
 		pPeb = (PPEB)PsGetProcessPeb(pEProcess);
 		if (!pPeb || !pPeb->ProcessParameters)
 		{
@@ -810,7 +813,7 @@ VOID ApcInject_LoadImageNotify(
 			break;
 		}
 
-		// ä¿å­˜å½“å‰è¿›ç¨‹åï¼Œç¡®ä¿ \ ä¸æ˜¯æœ€åä¸€ä¸ªå­—ç¬¦
+		// ±£´æµ±Ç°½ø³ÌÃû£¬È·±£ \ ²»ÊÇ×îºóÒ»¸ö×Ö·û
 		wcsncpy_s(
 			szImagePath,
 			MAX_PATH,
@@ -824,17 +827,17 @@ VOID ApcInject_LoadImageNotify(
 		}
 		wcscpy_s(szFileName, MAX_PATH, pLastBackslash + 1);
 
-		// åˆ¤æ–­è¿›ç¨‹æ˜¯å¦å±äºæ²™ç®±
+		// ÅĞ¶Ï½ø³ÌÊÇ·ñÊôÓÚÉ³Ïä
 		proc = Process_Find(NULL, NULL);
 		if (proc == PROCESS_TERMINATED)
 		{
 			break;
 		}
 
-		// æ²™ç®±å†…è¿›ç¨‹ç»Ÿä¸€æ³¨å…¥,æ²™ç®±å¤–è¿›ç¨‹æŒ‰è§„åˆ™æ³¨å…¥
+		// É³ÏäÄÚ½ø³ÌÍ³Ò»×¢Èë,É³ÏäÍâ½ø³Ì°´¹æÔò×¢Èë
 		if (proc == NULL)
 		{
-			// ä¸æ³¨å…¥ SessionId = 0 çš„è¿›ç¨‹
+			// ²»×¢Èë SessionId = 0 µÄ½ø³Ì
 			status = Process_GetSidStringAndSessionId(NtCurrentProcess(), NULL, &ProcSidString, &ProcSessionId);
 			if (!NT_SUCCESS(status))
 			{
@@ -845,7 +848,7 @@ VOID ApcInject_LoadImageNotify(
 				break;
 			}
 
-			// ä¸æ³¨å…¥ç³»ç»Ÿç™½åå•è¿›ç¨‹
+			// ²»×¢ÈëÏµÍ³°×Ãûµ¥½ø³Ì
 			for (INT i = 0; i < sizeof(WhiteApcProcessSystem) / sizeof(WhiteApcProcessSystem[0]); ++i)
 			{
 				if (wstristr(szImagePath, WhiteApcProcessSystem[i]) != 0)
@@ -859,7 +862,7 @@ VOID ApcInject_LoadImageNotify(
 				break;
 			}
 
-			// ä¸æ³¨å…¥è‡ªèº«ç™½åå•è¿›ç¨‹
+			// ²»×¢Èë×ÔÉí°×Ãûµ¥½ø³Ì
 			for (INT i = 0; i < sizeof(WhiteApcProcessSelf) / sizeof(WhiteApcProcessSelf[0]); ++i)
 			{
 				if (wstristr(szImagePath, WhiteApcProcessSelf[i]) != 0)
@@ -882,7 +885,7 @@ VOID ApcInject_LoadImageNotify(
 		}
 		else
 		{
-			// ä¸æ³¨å…¥è‡ªèº«ç™½åå•è¿›ç¨‹
+			// ²»×¢Èë×ÔÉí°×Ãûµ¥½ø³Ì
 			for (INT i = 0; i < sizeof(WhiteApcProcessSelf) / sizeof(WhiteApcProcessSelf[0]); ++i)
 			{
 				if (wstristr(szImagePath, WhiteApcProcessSelf[i]) != 0)
@@ -904,7 +907,7 @@ VOID ApcInject_LoadImageNotify(
 			);
 		}
 
-		// è·å– LdrLoadDllã€LdrGetProcedureAddress å‡½æ•°åœ°å€
+		// »ñÈ¡ LdrLoadDll¡¢LdrGetProcedureAddress º¯ÊıµØÖ·
 		pLdrLoadDllFunc = GetModuleExport(ImageInfo->ImageBase, "LdrLoadDll");
 		pLdrGetProcAddressFunc = GetModuleExport(
 			ImageInfo->ImageBase,
@@ -915,13 +918,13 @@ VOID ApcInject_LoadImageNotify(
 			break;
 		}
 
-		// è·å–ç”¨äºæ³¨å…¥ dll çš„ apc çº¿ç¨‹
+		// »ñÈ¡ÓÃÓÚ×¢Èë dll µÄ apc Ïß³Ì
 		if (!GetInjectApcThread(ProcessId, &pEThread))
 		{
 			break;
 		}
 
-		// è·å–æ³¨å…¥ dll çš„è·¯å¾„
+		// »ñÈ¡×¢Èë dll µÄÂ·¾¶
 #ifdef _WIN64
 		if (bIsWow64)
 		{
@@ -944,7 +947,7 @@ VOID ApcInject_LoadImageNotify(
 			break;
 		}
 
-		// è·å– apc æ³¨å…¥çš„ shellcoode
+		// »ñÈ¡ apc ×¢ÈëµÄ shellcoode
 		if (bIsWow64)
 		{
 			status = GetWow64InjectCode(
@@ -976,7 +979,7 @@ VOID ApcInject_LoadImageNotify(
 			break;
 		}
 
-		// æ·»åŠ  apc å¹¶æ‰§è¡Œ
+		// Ìí¼Ó apc ²¢Ö´ĞĞ
 		pApc = (PKAPC)MemAllocNonPagePoolWithTag(
 			sizeof(KAPC),
 			&gs_ApcHookPoolTag

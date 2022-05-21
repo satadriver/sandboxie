@@ -1125,6 +1125,20 @@ _FX NTSTATUS File_Generic_MyParseProc(
         return status;
     }
 
+
+	PEPROCESS ep = NULL;
+	if (STATUS_SUCCESS == PsLookupProcessByProcessId(PsGetCurrentProcessId(), &ep))
+	{
+		char* name = PsGetProcessImageFileName(ep);
+
+		if (strstr(name, "SafeDesktop") || strstr(name, "sfDeskExplorer"))
+		{
+			//DbgPrint("File_Generic_MyParseProc process:%s,file:%ws", name, Name->Name.Buffer);
+			return STATUS_SUCCESS;
+		}
+	}
+
+
     //
     // check if the specified path leads inside the box.  and if this
     // is an unsandboxed NamedPipe or MailSlot, we need to remember

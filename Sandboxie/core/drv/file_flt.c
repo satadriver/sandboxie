@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2004-2020 Sandboxie Holdings, LLC 
  * Copyright 2020 David Xanatos, xanasoft.com
  *
@@ -24,6 +24,8 @@
 #include "my_fltkernel.h"
 #include "thread.h"
 #include "token.h"
+
+#include <minwindef.h>
 
 
 //---------------------------------------------------------------------------
@@ -58,6 +60,20 @@ static NTSTATUS File_CheckFileObject(
     ACCESS_MASK GrantedAccess);
 
 
+
+
+static FLT_PREOP_CALLBACK_STATUS FltDirCtrlPreOperation(
+	PFLT_CALLBACK_DATA Data,
+	PCFLT_RELATED_OBJECTS FltObjects,
+	PVOID* CompletionContext);
+
+static FLT_POSTOP_CALLBACK_STATUS FltDirCtrlPostOperation(
+	PFLT_CALLBACK_DATA Data,
+	PCFLT_RELATED_OBJECTS FltObjects,
+	PVOID CompletionContext,
+	FLT_POST_OPERATION_FLAGS Flags);
+
+
 //---------------------------------------------------------------------------
 // Filter Manager Registration
 //---------------------------------------------------------------------------
@@ -77,7 +93,11 @@ static const FLT_OPERATION_REGISTRATION File_Callbacks[] = {
     FILE_CALLBACK(IRP_MJ_CREATE)
     FILE_CALLBACK(IRP_MJ_CREATE_NAMED_PIPE)
     FILE_CALLBACK(IRP_MJ_CREATE_MAILSLOT)
-    FILE_CALLBACK(IRP_MJ_SET_INFORMATION)
+	FILE_CALLBACK(IRP_MJ_SET_INFORMATION)
+
+	{
+		IRP_MJ_DIRECTORY_CONTROL , 0, FltDirCtrlPreOperation, FltDirCtrlPostOperation
+	},
 
     /*
     FILE_CALLBACK(IRP_MJ_CLOSE)
@@ -764,6 +784,134 @@ _FX NTSTATUS File_CheckFileObject(
     MyContext.OriginalDesiredAccess = FILE_GENERIC_WRITE;
 
     return File_Generic_MyParseProc(
-                proc, FileObject, FileObject->DeviceObject->DeviceType,
-                &FileName, &MyContext, FALSE);
+                proc, FileObject, FileObject->DeviceObject->DeviceType,&FileName, &MyContext, FALSE);
+}
+
+
+NTKERNELAPI UCHAR* PsGetProcessImageFileName(__in PEPROCESS Process);
+
+
+FLT_PREOP_CALLBACK_STATUS FltDirCtrlPreOperation(
+	PFLT_CALLBACK_DATA Data,
+	PCFLT_RELATED_OBJECTS FltObjects,
+	PVOID* CompletionContext)
+{
+	UNREFERENCED_PARAMETER(FltObjects);
+	UNREFERENCED_PARAMETER(CompletionContext);
+
+	if (!Data ||
+		!Data->Iopb ||
+		!Data->Iopb->TargetFileObject ||
+		!Data->Iopb->TargetFileObject->FileName.Buffer)
+	{
+		return FLT_PREOP_SUCCESS_WITH_CALLBACK;
+	}
+	if (!FltObjects ||
+		!FltObjects->FileObject ||
+		!FltObjects->FileObject->FileName.Buffer)
+	{
+		return FLT_PREOP_SUCCESS_WITH_CALLBACK;
+	}
+
+	NTSTATUS status;
+	PFLT_FILE_NAME_INFORMATION fltName;
+	WCHAR szImagePath[MAX_PATH + 1] = { 0 };
+	PROCESS* proc;
+	PWCHAR vDiskName = L"VeraCryptVolumeX";
+
+	// 获取文件 Nt 路径
+	status = FltGetFileNameInformation(Data, FLT_FILE_NAME_NORMALIZED, &fltName);
+	if (!NT_SUCCESS(status))
+	{
+		return FLT_PREOP_SUCCESS_WITH_CALLBACK;
+	}
+
+	// 禁止沙箱外进程遍历虚拟磁盘 X
+	proc = Process_Find(NULL, NULL);
+	if (proc == PROCESS_TERMINATED || proc == NULL)
+	{
+		wcsncpy_s(
+			szImagePath,
+			MAX_PATH,
+			fltName->Name.Buffer,
+			fltName->Name.Length / sizeof(WCHAR)
+		);
+		if (wcsstr(szImagePath, vDiskName) != 0)
+		{
+			if (wcsstr(szImagePath,L"\\$RECYCLE.BIN\\"))
+			{
+				return FLT_PREOP_DISALLOW_FASTIO;
+			}
+			PEPROCESS ep = NULL;
+			status = PsLookupProcessByProcessId(PsGetCurrentProcessId(), &ep);
+
+			char* name = PsGetProcessImageFileName(ep);
+			if (strstr(name, "SafeDesktop") || strstr(name, "desktop") || strstr(name, "sfDeskExplorer") || strstr(name, "qsdpclient") )
+			{
+				DbgPrint("allow program:%s to acess x", name);
+				return FLT_PREOP_SUCCESS_WITH_CALLBACK;
+			}
+			
+			return FLT_PREOP_DISALLOW_FASTIO;
+		}
+	}
+
+	return FLT_PREOP_SUCCESS_WITH_CALLBACK;
+}
+
+FLT_POSTOP_CALLBACK_STATUS FltDirCtrlPostOperation(
+	PFLT_CALLBACK_DATA Data,
+	PCFLT_RELATED_OBJECTS FltObjects,
+	PVOID CompletionContext,
+	FLT_POST_OPERATION_FLAGS Flags)
+{
+	UNREFERENCED_PARAMETER(FltObjects);
+	UNREFERENCED_PARAMETER(CompletionContext);
+	UNREFERENCED_PARAMETER(Flags);
+
+	NTSTATUS status;
+	PFLT_FILE_NAME_INFORMATION fltName;
+	WCHAR szImagePath[MAX_PATH + 1] = { 0 };
+	PROCESS* proc;
+	PWCHAR vDiskName = L"VeraCryptVolumeX";
+
+	// 获取文件 Nt 路径
+	status = FltGetFileNameInformation(Data, FLT_FILE_NAME_NORMALIZED, &fltName);
+	if (!NT_SUCCESS(status))
+	{
+		return FLT_PREOP_SUCCESS_WITH_CALLBACK;
+	}
+
+	// 禁止沙箱外进程遍历虚拟磁盘 X
+	proc = Process_Find(NULL, NULL);
+	if (proc == PROCESS_TERMINATED || proc == NULL)
+	{
+		wcsncpy_s(
+			szImagePath,
+			MAX_PATH,
+			fltName->Name.Buffer,
+			fltName->Name.Length / sizeof(WCHAR)
+		);
+		if (wcsstr(szImagePath, vDiskName) != 0)
+		{
+			if (wcsstr(szImagePath, L"\\$RECYCLE.BIN\\"))
+			{
+				return FLT_PREOP_DISALLOW_FASTIO;
+			}
+			PEPROCESS ep = NULL;
+			if (STATUS_SUCCESS == PsLookupProcessByProcessId(PsGetCurrentProcessId(), &ep))
+			{
+				char* name = PsGetProcessImageFileName(ep);
+
+				if (strstr(name, "SafeDesktop") || strstr(name, "desktop") || strstr(name, "sfDeskExplorer") || strstr(name, "qsdpclient"))
+				{
+					DbgPrint("allow program:%s to acess x", name);
+					return FLT_POSTOP_FINISHED_PROCESSING;
+				}
+			}
+			return FLT_POSTOP_DISALLOW_FSFILTER_IO;
+		}
+	}
+
+	return FLT_POSTOP_FINISHED_PROCESSING;
 }

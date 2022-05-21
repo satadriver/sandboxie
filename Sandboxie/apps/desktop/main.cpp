@@ -1,4 +1,4 @@
-ï»¿
+
 #pragma warning(disable:4005)//must be in the first line
 
 #include <windows.h>
@@ -62,6 +62,8 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	//getboxedFilePath(L"C:\\Users\\Admin\\go\\123.txt", L"Ljg_test", outpath);
 	//MessageBoxW(0, outpath, outpath, MB_OK);
 
+	OutputDebugStringW(L"desktop.exe starting!");
+
 	int argc = 0;
 	WCHAR ** argv = CommandLineToArgvW(GetCommandLineW(),&argc);
 	if (argc < 3)
@@ -96,9 +98,9 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	if (isVm) {
 		//SelfDelete();
-		//result = MessageBoxW(0,L"æ£€æµ‹åˆ°è™šæ‹ŸæœºçŽ¯å¢ƒ,ç‚¹å‡»\"å–æ¶ˆ\"é€€å‡ºç¨‹åº,ç‚¹å‡»\"ç¡®å®š\"ç»§ç»­", L"Detect runing in VM",MB_OKCANCEL);
-		result = MessageBoxW(0,L"æ£€æµ‹åˆ°è™šæ‹ŸæœºçŽ¯å¢ƒ,ç‚¹å‡»\"ç¡®å®š\"ç»§ç»­è¿è¡Œ,ç‚¹å‡»\"å–æ¶ˆ\"åœæ­¢è¿è¡Œ",L"VirtualMachie detected",
-			//"æ£€æµ‹åˆ°è™šæ‹ŸæœºçŽ¯å¢ƒ", 
+		//result = MessageBoxW(0,L"¼ì²âµ½ÐéÄâ»ú»·¾³,µã»÷\"È¡Ïû\"ÍË³ö³ÌÐò,µã»÷\"È·¶¨\"¼ÌÐø", L"Detect runing in VM",MB_OKCANCEL);
+		result = MessageBoxW(0,L"¼ì²âµ½ÐéÄâ»ú»·¾³,µã»÷\"È·¶¨\"¼ÌÐøÔËÐÐ,µã»÷\"È¡Ïû\"Í£Ö¹ÔËÐÐ",L"VirtualMachie detected",
+			//"¼ì²âµ½ÐéÄâ»ú»·¾³", 
 			MB_OKCANCEL);
 		if (result == IDCANCEL)
 		{
@@ -128,8 +130,8 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 //ctrl + /
 //ctrl + u
 
-// virtualkd æ— æ³•æ­£ç¡®è¿è¡Œéœ€è¦è¿è¡Œ:bcdedit /set dbgtransport kdvm.dll
-//vmware æ— æ³•å®‰è£…vmware toolï¼Œéœ€è¦å®‰è£…æ›´æ–°:2019-09 Security Update for Windows 7 for x64-based Systems (KB4474419)
+// virtualkd ÎÞ·¨ÕýÈ·ÔËÐÐÐèÒªÔËÐÐ:bcdedit /set dbgtransport kdvm.dll
+//vmware ÎÞ·¨°²×°vmware tool£¬ÐèÒª°²×°¸üÐÂ:2019-09 Security Update for Windows 7 for x64-based Systems (KB4474419)
 
 
 //Inf2Cat.exe /driver:"D:\work\Sandboxie2\Sandboxie\Bin\x64\sign\forsign" /os:7_X64,10_X64
@@ -155,26 +157,33 @@ bcdedit /set nointegritychecks on
 bcdedit /dbgsettings net hostip:192.168.101.115 port:50000 key:1.2.3.4
 */
 
+/*
+¹ÜÀíÔ±È¨ÏÞÏÂÖ´ÐÐ£º
+sc delete sfdeskdrv
+sc delete sfdesksvc
+sc delete inspect
+sc delete veracrypt
+ÖØÆô£¬²¢É¾³ý°²×°Ä¿Â¼ËùÓÐÎÄ¼þ
+*/
 
+//UAC´ò¿ª
+//µÇÂ¼µÄÊÇ³¬¼¶¹ÜÀíÔ±Administrator
+//ÌáÈ¨µÄÊ±ºò²»»áµ¯³öUACÌáÊ¾´°¿Ú¡£
 
-//UACæ‰“å¼€
-//ç™»å½•çš„æ˜¯è¶…çº§ç®¡ç†å‘˜Administrator
-//ææƒçš„æ—¶å€™ä¸ä¼šå¼¹å‡ºUACæç¤ºçª—å£ã€‚
+//µÇÂ¼µÄÊÇ¹ÜÀíÔ±£¨·Ç³¬¼¶¹ÜÀíÔ±Administrator£©
+// ÔÚÆô¶¯ÉèÖÃÁËrequireAdministratorÊôÐÔµÄ³ÌÐòÊ±£¬»áµ¯³öUACÌáÊ¾¿ò
 
-//ç™»å½•çš„æ˜¯ç®¡ç†å‘˜ï¼ˆéžè¶…çº§ç®¡ç†å‘˜Administratorï¼‰
-// åœ¨å¯åŠ¨è®¾ç½®äº†requireAdministratorå±žæ€§çš„ç¨‹åºæ—¶ï¼Œä¼šå¼¹å‡ºUACæç¤ºæ¡†
+//µÇÂ¼µÄÊÇ±ê×¼ÓÃ»§£¨·Ç¹ÜÀíÔ±£©
+//ÔÚÆô¶¯ÉèÖÃÁËrequireAdministratorÊôÐÔµÄ³ÌÐòÊ±£¬»áµ¯³öÊäÈë¹ÜÀíÔ±ÃÜÂëµÄUACÌáÊ¾¿ò
+// ÊäÈë¹ÜÀíÔ±ÃÜÂëºó£¬²ÅÄÜÕý³£µÄÆô¶¯³ÌÐò¡£
 
-//ç™»å½•çš„æ˜¯æ ‡å‡†ç”¨æˆ·ï¼ˆéžç®¡ç†å‘˜ï¼‰
-//åœ¨å¯åŠ¨è®¾ç½®äº†requireAdministratorå±žæ€§çš„ç¨‹åºæ—¶ï¼Œä¼šå¼¹å‡ºè¾“å…¥ç®¡ç†å‘˜å¯†ç çš„UACæç¤ºæ¡†
-// è¾“å…¥ç®¡ç†å‘˜å¯†ç åŽï¼Œæ‰èƒ½æ­£å¸¸çš„å¯åŠ¨ç¨‹åºã€‚
+//UAC¹Ø±Õ
+//µÇÂ¼µÄÊÇ³¬¼¶¹ÜÀíÔ±Administrator»òÕß¹ÜÀíÔ±£¨ÆÕÍ¨¹ÜÀíÔ±£©
+// ÔÚÆô¶¯ÉèÖÃÁËrequireAdministratorÊôÐÔµÄ³ÌÐò£¬»áÉêÇëµ½¹ÜÀíÔ±È¨ÏÞ£¬ÇÒ²»»áµ¯³öUACÌáÊ¾¿ò¡£
+//¶ÔÓÚÃ»ÓÐÉèÖÃrequireAdministratorÊôÐÔµÄ³ÌÐò£¬·¢ÏÖÒ²»áÒÔ¹ÜÀíÔ±È¨ÏÞÔËÐÐ¡£
 
-//UACå…³é—­
-//ç™»å½•çš„æ˜¯è¶…çº§ç®¡ç†å‘˜Administratoræˆ–è€…ç®¡ç†å‘˜ï¼ˆæ™®é€šç®¡ç†å‘˜ï¼‰
-// åœ¨å¯åŠ¨è®¾ç½®äº†requireAdministratorå±žæ€§çš„ç¨‹åºï¼Œä¼šç”³è¯·åˆ°ç®¡ç†å‘˜æƒé™ï¼Œä¸”ä¸ä¼šå¼¹å‡ºUACæç¤ºæ¡†ã€‚
-//å¯¹äºŽæ²¡æœ‰è®¾ç½®requireAdministratorå±žæ€§çš„ç¨‹åºï¼Œå‘çŽ°ä¹Ÿä¼šä»¥ç®¡ç†å‘˜æƒé™è¿è¡Œã€‚
-
-//ç™»å½•çš„æ˜¯æ ‡å‡†ç”¨æˆ·
-//ç¨‹åºæ˜¯ç”³è¯·ä¸åˆ°ç®¡ç†å‘˜æƒé™çš„ï¼Œç¨‹åºæ˜¯å¯ä»¥å¯åŠ¨çš„ï¼Œä½†æ˜¯æ‰€æœ‰æ‰§è¡Œéœ€è¦ç®¡ç†å‘˜æƒé™çš„æ“ä½œéƒ½ä¼šè¿”å›žå¤±è´¥ã€‚
+//µÇÂ¼µÄÊÇ±ê×¼ÓÃ»§
+//³ÌÐòÊÇÉêÇë²»µ½¹ÜÀíÔ±È¨ÏÞµÄ£¬³ÌÐòÊÇ¿ÉÒÔÆô¶¯µÄ£¬µ«ÊÇËùÓÐÖ´ÐÐÐèÒª¹ÜÀíÔ±È¨ÏÞµÄ²Ù×÷¶¼»á·µ»ØÊ§°Ü¡£
 
 //f the service type is either SERVICE_WIN32_OWN_PROCESS or SERVICE_WIN32_SHARE_PROCESS,
 //and the service is running in the context of the LocalSystem account,

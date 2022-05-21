@@ -42,6 +42,14 @@ extern "C" {
 
 #include "core/drv/api_flags.h"
 
+#define BASIC_ENABLE_STATE	1
+#define BASIC_DISABLE_STATE	2
+#define BASIC_DEFAULT_STATE	0
+
+#define WATERMARK_DEFAULT			0
+#define WATERMARK_FULLSCREEN_WATER	2
+#define WATERMARK_DARK_WATER		1
+
 
 //---------------------------------------------------------------------------
 // Sandboxie API Calls
@@ -399,6 +407,8 @@ BOOL SbieDll_RunStartExe(
     const WCHAR* cmd, 
     const wchar_t* boxname);
 
+void initOutsideBoxFileApis();
+
 SBIEAPI_EXPORT int SbieApi_CopyFile(const WCHAR* srcpath, const WCHAR* dstpath);
 
 SBIEAPI_EXPORT int SbieApi_DeleteFile(const WCHAR* srcpath);
@@ -407,11 +417,21 @@ SBIEAPI_EXPORT int SbieApi_DeleteFolder(const WCHAR* srcpath);
 
 SBIEAPI_EXPORT int SbieApi_DeleteSingleFile(const WCHAR* filename);
 
+SBIEAPI_EXPORT int Sbie_createSubPath(WCHAR* srcfilepath, WCHAR* appendpath);
+
+SBIEAPI_EXPORT int Sbie_writeAlert(const WCHAR* dstfn, char* data, int datasize);
+
+
 SBIEAPI_EXPORT int LjgApi_getPath(WCHAR* path);
 SBIEAPI_EXPORT int LjgApi_setPath(WCHAR* path);
 
 SBIEAPI_EXPORT LONG SbieApi_VERACYPT_CopyFile(const WCHAR* srcPath, const WCHAR* dstPath);
 SBIEAPI_EXPORT LONG SbieApi_VERACYPT_CopyFile(const WCHAR* srcpath, const WCHAR* dstpath);
+
+
+__declspec(dllexport)  DWORD SbieApi_SetPrinter(BOOLEAN enable);
+
+__declspec(dllexport)  DWORD SbieApi_QueryPrinter();
 
 #ifdef __cplusplus
 }

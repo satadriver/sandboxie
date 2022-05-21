@@ -28,6 +28,10 @@
 #include "common/my_version.h"
 #include "common/defines.h"
 #include "msgs/msgs.h"
+#include "mylog.h"
+#include "common.h"
+
+#include <string>
 
 #pragma warning(disable:4005)
 
@@ -100,38 +104,6 @@ WCHAR *Sandboxie_Start_Title = NULL;
 ULONG Token_Elevation_Type = 0;
 
 extern BOOL boxdlg_run_outside_sandbox;
-
-int __cdecl mylog(const WCHAR* format, ...) {
-	WCHAR szbuf[2048];
-
-	va_list   pArgList;
-
-	va_start(pArgList, format);
-
-	int nByteWrite = vswprintf_s(szbuf, format, pArgList);
-
-	va_end(pArgList);
-
-	OutputDebugStringW(szbuf);
-
-	return nByteWrite;
-}
-
-int __cdecl mylog(const CHAR* format, ...) {
-	CHAR szbuf[2048];
-
-	va_list   pArgList;
-
-	va_start(pArgList, format);
-
-	int nByteWrite = vsprintf_s(szbuf, format, pArgList);
-
-	va_end(pArgList);
-
-	OutputDebugStringA(szbuf);
-
-	return nByteWrite;
-}
 
 
 //---------------------------------------------------------------------------
@@ -999,8 +971,6 @@ int Terminate_All_Processes(BOOL all_boxes)
 
 int Program_Start(void)
 {
-	//MessageBox(0, L"Program_Start", 0, 0);
-
     BOOL ok;
     ULONG err;
     WCHAR *curdir;
@@ -1553,6 +1523,185 @@ void StartAllAutoRunEntries()
 // RestartInSandbox
 //---------------------------------------------------------------------------
 
+PWCHAR VideoSuffix[] = {
+	L".avi",
+	L".rmvb",
+	L".rm",
+	L".asf",
+	L".divx",
+	L".mpg",
+	L".mpeg",
+	L".mpe",
+	L".wmv",
+	L".mp4",
+	L".mkv",
+	L".vob",
+	L".mov",
+	L".ram",
+	L".swf",
+	L".flv"
+};
+PWCHAR PictureSuffix[] = {
+	L".bmp",
+	L".jpeg",
+	L".gif",
+	L".jpg",
+	L".png",
+	L".tif",
+	L".tga",
+	L".dds",
+	L".svg",
+	L".eps",
+	L".hdr",
+	L".raw",
+};
+typedef enum SuffixType {
+	NoType,
+	VideoType,
+	PictureType
+};
+VOID QueryFileDefaultOpenMode(WCHAR SuffixName[8])
+{
+	// 读注册表，获取默认应用的 Progid
+	WCHAR UserSid[MAX_PATH] = { 0 };
+	WCHAR RegPath[MAX_PATH] = { 0 };
+	HKEY hKey = NULL;
+	WCHAR keyValue[256];
+	DWORD keySzType;
+	DWORD keySize = MAX_PATH;
+	DWORD RegError = 0;
+	if (!GetSIDW(UserSid))
+	{
+		mylog(L"[LYSM][%S] GetSIDW failed \n",__FUNCTION__);
+		return;
+	}
+	wsprintf(
+		RegPath,
+		L"%s\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\%s\\UserChoice\\",
+		UserSid, SuffixName
+	);
+	RegError = RegOpenKeyEx(
+		HKEY_USERS,
+		RegPath,
+		0,
+		KEY_READ,
+		&hKey
+	);
+	if (RegError != ERROR_SUCCESS)
+	{
+		mylog(L"[LYSM][%S] RegOpenKeyEx failed:%d \n", __FUNCTION__,RegError);
+		return;
+	}
+	RegError = RegQueryValueEx(
+		hKey,
+		L"Progid",
+		0,
+		&keySzType,
+		(LPBYTE)&keyValue,
+		&keySize
+	);
+	RegCloseKey(hKey);
+	if (RegError != ERROR_SUCCESS)
+	{
+		mylog(L"[LYSM][%S] RegQueryValueEx failed:%d \n", __FUNCTION__,RegError);
+		return;
+	}
+
+	// 判断文件类型
+	UINT Type = NoType;
+	do
+	{
+		for (UINT i = 0; i < sizeof(VideoSuffix) / sizeof(VideoSuffix[0]); ++i)
+		{
+			if (wcsicmp(SuffixName, VideoSuffix[i]) == 0)
+			{
+				Type = VideoType;
+				break;
+			}
+		}
+		if (Type != NoType)
+		{
+			break;
+		}
+
+		for (UINT i = 0; i < sizeof(PictureSuffix) / sizeof(PictureSuffix[0]); ++i)
+		{
+			if (wcsicmp(SuffixName, PictureSuffix[i]) == 0)
+			{
+				Type = PictureType;
+				break;
+			}
+		}
+		if (Type != NoType)
+		{
+			break;
+		}
+
+	} while (0);
+	if (Type == VideoType)
+	{
+		mylog(L"[LYSM][%S] VideoType \n", __FUNCTION__);
+
+		PWCHAR VideosProgid = L"AppX6eg8h5sxqq90pv53845wmnbewywdqq5h";
+		PWCHAR PhotosProgid = L"AppXk0g4vb8gvt7b93tg50ybcy892pge6jmt";
+		PWCHAR MediaProgid = L"WMP11.AssocFile.MP4";
+		if (wcscmp(keyValue, VideosProgid) == 0 ||
+			wcscmp(keyValue, PhotosProgid) == 0 ||
+			wcscmp(keyValue, MediaProgid) == 0)
+		{
+			WCHAR NewChildCmdLine[MAX_PATH] = L"c:\\program files (x86)\\windows media player\\wmplayer.exe ";
+			wcscat(NewChildCmdLine, ChildCmdLine);
+			wcscpy(ChildCmdLine, NewChildCmdLine);
+
+			mylog(L"[LYSM][%S] New ChildCmdLine:%s \n", __FUNCTION__, ChildCmdLine);
+		}
+
+	}
+	else if (Type == PictureType)
+	{
+		mylog(L"[LYSM][%S] PictureType \n", __FUNCTION__);
+
+		PWCHAR PhotosProgid = L"AppX43hnxtbyyps62jhe9sqpdzxn1790zetc";
+		PWCHAR MspaintProgid = L"PBrush";
+		PWCHAR PaintStudioProgid = L"AppXcdh38jxzbcberv50vxg2tg4k84kfnewn";
+		PWCHAR ScreenSketchProgid = L"AppX2jm25qtmp2qxstv333wv5mne3k5bf4bm";
+		if (wcscmp(keyValue, PhotosProgid) == 0 ||
+			wcscmp(keyValue, MspaintProgid) == 0 ||
+			wcscmp(keyValue, PaintStudioProgid) == 0 ||
+			wcscmp(keyValue, ScreenSketchProgid) == 0)
+		{
+			WCHAR NewChildCmdLine[MAX_PATH] = L"C:\\Windows\\system32\\mspaint.exe ";
+			wcscat(NewChildCmdLine, ChildCmdLine);
+			wcscpy(ChildCmdLine, NewChildCmdLine);
+
+			mylog(L"[LYSM][%S] New ChildCmdLine:%s \n", __FUNCTION__,ChildCmdLine);
+		}
+	}
+	else
+	{
+		// todo
+	}
+}
+
+VOID ModifyCmdLinePassUwpApp()
+{
+	// 解析文件后缀名
+	std::wstring CmdLine = ChildCmdLine;
+	INT PointSub = CmdLine.rfind(L".");
+	if (!PointSub)
+	{
+		return;
+	}
+	UINT SuffixLen = CmdLine.length() - PointSub;
+	UINT MaxSuffixLen = 10;
+	if (SuffixLen > MaxSuffixLen)
+	{
+		return;
+	}
+
+	// 检索默认应用，并 Bypass UWP
+	(VOID)QueryFileDefaultOpenMode((PWCHAR)CmdLine.substr(PointSub, SuffixLen - 1).c_str());
+}
 
 ULONG RestartInSandbox(void)
 {
@@ -1605,18 +1754,16 @@ ULONG RestartInSandbox(void)
         wcscpy(ptr, L"/wait ");
         ptr = cmd + wcslen(cmd);
     }
+
+	// 修改命令行，ByPass 沙箱内 UWP 默认应用
+	ModifyCmdLinePassUwpApp();
+
     wcscpy(ptr, ChildCmdLine);
-
     SbieApi_GetHomePath(NULL, 0, dir, 1020);
-
-    //
-    //
-    //
-
     ok = SbieDll_RunSandboxed(BoxName, cmd, dir, 0, &si, &pi);
     err = GetLastError();
 
-	mylog(L"RestartInSandbox SbieDll_RunSandboxed:%ws\r\n", cmd);
+	mylog(L"[LYSM]RestartInSandbox SbieDll_RunSandboxed:%ws\r\n", cmd);
 
     if (! ok) {
 
@@ -1665,7 +1812,6 @@ int __stdcall WinMainCRTStartup(
     HINSTANCE hPrevInstance,
     LPSTR lpCmdLine, int nCmdShow)
 {
-	//MessageBox(0, L"WinMainCRTStartup", 0, 0);
     int rc;
     USHORT KeyState;
     STARTUPINFO si;
@@ -1754,10 +1900,6 @@ int __stdcall WinMainCRTStartup(
 
         return die(RestartInSandbox());				// 注释后 SfDeskDll 不注入（原因：无法在沙箱内重启 Start.exe ）
     }
-
-    //
-    //
-    //
 
     while (1) {
 

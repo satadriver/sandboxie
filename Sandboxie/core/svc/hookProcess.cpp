@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include <windows.h>
 #include "hookProcess.h"
 
@@ -19,10 +19,8 @@
 
 
 
-
-
-int __cdecl mylog(const WCHAR* format, ...) {
-	WCHAR szbuf[0x1000];
+int __cdecl servicelog(const WCHAR* format, ...) {
+	WCHAR szbuf[2048];
 
 	va_list   pArgList;
 
@@ -36,6 +34,24 @@ int __cdecl mylog(const WCHAR* format, ...) {
 
 	return nByteWrite;
 }
+
+int __cdecl servicelog(const CHAR* format, ...) {
+	CHAR szbuf[2048];
+
+	va_list   pArgList;
+
+	va_start(pArgList, format);
+
+	int nByteWrite = vsprintf_s(szbuf, format, pArgList);
+
+	va_end(pArgList);
+
+	OutputDebugStringA(szbuf);
+
+	return nByteWrite;
+}
+
+
 
 
 DWORD isTargetProcess(const INJECT_PROCESS_INFO injectProcess[], WCHAR * fullpepath, int * seq) {
@@ -75,7 +91,7 @@ DWORD isPidWow64(DWORD pid) {
 }
 
 
-DWORD getpidsFromNames(const INJECT_PROCESS_INFO injectProcess[],DWORD pids[],WCHAR * processnames[],int *flags) {
+DWORD myGetpidsFromNames(const INJECT_PROCESS_INFO injectProcess[],DWORD pids[],WCHAR * processnames[],int *flags) {
 	int cnt = 0;
 
 	//__debugbreak();
@@ -102,7 +118,7 @@ DWORD getpidsFromNames(const INJECT_PROCESS_INFO injectProcess[],DWORD pids[],WC
 					flags[cnt] = injectProcess[i].flag;
 					cnt++;
 
-					mylog(L"find process to inject and hook:%ws pid:%d", procname, pids[cnt]);
+					servicelog(L"find process to inject and hook:%ws pid:%d", procname, pids[cnt]);
 					break;
 				}
 			}
@@ -113,7 +129,7 @@ DWORD getpidsFromNames(const INJECT_PROCESS_INFO injectProcess[],DWORD pids[],WC
 	return cnt;
 }
 
-BOOL getProcessTokenByPid(HANDLE& hToken,DWORD pid,DWORD isboxed) {
+BOOL myGetProcessTokenByPid(HANDLE& hToken,DWORD pid,DWORD isboxed) {
 	int bRet = 0;
 	HANDLE hProcess = 0;
 	if (isboxed)
@@ -121,7 +137,7 @@ BOOL getProcessTokenByPid(HANDLE& hToken,DWORD pid,DWORD isboxed) {
 		HANDLE hp = ULongToHandle(pid);
 		bRet = SbieApi_OpenProcess(&hProcess, hp);
 		if (hProcess == 0) {
-			mylog(L"SbieApi_OpenProcess %d error %d\r\n", pid, GetLastError());
+			servicelog(L"SbieApi_OpenProcess %d error %d\r\n", pid, GetLastError());
 			return FALSE;
 		}
 	}
@@ -219,7 +235,7 @@ BOOL getProcessTokenByName(HANDLE& hToken, WCHAR* processname,int injected)
 }
 
 
-BOOL createProcessWithToken(const HANDLE& hSrcToken,DWORD srcpid, WCHAR* strPath, WCHAR* lpCmdLine)
+BOOL myCreateProcessWithToken(const HANDLE& hSrcToken,DWORD srcpid, WCHAR* strPath, WCHAR* lpCmdLine)
 {
 	int result = 0;
 
@@ -227,7 +243,7 @@ BOOL createProcessWithToken(const HANDLE& hSrcToken,DWORD srcpid, WCHAR* strPath
 	result = DuplicateTokenEx(hSrcToken, MAXIMUM_ALLOWED, NULL, SecurityIdentification, TokenPrimary, &hTokenDup);
 	if (result == 0)
 	{
-		mylog(L"DuplicateTokenEx error code %d\r\n",GetLastError());
+		servicelog(L"DuplicateTokenEx error code %d\r\n",GetLastError());
 		return FALSE;
 	}
 
@@ -235,14 +251,14 @@ BOOL createProcessWithToken(const HANDLE& hSrcToken,DWORD srcpid, WCHAR* strPath
 	result = ProcessIdToSessionId(srcpid, &dwSessionId);
 	if (result == 0)
 	{
-		mylog(L"ProcessIdToSessionId error code %d\r\n", GetLastError());
+		servicelog(L"ProcessIdToSessionId error code %d\r\n", GetLastError());
 		CloseHandle(hTokenDup);
 		return FALSE;
 	}
 	result = SetTokenInformation(hTokenDup, TokenSessionId, &dwSessionId, sizeof(DWORD));
 	if (result == 0)
 	{
-		mylog(L"SetTokenInformation error code %d\r\n", GetLastError());
+		servicelog(L"SetTokenInformation error code %d\r\n", GetLastError());
 		CloseHandle(hTokenDup);
 		return FALSE;
 	}
@@ -252,7 +268,7 @@ BOOL createProcessWithToken(const HANDLE& hSrcToken,DWORD srcpid, WCHAR* strPath
 	if (result == 0)
 	{
 		CloseHandle(hTokenDup);
-		mylog(L"CreateEnvironmentBlock error code %d\r\n", GetLastError());
+		servicelog(L"CreateEnvironmentBlock error code %d\r\n", GetLastError());
 		return FALSE;
 	}
 
@@ -267,7 +283,7 @@ BOOL createProcessWithToken(const HANDLE& hSrcToken,DWORD srcpid, WCHAR* strPath
 	result = CreateProcessAsUserW(hTokenDup, strPath, lpCmdLine, NULL, NULL, FALSE, dwCreationFlags, pEnv, NULL, &si, &pi);
 	if (result == 0)
 	{
-		mylog(L"CreateProcessAsUserW error code %d\r\n", GetLastError());
+		servicelog(L"CreateProcessAsUserW error code %d\r\n", GetLastError());
 		CloseHandle(hTokenDup);
 		if (pEnv != NULL) {
 			DestroyEnvironmentBlock(pEnv);
@@ -276,7 +292,7 @@ BOOL createProcessWithToken(const HANDLE& hSrcToken,DWORD srcpid, WCHAR* strPath
 		return FALSE;
 	}
 	else {
-		mylog(L"CreateProcessAsUserW ok\r\n");
+		servicelog(L"CreateProcessAsUserW ok\r\n");
 	}
 
 	CloseHandle(pi.hProcess);
@@ -306,10 +322,10 @@ int __stdcall hookProcess(LPVOID params) {
 
 	if (msg == 0 || msg->process_id == 0)
 	{
-		cnt = getpidsFromNames(g_injectProcess, pids,processnames,flags);
+		cnt = myGetpidsFromNames(g_injectProcess, pids,processnames,flags);
 	}
 	else {
-		mylog( L"checking process to inject and hook:%ws,pid:%d,iswow:%d,bHostInject:%d,session_id:%d,reason:%d",
+		servicelog( L"checking process to inject and hook:%ws,pid:%d,iswow:%d,bHostInject:%d,session_id:%d,reason:%d",
 			msg->process_name, msg->process_id,msg->is_wow64,msg->bHostInject,msg->session_id,(DWORD)msg->reason);
 
 // 		WCHAR procboxname[64] = { 0 };
@@ -323,7 +339,6 @@ int __stdcall hookProcess(LPVOID params) {
 // 			return FALSE;
 // 		}
 		
-
 		if (msg->reason) {
 			pids[0] = msg->process_id;
 			processnames[0] = (WCHAR*)msg->process_name;
@@ -405,7 +420,7 @@ int __stdcall hookProcess(LPVOID params) {
 						result = getProcessTokenByName(token, SBIESVC_EXE, (DWORD)msg->reason);
 					}
 
-					mylog(L"pid:%d boxed:%d prime token null\r\n", pid, msg->reason);
+					servicelog(L"pid:%d boxed:%d prime token null\r\n", pid, msg->reason);
 					//result = getProcessTokenByPid(token, pid, (DWORD)msg->reason);
 				}
 				else {
@@ -413,19 +428,18 @@ int __stdcall hookProcess(LPVOID params) {
 				}
 			}
 			else {
-				result = getProcessTokenByPid(token, pid, (DWORD)msg->reason);
+				result = myGetProcessTokenByPid(token, pid, (DWORD)msg->reason);
 			}
 
 			if (result)
 			{
-				result = createProcessWithToken(token, pid, 0, szcmd);
-				mylog(L"inject process cmd:%ws,token:%u,pid:%u\r\n", szcmd, HandleToULong(token), pid);
+				result = myCreateProcessWithToken(token, pid, 0, szcmd);
+				servicelog(L"inject process cmd:%ws,token:%u,pid:%u\r\n", szcmd, HandleToULong(token), pid);
 			}
 			else {
-				mylog(L"getProcessTokenByPid pid:%u boxed:%d error\r\n", pid, msg->reason);
+				servicelog(L"getProcessTokenByPid pid:%u boxed:%d error\r\n", pid, msg->reason);
 			}
-		}
-		
+		}	
 	}
 
 	return result;
@@ -484,70 +498,10 @@ BOOL IsAdminPrivilege()
 }
 
 
-DWORD WINAPI ControlProThreads(DWORD ProcessId, BOOL Suspend)
-{
-	// 定义函数错误代码
-	DWORD LastError = NULL;
-
-	// 通过 CreateToolhelp32Snapshot 函数获取当前系统所有线程的快照
-	HANDLE ProcessHandle = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, ProcessId);
-	if (ProcessHandle == INVALID_HANDLE_VALUE)
-	{
-		// 函数调用失败，返回错误代码，方便打印出错误信息
-		LastError = GetLastError();
-		return LastError;
-	}
-
-	// 判断进程是否为当前进程，SkipMainThread 的作用是是否跳过主线程
-	INT SkipMainThread = 0;
-	HANDLE DupProcessHandle = NULL;
-	DuplicateHandle(GetCurrentProcess(), GetCurrentProcess(), GetCurrentProcess(), &DupProcessHandle, 0, FALSE, DUPLICATE_SAME_ACCESS);
-	DWORD IsThisProcess = GetProcessId(DupProcessHandle);
-
-	// 如果传入的进程 ID 不是当前进程，则将 SkipMainThread 变为 1，表示不跳过主线程
-	if (ProcessId != IsThisProcess)
-		SkipMainThread = 1;
-
-	THREADENTRY32 ThreadInfo = { sizeof(ThreadInfo) };
-	BOOL fOk = Thread32First(ProcessHandle, &ThreadInfo);
-
-	while (fOk)
-	{
-		// 将线程 ID 转换为线程句柄
-		HANDLE ThreadHandle = OpenThread(THREAD_SUSPEND_RESUME, FALSE, ThreadInfo.th32ThreadID);
-
-		// 是否为传入进程的子线程，且判断是挂起操作还是释放操作
-		if (ThreadInfo.th32OwnerProcessID == ProcessId && Suspend == TRUE)
-		{
-			// 如果是当前进程，就跳过主线程，SkipMainThread == 0 表示为主线程
-			if (SkipMainThread != 0)
-			{
-				// 挂起线程
-				DWORD count = SuspendThread(ThreadHandle);
-				//cout << "[*] 线程号: " << ThreadInfo.th32ThreadID << " 挂起系数 + 1 " << " 上一次挂起系数为: " << count << endl;
-			}
-			SkipMainThread++;
-		}
-		else if (ThreadInfo.th32OwnerProcessID == ProcessId && Suspend == FALSE)
-		{
-			if (SkipMainThread != 0)
-			{
-				// 释放线程
-				DWORD count = ResumeThread(ThreadHandle);
-				//cout << "[-] 线程号: " << ThreadInfo.th32ThreadID << " 挂起系数 - 1 " << " 上一次挂起系数为: " << count << endl;
-			}
-			SkipMainThread++;
-		}
-		fOk = Thread32Next(ProcessHandle, &ThreadInfo);
-	}
-
-	// 关闭句柄
-	CloseHandle(ProcessHandle);
-	return SkipMainThread;
-}
 
 
 #include "configStrategy.h"
+#include "apiFuns.h"
 
 
 //question:
@@ -602,7 +556,7 @@ void __stdcall configThread(LPVOID params) {
 #endif
 			}
 			else {
-				mylog(L"svc ReadFile config file %s error %d\r\n",curdir, GetLastError());
+				servicelog(L"svc ReadFile config file %s error %d\r\n",curdir, GetLastError());
 			}
 			delete [] data;
 			//DeleteFileW(JSON_CONFIG_FILENAME);
@@ -611,8 +565,18 @@ void __stdcall configThread(LPVOID params) {
 			//mylog(L"svc CreateFileW config file %s error %d\r\n", curdir, GetLastError());
 		}
 
-		Sleep(6000);
+		Sleep(10000);
 	}
 
 	return;
+}
+
+
+
+int killProcessCord(LPVOID params) {
+	int result = 0;
+#ifdef _WIN64
+	return alarmWarning(PROCESS_PROHIBIT, params);
+#endif
+	return result;
 }

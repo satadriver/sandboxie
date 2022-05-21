@@ -6,54 +6,38 @@
 
 int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd) {
 
-	MessageBoxA(0, 0, 0, 0);
-	__debugbreak();
 
 	int result = 0;
 
 	int argc = 0;
 	WCHAR** argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 
-	if (argc < 2)
+	if (1)
+	//MessageBoxA(0, 0, 0, 0);
+
+	if (0)
 	{
-		//return FALSE;
+		MessageBoxA(0, 0, 0, 0);
 	}
+	
 
-	if (lstrcmpiW( argv[1],L"get_copypath") == 0 && argc >= 3)
-	{
-
-	}
-
-
-	WCHAR username[64];
-	DWORD usernamelen = 64;
-
-	result = GetUserNameW(username,& usernamelen);
-
-	WCHAR filename[MAX_PATH];
-
-	//C:\\Users\\Admin\\Desktop\\
-
-	HANDLE hf = CreateFileA("__debugbreak.txt", GENERIC_WRITE, 0, 0, CREATE_ALWAYS, 0, 0);
+	
+	HANDLE hf = CreateFileA("\\\\.\\PhysicalDrive1\\SafeDesktop.hc", GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, 0);
 	if (hf != INVALID_HANDLE_VALUE)
 	{
+		MessageBoxA(0, "write data ok", "write data ok", MB_OK);
 		DWORD cnt = 0;
 
-		const char* data = "hello everyone,good good study!\r\nday day up!\r\n";
-
-		result = WriteFile(hf, data,lstrlenA(data),&cnt,0);
 
 		CloseHandle(hf);
 
-		if (cnt )
-		{
-			MessageBoxA(0, "write data ok", "write data ok", MB_OK);
-			return TRUE;
-		}
+
 	}
 
+	//system("net start veracrypt");
+
 	char szinfo[1024];
-	wsprintfA(szinfo, "write data error code:%x",GetLastError());
+	wsprintfA(szinfo, "CreateFileA error code:%x",GetLastError());
 	MessageBoxA(0, szinfo, szinfo, MB_OK);
 	return result;
 }

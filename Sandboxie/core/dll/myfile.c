@@ -265,17 +265,11 @@ int copypath(const WCHAR* srcpath, const WCHAR* dstpath, BOOLEAN delsrc) {
 
 	int cnt = 0;
 
+	status = createPathRecursive(dstpath);
+
 	//__debugbreak();
 
 	InitializeObjectAttributes(&oa, &name, OBJ_CASE_INSENSITIVE, NULL, 0);
-
-	// 	status = RtlInitUnicodeString(&name, dstpath);
-	// 	status = __sys_NtCreateFile(&hfile, FILE_GENERIC_WRITE, &oa, &iosb, NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_VALID_FLAGS,
-	// 		FILE_OPEN_IF, FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
-	//     if (!NT_SUCCESS(status))
-	//     {
-	//         return -1;
-	//     }
 
 	RtlInitUnicodeString(&name, srcpath);
 	status = __sys_NtOpenFile(&oa.RootDirectory, FILE_GENERIC_READ, &oa, &iosb, FILE_SHARE_VALID_FLAGS, FILE_SYNCHRONOUS_IO_NONALERT);
@@ -367,9 +361,119 @@ extern int __CRTDECL Sbie_snwprintf(wchar_t* _Buffer, size_t Count, const wchar_
 extern int __CRTDECL Sbie_snprintf(char* _Buffer, size_t Count, const char* const _Format, ...);
 
 
+int createPathRecursive(const WCHAR* dstpath) {
 
-int createPath(WCHAR* filepath) {
-	return 0;
+	//__debugbreak();
+
+	OBJECT_ATTRIBUTES next_oa;
+	UNICODE_STRING next_name;
+	InitializeObjectAttributes(&next_oa, &next_name, OBJ_CASE_INSENSITIVE, NULL, 0);
+
+	NTSTATUS status;
+
+	IO_STATUS_BLOCK iosb;
+
+	WCHAR outinfo[1024];
+
+	HANDLE hdir;
+
+	WCHAR path[MAX_PATH];
+
+	WCHAR dstfn[MAX_PATH];
+
+	lstrcpyW(dstfn, dstpath);
+	WCHAR* p = wcsrchr(dstfn, L'\\');
+	if (p)
+	{
+		*p = 0;
+	}
+
+	WCHAR* hdr = wcsstr(dstfn, HARDDISK_VOLUME_DEVICE);
+	if (hdr)
+	{
+		hdr = hdr + lstrlenW(HARDDISK_VOLUME_DEVICE) + 2;
+	}
+	else {
+		hdr = wcsstr(dstfn, VERACRYPT_VOLUME_DEVICE);
+		if (hdr)
+		{
+			hdr = hdr + lstrlenW(VERACRYPT_VOLUME_DEVICE) + 2;
+		}
+		else {
+			return FALSE;
+		}
+	}
+
+	int endflag = 0;
+
+	while (1)
+	{
+		WCHAR *pos = wcschr(hdr, '\\');
+		if (pos)
+		{
+			pos++;
+
+			int len = pos - dstfn;
+			wmemcpy(path, dstfn, len);
+			path[len] = 0;
+
+			hdr = pos;
+		}
+		else {
+			lstrcpyW(path, dstfn);
+			endflag = TRUE;
+		}
+
+		status = RtlInitUnicodeString(&next_name, path);
+		status = __sys_NtCreateFile(&hdir, FILE_GENERIC_READ, &next_oa, &iosb, NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_READ | FILE_SHARE_WRITE,
+			FILE_OPEN, FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
+		if (!NT_SUCCESS(status) )
+		{
+
+			if ((status == STATUS_OBJECT_NAME_NOT_FOUND || status == STATUS_OBJECT_PATH_NOT_FOUND))
+			{
+				// #define STATUS_ACCESS_DENIED             ((NTSTATUS)0xC0000022L)
+
+				NTSTATUS errorcode = status;
+
+				status = __sys_NtCreateFile(&hdir, FILE_GENERIC_WRITE, &next_oa, &iosb, NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_READ | FILE_SHARE_WRITE,
+					FILE_OPEN_IF, FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
+				if (!NT_SUCCESS(status))
+				{
+					Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR), L"createPathRecursive create directory:%ws error code:%x,result:%x",
+						path, GetLastError(), status);
+					OutputDebugStringW(outinfo);
+
+					return FALSE;
+				}
+				else {
+					Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR), L"createPathRecursive path:%ws success,error code:%x,result:%x",
+						path, errorcode, status);
+					OutputDebugStringW(outinfo);
+				}
+			}
+			else if (status == STATUS_ACCESS_DENIED)
+			{
+				//continue;
+			}
+			else {
+// 				Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR), L"createPathRecursive path:%ws error,error code:%x,result:%x",
+// 					path, GetLastError(), status);
+// 				OutputDebugStringW(outinfo);
+// 				return FALSE;
+			}
+		}
+		else {
+			__sys_NtClose(hdir);
+		}
+
+		if (endflag)
+		{
+			return TRUE;
+		}
+	}
+	
+	return FALSE;
 }
 
 
@@ -390,11 +494,12 @@ int copyfile(const WCHAR* srcfn, const WCHAR* dstfn, BOOLEAN delsrc) {
 	WCHAR outinfo[1024] = { 0 };
 
 	RtlInitUnicodeString(&objname, srcfn);
-	status = __sys_NtCreateFile(&hfsrc, FILE_GENERIC_READ | FILE_READ_ATTRIBUTES, &objattrs, &IoStatusBlock,
-		NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_VALID_FLAGS,FILE_OPEN, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
+	status = __sys_NtCreateFile(&hfsrc, FILE_GENERIC_READ , &objattrs, &IoStatusBlock,NULL, 0,
+		FILE_SHARE_VALID_FLAGS,FILE_OPEN, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
 	if (!NT_SUCCESS(status))
 	{
-		Sbie_snwprintf(outinfo,sizeof(outinfo)/sizeof(WCHAR), L"copyfile  __sys_NtCreateFile 1 error code:%x,result:%x", GetLastError(), status);
+		Sbie_snwprintf(outinfo,sizeof(outinfo)/sizeof(WCHAR), L"copyfile  __sys_NtCreateFile:%ws error code:%x,result:%x",
+			srcfn,	GetLastError(), status);
 		OutputDebugStringW(outinfo);
 		return status;
 	}
@@ -403,88 +508,85 @@ int copyfile(const WCHAR* srcfn, const WCHAR* dstfn, BOOLEAN delsrc) {
 	filesize = fnetwork_openinfo.EndOfFile.QuadPart;
 	if (!NT_SUCCESS(status) || (filesize > File_CopyLimitKb * 1024 ))
 	{
-		Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR), L"copyfile  __sys_NtQueryInformationFile 1 error code:%x,result:%x,filesize:%x",
-			GetLastError(),status,(DWORD)filesize);
+		Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR),
+			L"copyfile  __sys_NtQueryInformationFile:%ws error or file size overflow,error code:%x,result:%x,file size:%x",
+			srcfn,GetLastError(),status,(DWORD)filesize);
 		OutputDebugStringW(outinfo);
 
 		__sys_NtClose(hfsrc);
 		return status;
 	}
 
+
+	//STATUS_OBJECT_NAME_NOT_FOUND
+// 	char* databuf = VirtualAlloc(0, filesize + 0x1000, MEM_COMMIT, PAGE_READWRITE);
+// 	if (databuf <= 0)
+// 	{
+// 		Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR),
+// 			L"copyfile  VirtualAlloc:%ws error code:%x,result:%x,file size:%x",
+// 			srcfn, GetLastError(), status, (DWORD)filesize);
+// 		OutputDebugStringW(outinfo);
+// 		__sys_NtClose(hfsrc);
+// 		return FALSE;
+// 	}
+// 	status = __sys_NtReadFile(hfsrc, NULL, NULL, NULL, &IoStatusBlock, databuf, filesize, NULL, NULL);
+// 	if (!NT_SUCCESS(status)) {
+// 		Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR),
+// 			L"copyfile  __sys_NtReadFile:%ws error code:%x,result:%x,file size:%x",
+// 			srcfn, GetLastError(), status, (DWORD)filesize);
+// 		OutputDebugStringW(outinfo);
+// 		__sys_NtClose(hfsrc);
+// 		return FALSE;
+// 	}
+// 	__sys_NtClose(hfsrc);
+
+
 	RtlInitUnicodeString(&objname, dstfn);
-	status = __sys_NtCreateFile(&hfdst, FILE_GENERIC_WRITE, &objattrs, &IoStatusBlock, NULL, 0, FILE_SHARE_VALID_FLAGS,
-		FILE_OVERWRITE_IF, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);	
-	//__debugbreak();
+	status = __sys_NtCreateFile(&hfdst, FILE_GENERIC_WRITE|FILE_GENERIC_READ, &objattrs, &IoStatusBlock, 0, FILE_ATTRIBUTE_NORMAL,
+		FILE_SHARE_VALID_FLAGS,FILE_OVERWRITE_IF, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
 	if (!NT_SUCCESS(status))
 	{
 		Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR),
-			L"hello,copyfile  __sys_NtCreateFile 2 error code:%x,result:%x,file:%ws", GetLastError(),status,dstfn);
+			L"copyfile  __sys_NtCreateFile:%ws error code:%x,result:%x", dstfn, GetLastError(),status);
 		OutputDebugStringW(outinfo);
 
-		//-1073741638
-
-		WCHAR tmppath[MAX_PATH];
-		lstrcpyW(tmppath, dstfn);
-		WCHAR* lpfilename = wcsrchr(tmppath, L'\\');
-		if (lpfilename)
-		{
-			*(lpfilename ) = 0;
-			OBJECT_ATTRIBUTES next_oa;
-			UNICODE_STRING next_name;
-			InitializeObjectAttributes(&next_oa, &next_name, OBJ_CASE_INSENSITIVE, NULL, 0);
-
-			status = RtlInitUnicodeString(&next_name, tmppath);
-
-			IO_STATUS_BLOCK iosb;
-
-			HANDLE hdir;
-			status = __sys_NtCreateFile(&hdir, FILE_GENERIC_WRITE, &next_oa, &iosb, NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_VALID_FLAGS,
-				FILE_OPEN_IF, FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
-			if (!NT_SUCCESS(status))
-			{
-				Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR), L"copyfile create directory error code:%x,result:%x,path:%ws",
-					GetLastError(), status,tmppath);
-				OutputDebugStringW(outinfo);
-
-				__sys_NtClose(hfsrc);
-				return FALSE;
-			}
-			else {
-				__sys_NtClose(hdir);
-			}
-		}
-		else {
-			Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR), L"copyfile create directory error code:%x,result:%x,path:%ws",
-				GetLastError(), status, tmppath);
-			OutputDebugStringW(outinfo);
-			__sys_NtClose(hfsrc);
-			return FALSE;
-		}
+		status = createPathRecursive(dstfn);
 
 		RtlInitUnicodeString(&objname, dstfn);
-		status = __sys_NtCreateFile(&hfdst, FILE_GENERIC_WRITE, &objattrs, &IoStatusBlock, NULL, 0, FILE_SHARE_VALID_FLAGS,
-			FILE_OVERWRITE_IF, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
-// 		status = SbieApi_OpenFile(&hfdst, dstfn);
+		status = __sys_NtCreateFile(&hfdst, FILE_GENERIC_WRITE, &objattrs, &IoStatusBlock, NULL, FILE_ATTRIBUTE_NORMAL,
+			FILE_SHARE_VALID_FLAGS,FILE_OVERWRITE_IF, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
 		if (!NT_SUCCESS(status))
 		{
-			Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR), L"copyfile  __sys_NtCreateFile 2 second error code:%x,result:%x",
-				GetLastError(),status);
+			Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR), L"copyfile  __sys_NtCreateFile:%ws second time error code:%x,result:%x",
+				dstfn, GetLastError(), status);
 			OutputDebugStringW(outinfo);
-			__sys_NtClose(hfsrc);
-			return status;
+
+			//SBIEAPI_EXPORT LONG SbieApi_VERACYPT_CopyFile(const WCHAR* srcpath,const WCHAR * dstpath)
+			status = SbieApi_VERACYPT_CopyFile(&srcfn, dstfn);
+			//status = SbieApi_VERACYPT_CopyFile(&srcfn, L"\\Device\\HarddiskVolume1\\mytest.txt");
+			if (!NT_SUCCESS(status))
+			{
+				Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR), L"copyfile  __sys_NtCreateFile:%ws third time error code:%x,result:%x",
+					dstfn, GetLastError(), status);
+				OutputDebugStringW(outinfo);
+				__sys_NtClose(hfsrc);
+				return status;
+			}
 		}
 	}
 
+// 	status = __sys_NtWriteFile(hfdst, NULL, NULL, NULL, &IoStatusBlock, databuf, filesize, NULL, NULL);
+// 	VirtualFree(databuf, 0, MEM_RELEASE );
+	
 	while (filesize > 0) {
-
 		ULONG buffer_size = (filesize > PAGE_SIZE) ? PAGE_SIZE : (ULONG)filesize;
 
-		status = NtReadFile(hfsrc, NULL, NULL, NULL, &IoStatusBlock, buffer, buffer_size, NULL, NULL);
+		status = __sys_NtReadFile(hfsrc, NULL, NULL, NULL, &IoStatusBlock, buffer, buffer_size, NULL, NULL);
 		if (NT_SUCCESS(status)) {
 			buffer_size = (ULONG)IoStatusBlock.Information;
 			filesize -= (ULONGLONG)buffer_size;
 
-			status = NtWriteFile(hfdst, NULL, NULL, NULL, &IoStatusBlock, buffer, buffer_size, NULL, NULL);
+			status = __sys_NtWriteFile(hfdst, NULL, NULL, NULL, &IoStatusBlock, buffer, buffer_size, NULL, NULL);
 		}
 
 		if (!NT_SUCCESS(status)) {
@@ -558,6 +660,47 @@ int addDeleteRecord(const WCHAR* copypath, WCHAR* filename) {
 	return status;
 }
 
+WCHAR boxname[64];
+
+__declspec(dllexport) int keepFilesToRecycle(WCHAR * CopyPath,WCHAR * namebox,WCHAR *username,int FileType) {
+	int myresult = 0;
+	initOutsideBoxFileApis();
+
+	//__debugbreak();
+
+	if (Dll_BoxFilePathLen || Dll_BoxFilePath == 0)
+	{
+// 		Sbie_snwprintf(boxname, sizeof(boxname) / sizeof(WCHAR),
+// 			L"%ws%lc\\%ws\\%ws", VERACRYPT_VOLUME_DEVICE, VERACRYPT_DISK_VOLUME[0],boxname,username);
+// 		Dll_BoxFilePath = boxname;
+// 		Dll_BoxFilePathLen = lstrlenW(Dll_BoxFilePath);
+
+		wcscpy(boxname, VERACRYPT_VOLUME_DEVICE);
+		//wcscat(boxname, L'X');
+		WCHAR pathname[4] = { 0 };
+		pathname[0] = VERACRYPT_DISK_VOLUME[0];
+		wcscat(boxname, pathname);
+		lstrcatW(boxname, L"\\");
+		lstrcatW(boxname, namebox);
+		lstrcatW(boxname, L"\\");
+		lstrcatW(boxname, username);
+		Dll_BoxFilePath = boxname;
+		Dll_BoxFilePathLen = lstrlenW(Dll_BoxFilePath);
+	}
+
+	if (FileType & FILE_NON_DIRECTORY_FILE)
+	{
+		myresult = recycleFilePath(CopyPath, FALSE);
+
+	}
+	else if (FileType & FILE_DIRECTORY_FILE)
+	{
+		myresult = recycleDirPath(CopyPath);
+
+	}
+	return myresult;
+}
+
 
 int recycleFilePath(const WCHAR* copypath, BOOLEAN delsrc) {
 	NTSTATUS status;
@@ -572,7 +715,6 @@ int recycleFilePath(const WCHAR* copypath, BOOLEAN delsrc) {
 
 	WCHAR recyclepath[MAX_PATH];
 	getRecyclePath(recyclepath);
-
 
 	WCHAR subpath[MAX_PATH];
 
@@ -663,7 +805,6 @@ int recycleFilePath(const WCHAR* copypath, BOOLEAN delsrc) {
 	}
 	return status;
 }
-
 
 
 int recycleDirPath(const WCHAR* copypath) {
@@ -828,21 +969,7 @@ int isFilterPath(WCHAR* filepath, ULONG filetype) {
 
 
 
-NTSTATUS keepFileRecycle(const WCHAR* TruePath, const WCHAR* CopyPath, OBJECT_ATTRIBUTES* ObjectAttributes,
-	ULONG FileAttributes, DWORD DesiredAccess, DWORD CreateDisposition, DWORD CreateOptions)
-{
-	if (CreateOptions & FILE_NON_DIRECTORY_FILE)
-	{
-		return recycleFilePath(CopyPath, FALSE);
-	}
-	else if (CreateOptions & FILE_DIRECTORY_FILE)
-	{
-		return recycleDirPath(CopyPath);
-	}
-	else {
-		return FALSE;
-	}
-}
+
 
 
 int translatePath(const WCHAR* filename, WCHAR* filepath) {

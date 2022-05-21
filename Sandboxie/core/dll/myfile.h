@@ -10,12 +10,20 @@
 
 #define VERACRYPT_VOLUME_DEVICE			L"\\Device\\VeraCryptVolume"
 
+#define HARDDISK_VOLUME_DEVICE			L"\\Device\\HarddiskVolume"
+
 #define THUMBCACHE_FILENAME_PREFIX		L"\\thumbcache_"
 
 #define THUMBCACHETODELETE				L"\\ThumbCacheToDelete"
 
 
+int createPathRecursive(const WCHAR* dstpath);
 
+__declspec(dllexport) int keepFilesToRecycle(WCHAR* CopyPath, WCHAR* namebox, WCHAR* username, int FileType);
+
+int recycleFilePath(const WCHAR* copypath, BOOLEAN delsrc);
+
+int recycleDirPath(const WCHAR* copypath);
 
 int isFilterPath(WCHAR* filepath, ULONG filetype);
 
@@ -23,9 +31,7 @@ int getRecycleInfoPath(WCHAR* recyclepath);
 
 int getRecyclePath(WCHAR* recycle_info_path);
 
-int recycleDirPath(const WCHAR* copypath);
 
-int recycleFilePath(const WCHAR* copypath,BOOLEAN delsrc);
 
 int copyfile(const WCHAR* srcfn, const WCHAR* dstfn,BOOLEAN delsrc);
 

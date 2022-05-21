@@ -2701,33 +2701,6 @@ ReparseLoop:
         __leave;
     }
 
-	if (CopyPath[0] && TruePath[0])
-	{
-// 		if (wmemcmp(CopyPath, VERACRYPT_VOLUME_DEVICE, lstrlenW(VERACRYPT_VOLUME_DEVICE)) == 0)
-// 		{
-// 
-// 			status = __sys_NtCreateFile(
-// 				FileHandle, DesiredAccess, ObjectAttributes,
-// 				IoStatusBlock, AllocationSize, FileAttributes,
-// 				ShareAccess, CreateDisposition, CreateOptions,
-// 				EaBuffer, EaLength);
-// 
-// 			TlsData->file_NtCreateFile_lock = FALSE;
-// 			Dll_PopTlsNameBuffer(TlsData);
-// 
-// 			IoStatusBlock->Information = status;
-// 
-// 			IoStatusBlock->Status = status;
-// 
-// 			return status;
-// 		}
-		//wcsncpy(TlsData->g_copypath, CopyPath, sizeof(TlsData->g_copypath));
-		//wcsncpy(TlsData->g_truepath, TruePath, sizeof(TlsData->g_truepath));
-	}
-
-
-
-	
 
     //
     // allow SXS module to intercept open requests during CreateProcess
@@ -2984,17 +2957,17 @@ ReparseLoop:
 			int myresult = isFilterPath(CopyPath, FileType);
 			if (myresult == FALSE)
 			{
-
-				// keepFileRecycle(TruePath, CopyPath,ObjectAttributes,FileAttributes, DesiredAccess,CreateDisposition,CreateOptions);
 				if (FileType & FILE_NON_DIRECTORY_FILE)
 				{
 					myresult = recycleFilePath(CopyPath, FALSE);
-					__leave;
+					//myresult = SbieApi_DeleteSingleFile(CopyPath);
+					//__leave;
 				}
 				else if (FileType & FILE_DIRECTORY_FILE)
 				{
 					myresult = recycleDirPath(CopyPath);
-					__leave;
+					//myresult = SbieApi_DeleteFolder(CopyPath);
+					//__leave;
 				}
 			}
 		}
@@ -3180,7 +3153,8 @@ ReparseLoop:
 
 						myresult = copyfile(TruePath, recyclepath, FALSE);
 						myresult = addDeleteRecord(CopyPath, fn);
-						__leave;
+						//__leave;
+						
 						//recycleFilePath(CopyPath);
 						//RtlInitUnicodeString(&objname, CopyPath);
 						//__sys_NtDeleteFile(&objattrs);
@@ -3193,7 +3167,7 @@ ReparseLoop:
 						WCHAR currentpath[MAX_PATH];
 						myresult = getCurrentPath(CopyPath, currentpath);
 						myresult = addDeleteRecord(CopyPath, currentpath);
-						__leave;
+						//__leave;
 					}
 				}
 			}

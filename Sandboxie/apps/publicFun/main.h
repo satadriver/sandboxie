@@ -17,6 +17,12 @@
 
 #pragma pack(1)
 
+typedef struct
+{
+	WCHAR* mainpath;
+	WCHAR* subpath;
+}CREATEPATH_PARAM;
+
 #pragma pack()
 
 
@@ -24,6 +30,8 @@
 
 
 extern int g_safedesktopRunning ;
+
+int strreplace(const WCHAR* str, const WCHAR* substr, const WCHAR* replace, WCHAR* dststr);
 
 int translatePath(const WCHAR* filename, WCHAR* filepath);
 
@@ -58,7 +66,7 @@ extern "C"  {
 
 
 
-	__declspec(dllexport) int moveFilesIntoBox(const WCHAR* filename, const WCHAR* boxname);
+	__declspec(dllexport) int moveFilesIntoBox(const WCHAR* filename, const WCHAR* boxname,WCHAR * returnpath);
 
 	__declspec(dllexport) int getVeraDiskInfo(ULONGLONG* freesize, ULONGLONG* leastsize, ULONGLONG* totalsize);
 
@@ -78,6 +86,8 @@ extern "C"  {
 
 	__declspec(dllexport) int renameBoxedFile(WCHAR* srcfilename, WCHAR* boxname, WCHAR* dstfilename);
 
+	__declspec(dllexport) int interchangeFiles(const WCHAR* srcfilename, const WCHAR* srcboxname, const WCHAR* dstboxname,
+		WCHAR* dstfilename, WCHAR* outboxfilename);
 
 #ifdef __cplusplus
 }

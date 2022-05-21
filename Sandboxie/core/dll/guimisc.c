@@ -799,12 +799,25 @@ _FX HANDLE Gui_GetClipboardData(UINT uFormat)
 		g_clipboardMask = crc(Dll_BoxName, lstrlenW(Dll_BoxName));
 	}
 
+	WCHAR outinfo[1024];
+	Sbie_snwprintf(outinfo, sizeof(outinfo) / sizeof(WCHAR), L"Gui_GetClipboardData:%x", uFormat);
+	OutputDebugStringW(outinfo);
+
+	if ( (uFormat & CLIPBOARD_FORMAT_KEY) == CLIPBOARD_FORMAT_KEY)
+	{
+		uFormat -= CLIPBOARD_FORMAT_KEY;
+	}
+
     hGlobalRet = __sys_GetClipboardData(uFormat);
 	if (hGlobalRet) {
 		unsigned char* data = (unsigned char*)GlobalLock(hGlobalRet);
-		int size = (int)GlobalSize(hGlobalRet);
+		int size = GlobalSize(hGlobalRet);
 
-		decryptClipboard(data, size, uFormat);
+		if (size > CLIPBOARD_PREFIX_LENGTH && memcmp(data,"\x00\x00\x00\x00",4) == 0)
+		{
+			decryptClipboard(data + CLIPBOARD_PREFIX_LENGTH, size - CLIPBOARD_PREFIX_LENGTH, uFormat);
+			memmove(data, data + CLIPBOARD_PREFIX_LENGTH, size - CLIPBOARD_PREFIX_LENGTH);
+		}	
 
 		GlobalUnlock(hGlobalRet);
 		return hGlobalRet;
@@ -841,12 +854,14 @@ _FX HANDLE Gui_GetClipboardData(UINT uFormat)
     req.msgid = GUI_GET_CLIPBOARD_DATA;
     req.format = uFormat;
     rpl = Gui_CallProxyEx(&req, sizeof(req), sizeof(*rpl), TRUE);
-    if (! rpl)
-        error = GetLastError();
+	if (!rpl) {
+		error = GetLastError();
+	}
     else {
 
-        if (! rpl->result)
-            error = rpl->error;
+		if (!rpl->result) {
+			error = rpl->error;
+		}
         else {
 
             //
@@ -855,25 +870,27 @@ _FX HANDLE Gui_GetClipboardData(UINT uFormat)
             // have to convert this into an HGLOBAL
             //
 
-            void *src = MapViewOfFileEx(
-                                (HANDLE)(ULONG_PTR)rpl->section_handle,
-                                FILE_MAP_READ, 0, 0, 0, NULL);
-            if (! src)
-                error = GetLastError();
+            void *src = MapViewOfFileEx( (HANDLE)(ULONG_PTR)rpl->section_handle, FILE_MAP_READ, 0, 0, 0, NULL);
+			if (!src) {
+				error = GetLastError();
+			}
             else {
 
-                HGLOBAL hGlobal =
-                    GlobalAlloc(GMEM_FIXED, (ULONG_PTR)rpl->section_length);
+                HGLOBAL hGlobal = GlobalAlloc(GPTR, (ULONG_PTR)rpl->section_length);
                 if (hGlobal) {
 
                     void *dst = GlobalLock(hGlobal);
-                    if (! dst)
-                        error = GetLastError();
+					if (!dst) {
+						error = GetLastError();
+					}
                     else {
 
                         memcpy(dst, src, (ULONG_PTR)rpl->section_length);
 
-						decryptClipboard(dst, (INT)rpl->section_length, uFormat);
+						if (rpl->section_length > CLIPBOARD_PREFIX_LENGTH && memcmp(dst,"\x00\x00\x00\x00",4) == 0) {
+							decryptClipboard((char*)dst + CLIPBOARD_PREFIX_LENGTH, (INT)rpl->section_length - CLIPBOARD_PREFIX_LENGTH, uFormat);
+							memmove(dst, (char*)dst + CLIPBOARD_PREFIX_LENGTH, (INT)rpl->section_length - CLIPBOARD_PREFIX_LENGTH);
+						}
 
                         if (uFormat == CF_BITMAP)// || uFormat == CF_DIB)
                             Gui_GetClipboardData_BMP(dst, uFormat);

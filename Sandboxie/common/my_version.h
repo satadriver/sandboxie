@@ -81,13 +81,17 @@
 #define SBIEINI                 L"SfDeskIni"
 #define SBIEINI_EXE             L"SfDeskIni.exe"
 
-#define SANDBOX_VERB            L"SafeDesktop"
+//#define SANDBOX_DESKTOP            L"SafeDesktop"
 
 //#define EXPLORER_PROCESS_NAME_PLUSPLUS		L"explorer++.exe"
 
 #define EXPLORER_PROCESS_NAME		L"explorer.exe"
 
 #define EXPLORER_PROCESS_NAME_PLUSPLUS			L"sfDeskExplorer.exe"
+
+#define EXPLORER_PLUSPLUS					L"sfDeskExplorer"
+
+#define VERACRYPT_VOLUME_DEVICE			L"\\Device\\VeraCryptVolume"
 
 #define MY_AUTOPLAY_CLSID_STR   "7E950284-E123-49F4-B32B-A806C090D747"
 #define MY_AUTOPLAY_CLSID       0x7E950284, 0xE123, 0x49F4, \
