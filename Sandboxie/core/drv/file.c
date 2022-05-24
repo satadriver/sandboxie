@@ -1050,6 +1050,18 @@ _FX NTSTATUS File_Generic_MyParseProc(
     ULONG MonitorPrefixLen;
     WCHAR *MonitorSuffixPtr;
 
+	PEPROCESS ep = NULL;
+	if (STATUS_SUCCESS == PsLookupProcessByProcessId(PsGetCurrentProcessId(), &ep))
+	{
+		char* name = PsGetProcessImageFileName(ep);
+
+		if (strstr(name, "SafeDesktop") || strstr(name, "sfDeskExplorer"))
+		{
+			//DbgPrint("File_Generic_MyParseProc process:%s,file:%ws", name, Name->Name.Buffer);
+			return STATUS_SUCCESS;
+		}
+	}
+
     //
     // skip requests dealing with devices we don't care about
     //
@@ -1126,17 +1138,7 @@ _FX NTSTATUS File_Generic_MyParseProc(
     }
 
 
-	PEPROCESS ep = NULL;
-	if (STATUS_SUCCESS == PsLookupProcessByProcessId(PsGetCurrentProcessId(), &ep))
-	{
-		char* name = PsGetProcessImageFileName(ep);
 
-		if (strstr(name, "SafeDesktop") || strstr(name, "sfDeskExplorer"))
-		{
-			//DbgPrint("File_Generic_MyParseProc process:%s,file:%ws", name, Name->Name.Buffer);
-			return STATUS_SUCCESS;
-		}
-	}
 
 
     //

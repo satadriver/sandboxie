@@ -22,7 +22,7 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	
 
 	
-	HANDLE hf = CreateFileA("\\\\.\\PhysicalDrive1\\SafeDesktop.hc", GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, 0);
+	HANDLE hf = CreateFileA("\\??\\PhysicalDrive0\\SafeDesktop.hc", GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (hf != INVALID_HANDLE_VALUE)
 	{
 		MessageBoxA(0, "write data ok", "write data ok", MB_OK);

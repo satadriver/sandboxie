@@ -746,7 +746,9 @@ int dospath2NTpath(const WCHAR* dospath, WCHAR* ntpath) {
 
 	int n = drive - 'c' + 1;
 
-	int len = wsprintfW(ntpath, L"\\Device\\HarddiskVolume%u\\%ws", n, dospath + 3);
+	//int len = wsprintfW(ntpath, L"\\Device\\HarddiskVolume%u\\%ws", n, dospath + 3);
+
+	int len = wsprintfW(ntpath, L"\\Device\\PhysicalDrive%d\\%ws", n-1, dospath + 3);
 	return len;
 }
 

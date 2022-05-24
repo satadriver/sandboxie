@@ -36,7 +36,7 @@ void removeQuota(char* data, int size) {
 
 
 
-int setJsonConfig(const WCHAR *filename,char * utf8data,int utf8size){
+int setJsonConfig_old(const WCHAR *filename,char * utf8data,int utf8size){
 	int result = 0;
 
 	//mylog(L"setConfig start\r\n");
@@ -262,7 +262,7 @@ int setJsonConfig(const WCHAR *filename,char * utf8data,int utf8size){
 
 
 
-extern "C" __declspec(dllexport) int configBox(const WCHAR* wstrusername, const WCHAR* wstrpassword, WCHAR * verapath,WCHAR * strverasize) {
+extern "C" __declspec(dllexport) int configBox_old(const WCHAR* wstrusername, const WCHAR* wstrpassword, WCHAR * verapath,WCHAR * strverasize) {
 	int result = 0;
 	mylog(L"username:%ws,password:%ws", wstrusername, wstrpassword);
 

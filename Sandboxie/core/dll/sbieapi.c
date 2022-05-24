@@ -2228,7 +2228,7 @@ int SbieApi_CopyFile(const WCHAR* srcpath, const WCHAR* dstpath) {
 	}
 	else {
 		Sbie_snwprintf(szinfo, sizeof(szinfo) / sizeof(WCHAR),
-			L"SbieApi_CopyFile __sys_NtQueryFullAttributesFile error code:%x,result:%x,file:%ws", GetLastError(), status, srcfile);
+			L"SbieApi_CopyFile __sys_NtQueryFullAttributesFile:%ws error code:%x,result:%x,file:%ws",srcfile, GetLastError(), status, srcfile);
 		OutputDebugStringW(szinfo);
 	}
 	return STATUS_UNSUCCESSFUL;

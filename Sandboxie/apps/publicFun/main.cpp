@@ -865,7 +865,6 @@ int translateBoxedpath2Realpath(const WCHAR* filepath, const WCHAR* boxname, WCH
 
 	WCHAR filename[MAX_PATH];
 	lstrcpyW(filename, filepath);
-	//_wcslwr(filename);
 
 	WCHAR username[64];
 	DWORD usernamelen = sizeof(username) / 2;
@@ -873,14 +872,12 @@ int translateBoxedpath2Realpath(const WCHAR* filepath, const WCHAR* boxname, WCH
 	if (result)
 	{
 		username[usernamelen] = 0;
-		//_wcslwr(username);
 	}
 
 	WCHAR sysdir[32];
 	result = GetSystemDirectoryW(sysdir, sizeof(sysdir) / sizeof(WCHAR));
 	if (sysdir[0]>= 'C' && sysdir[0] <= 'Z')
 	{
-		//sysdir[0] += 0x20;
 	}
 
 	WCHAR veracryptpath[64];
@@ -892,82 +889,69 @@ int translateBoxedpath2Realpath(const WCHAR* filepath, const WCHAR* boxname, WCH
 		wsprintfW(veracryptpath, L"%ws",  VERACRYPT_DISK_VOLUME);
 	}
 
+	WCHAR currentuserpath[256];
+	wsprintfW(currentuserpath, L"Users\\%ws",username);
+	int current_userpathlen = lstrlenW(currentuserpath);
+
 	if (filename[1] == ':' && filename[2] == '\\')
 	{
-		if (filename[0] == sysdir[0] && wmemcmp(filename + 1, L":\\Users\\", 8) == 0) {
-
-			WCHAR* subuserpath ;
+		if (filename[0] == sysdir[0] && wmemcmp(filename + 3, currentuserpath, current_userpathlen) == 0) {
 
 			wsprintfW(realpath, L"%ws%ws\\%ws\\", veracryptpath, boxname, username);
-
-			if (isdevice & CREATE_BOX_SUBPATH) {
-				result = createpath(realpath,(WCHAR*) L"\\user\\");
-				//mylog("createpath:%ws subpath:%ws result:%d,error code:%d", realpath, L"user", result, GetLastError());
-			}
-
 			lstrcatW(realpath, L"user\\");
-
-			if (wmemcmp(filename + 9, username, usernamelen - 1) == 0)
-			{
-				//lstrcatW(realpath, L"current\\");
-
-				subuserpath =(WCHAR*) L"current\\";
-			}
-			else if (wmemcmp(filename + 9, L"All Users", lstrlenW(L"All Users")) == 0) {
-				//lstrcatW(realpath, L"all\\");
-				subuserpath = (WCHAR*)L"all\\";
-			}
-			else if (wmemcmp(filename + 9, L"Public", lstrlenW(L"Public")) == 0) {
-				//lstrcatW(realpath, L"public\\");
-				subuserpath = (WCHAR*)L"public\\";
-			}
-			else if (wmemcmp(filename + 9, L"Default", lstrlenW(L"Default")) == 0) {
-				//lstrcatW(realpath, L"default\\");
-
-				subuserpath = (WCHAR*)L"default\\";
-			}
-			else {
-				//lstrcatW(realpath, L"all\\");
-
-				subuserpath = (WCHAR*)L"all\\";
-			}
-
-			if (isdevice & CREATE_BOX_SUBPATH) {
-				result = createpath(realpath, subuserpath);
-				//mylog("createpath:%ws subpath:%ws result:%d,error code:%d", realpath, subuserpath, result, GetLastError());
-			}
-			lstrcatW(realpath, subuserpath );
-			//lstrcatW(realpath, L"\\");
+			lstrcatW(realpath, L"current\\");
 
 			WCHAR* pos = wcschr((WCHAR*)filename + 9, '\\');
 			if (pos)
 			{
-				if (isdevice & CREATE_BOX_SUBPATH) {
-					result = createpath(realpath, pos + 1);
-					//mylog("createpath result:%d,error code:%d", result, GetLastError());
-				}
+				lstrcatW(realpath, pos + 1);
+			}
+		}
+		else if (filename[0] == sysdir[0] && wmemcmp(filename + 3, L"Users\\All\\", lstrlenW(L"Users\\All\\")) == 0)
+		{
+			wsprintfW(realpath, L"%ws%ws\\%ws\\", veracryptpath, boxname, username);
+			lstrcatW(realpath, L"user\\");
+			lstrcatW(realpath, L"all\\");
+
+			WCHAR* pos = wcschr((WCHAR*)filename + 9, '\\');
+			if (pos)
+			{
+				lstrcatW(realpath, pos + 1);
+			}
+		}
+		else if (filename[0] == sysdir[0] && wmemcmp(filename + 3, L"Users\\Default\\", lstrlenW(L"Users\\Default\\")) == 0)
+		{
+			wsprintfW(realpath, L"%ws%ws\\%ws\\", veracryptpath, boxname, username);
+			lstrcatW(realpath, L"user\\");
+			lstrcatW(realpath, L"default\\");
+
+			WCHAR* pos = wcschr((WCHAR*)filename + 9, '\\');
+			if (pos)
+			{
+				lstrcatW(realpath, pos + 1);
+			}
+		}
+		else if (filename[0] == sysdir[0] && wmemcmp(filename + 3, L"Users\\Public\\", lstrlenW(L"Users\\Public\\")) == 0)
+		{
+			wsprintfW(realpath, L"%ws%ws\\%ws\\", veracryptpath, boxname, username);
+			lstrcatW(realpath, L"user\\");
+			lstrcatW(realpath, L"public\\");
+
+			WCHAR* pos = wcschr((WCHAR*)filename + 9, '\\');
+			if (pos)
+			{
 				lstrcatW(realpath, pos + 1);
 			}
 		}
 		else
 		{
 			wsprintfW(realpath, L"%ws%ws\\%ws\\%ws\\%lc\\", veracryptpath, boxname, username, L"drive", filename[0]);
-
-			if (isdevice & CREATE_BOX_SUBPATH) {
-				result = createpath(realpath, filename + 3);
-				//mylog("createpath result:%d,error code:%d", result, GetLastError());
-			}
-
 			lstrcatW(realpath, filename + 3);
 		}
 	}
 	else {
 		wsprintfW(realpath,	L"%ws%ws\\%ws\\%ws\\%lc\\windows\\system32\\", veracryptpath, boxname, username, L"drive", sysdir[0]);
-		if (isdevice & CREATE_BOX_SUBPATH) {
-			
-			result = createpath(realpath, filename);
-			//mylog("createpath result:%d,error code:%d", result, GetLastError());
-		}
+
 		lstrcatW(realpath, filename);
 	}
 
@@ -1032,9 +1016,9 @@ int getBoxedFile(const WCHAR* filename,const WCHAR * boxname, WCHAR* dospath) {
 	{
 		WCHAR ntpath[MAX_PATH];
 		//应用曾不能打开形如:/Device/HarddiskVolume1/xxx之类的设备
-		//dospath2NTpath(dospath, ntpath);
+		dospath2NTpath(dospath, ntpath);
 		//dospath2LinkPath(dospath, ntpath);
-		lstrcpyW(ntpath, dospath);
+		//lstrcpyW(ntpath, dospath);
 		
 		result = copyfile(realpath, ntpath);
 		mylog(L"ptrSbieApi_CopyFile from:%ws to:%ws result:%d", realpath, ntpath, result);		
@@ -1139,13 +1123,7 @@ int Get_Default_Browser(WCHAR* pgmname)
 
 
 
-/*
-#define STATUS_ACCESS_DENIED             ((NTSTATUS)0xC0000022L)
-#define STATUS_OBJECT_NAME_NOT_FOUND     ((NTSTATUS)0xC0000034L)
-#define STATUS_OBJECT_PATH_INVALID       ((NTSTATUS)0xC0000039L)
-#define STATUS_OBJECT_PATH_NOT_FOUND     ((NTSTATUS)0xC000003AL)
-#define STATUS_OBJECT_PATH_SYNTAX_BAD    ((NTSTATUS)0xC000003BL)
-*/
+
 
 
 int strreplace(const WCHAR* str,const WCHAR* substr,const WCHAR * replace, WCHAR * dststr) {

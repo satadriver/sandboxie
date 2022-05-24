@@ -542,7 +542,7 @@ int copyfile(const WCHAR* srcfn, const WCHAR* dstfn, BOOLEAN delsrc) {
 
 
 	RtlInitUnicodeString(&objname, dstfn);
-	status = __sys_NtCreateFile(&hfdst, FILE_GENERIC_WRITE|FILE_GENERIC_READ, &objattrs, &IoStatusBlock, 0, FILE_ATTRIBUTE_NORMAL,
+	status = __sys_NtCreateFile(&hfdst, FILE_GENERIC_WRITE, &objattrs, &IoStatusBlock, 0, FILE_ATTRIBUTE_NORMAL,
 		FILE_SHARE_VALID_FLAGS,FILE_OVERWRITE_IF, FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
 	if (!NT_SUCCESS(status))
 	{

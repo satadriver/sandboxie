@@ -20,7 +20,7 @@ using namespace std;
 #pragma warning(disable: 4996)
 
 
-int setJsonConfig_new(const WCHAR* filename, char* utf8data, int utf8size) {
+int setJsonConfig(const WCHAR* filename, char* utf8data, int utf8size) {
 	int result = 0;
 
 	//mylog(L"setConfig start\r\n");
@@ -97,6 +97,7 @@ int setJsonConfig_new(const WCHAR* filename, char* utf8data, int utf8size) {
 		return FALSE;
 	}
 
+	string timestamp = root["timestamp"].asString();
 	string cmd = root["cmd"].asString();
 	if (cmd != "getSandBoxRule" && cmd != "updateSandBoxRule")
 	{
@@ -111,14 +112,14 @@ int setJsonConfig_new(const WCHAR* filename, char* utf8data, int utf8size) {
 		mylog(L"data param error\r\n");
 	}
 
-	for (int i = 0; i < datacnt; i++)
+	for (int data_number = 0; data_number < datacnt; data_number++)
 	{
-		Json::Value spaceinfo = data[i]["spaceInfo"];
-		Json::Value safepolicy = data[i]["safePolicy"];
+		Json::Value spaceinfo = data[data_number]["spaceInfo"];
+		Json::Value safepolicy = data[data_number]["safePolicy"];
 
 		string name = spaceinfo["name"].asString();
-		string spaceType = spaceinfo["spaceType"].asString();
-		string safeLevel = spaceinfo["safeLevel"].asString();
+		int spaceType = spaceinfo["spaceType"].asInt();
+
 
 		if (name != "")
 		{
@@ -156,96 +157,65 @@ int setJsonConfig_new(const WCHAR* filename, char* utf8data, int utf8size) {
 
 			//mylog(L"screen:%d,watermark:%d,printer:%d,fileexport:%d", screencap, watermark, printer, fileexport);
 
-			Json::Value allowPrograms = safepolicy["allowPrograms"];
-			int allowprogcnt = allowPrograms.size();
-			for (int j = 0; j < allowprogcnt; j++)
+			BOOLEAN programLimit = safepolicy["programLimit"].asBool();
+			if (programLimit)
 			{
-				string name = allowPrograms[j]["name"].asString();
+				Json::Value allowPrograms = safepolicy["allowPrograms"];
+				int allowprogcnt = allowPrograms.size();
+				for (int j = 0; j < allowprogcnt; j++)
+				{
+					string name = allowPrograms[j]["name"].asString();
 
-				string copyright = allowPrograms[j]["copyrightInfo"].asString();
+					string copyright = allowPrograms[j]["copyrightInfo"].asString();
 
-				string procname = allowPrograms[j]["processName"].asString();
-				WCHAR wstrprocname[MAX_PATH];
-				MultiByteToWideChar(CP_ACP, 0, procname.c_str(), -1, wstrprocname, MAX_PATH);
+					string protype = allowPrograms[j]["proType"].asString();
 
-				setProcessMonitor(wstrprocname);
+					Json::Value programs = allowPrograms[j]["programs"];
+					int programs_cnt = programs.size();
+					for (int k = 0; k < programs_cnt; k++)
+					{
+						string sign = programs[k]["signerInfo"].asString();
 
-				string sign = allowPrograms[j]["signerInfo"].asString();
-
-				string originalname = allowPrograms[j]["originalName"].asString();
-
-				string protype = allowPrograms[j]["proType"].asString();
+						string procname = programs[k]["processName"].asString();
+						WCHAR wstrprocname[MAX_PATH];
+						MultiByteToWideChar(CP_ACP, 0, procname.c_str(), -1, wstrprocname, MAX_PATH);
+						setProcessMonitor(wstrprocname);
+					}
+				}
 			}
 
-			BOOLEAN networklimit = safepolicy["outNetworkLimit"].asInt();
 
-			int network_state = safepolicy["resProtectState"].asBool();
-			if (network_state)
+			int resProtectState = safepolicy["resProtectState"].asBool();
+			if (resProtectState == 1)
 			{
-				Json::Value network = safepolicy["resList"];
-				int networkcnt = network.size();
-				for (int j = 0; j < networkcnt; j++)
+				Json::Value resList = safepolicy["resList"];
+				int resListcnt = resList.size();
+				for (int j = 0; j < resListcnt; j++)
 				{
-					string procname = network[j]["name"].asString();
+				}
+			}
 
-					char dstname[256 + 4];
-					*(DWORD*)dstname = IOCTL_WFP_SDWS_ADD_PROCESS;
-					lstrcpyA(dstname + sizeof(DWORD), procname.c_str());
-					int namelen = (int)procname.length();
-					if (hWfp != INVALID_HANDLE_VALUE)
-					{
-						result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_PROCESS, (LPVOID)dstname, namelen + 1 + sizeof(DWORD), NULL, 0, &dwretcode, NULL);
-						//mylog("DeviceIoControl type:%d dns:%s\r\n", IOCTL_WFP_SDWS_ADD_PROCESS, dstname + sizeof(DWORD));
-					}
+			BOOLEAN outNetworkLimit = safepolicy["outNetworkLimit"].asBool();
+			if (outNetworkLimit)
+			{
+				Json::Value limitNetworks = safepolicy["limitNetworks"];
+				int limitNetworkscnt = limitNetworks.size();
+				for (int j = 0; j < limitNetworkscnt; j++)
+				{
+					string strip = limitNetworks[j]["network"].asString();
+					IPV4_PARAMS ipparam;
+					ipparam.type = IOCTL_WFP_SDWS_ADD_IPV4;
+					ipparam.dir = FWP_DIRECTION_OUTBOUND;
+					result = parseIPv4(strip.c_str(), &ipparam.ip, &ipparam.mask);
+					result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_IPV4, &ipparam, sizeof(IPV4_PARAMS), NULL, 0, &dwretcode, NULL);
+					//mylog("DeviceIoControl type:%d ip:%x ipstr:%s\r\n", IOCTL_WFP_SDWS_ADD_IPV4, ipparam.ip, strip.c_str());
 
-					string resseq = network[j]["resSeq"].asString();
-
-					int resauth_state = network[j]["resAuthState"].asBool();
-
-					string resauth_mark = network[j]["resAuthremark"].asString();
-
-					Json::Value match = network[j]["ipMatchInfo"];
-					int matchsize = match.size();
-					for (int i = 0; i < matchsize; i++)
-					{
-						string strip = match[i]["ip"].asString();
-
-						IPV4_PARAMS ipparam;
-						ipparam.type = IOCTL_WFP_SDWS_ADD_IPV4;
-						ipparam.dir = FWP_DIRECTION_OUTBOUND;
-						result = parseIPv4(strip.c_str(), &ipparam.ip, &ipparam.mask);
-						if (hWfp != INVALID_HANDLE_VALUE)
-						{
-							result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_IPV4, &ipparam, sizeof(IPV4_PARAMS), NULL, 0, &dwretcode, NULL);
-							//mylog("DeviceIoControl type:%d ip:%x ipstr:%s\r\n", IOCTL_WFP_SDWS_ADD_IPV4, ipparam.ip, strip.c_str());
-						}
-
-						string url = match[i]["showUrl"].asString();
-						char dsturl[256 + 4];
-						*(DWORD*)dsturl = IOCTL_WFP_SDWS_ADD_URL;
-						int urllen = parseUrl(url.c_str(), dsturl + sizeof(DWORD));
-						if (hWfp != INVALID_HANDLE_VALUE)
-						{
-							result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_URL, (LPVOID)dsturl, urllen + 1 + sizeof(DWORD), NULL, 0, &dwretcode, NULL);
-							//mylog("DeviceIoControl type:%d dns:%s\r\n", IOCTL_WFP_SDWS_ADD_URL, dsturl + sizeof(DWORD));
-						}
-
-						int enable = match[i]["defaultShow"].asBool();
-
-						int port = match[i]["minPort"].asInt();
-						PORT_PARAMS portparam;
-						portparam.type = IOCTL_WFP_SDWS_ADD_PORT;
-						portparam.dir = FWP_DIRECTION_OUTBOUND;
-						portparam.port = parsePort(port);
-						if (hWfp != INVALID_HANDLE_VALUE)
-						{
-							result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_PORT, (LPVOID)&portparam, sizeof(PORT_PARAMS), NULL, 0, &dwretcode, NULL);
-							//mylog("DeviceIoControl type:%d port:%d\r\n", IOCTL_WFP_SDWS_ADD_PORT, portparam.port);
-						}
-
-						int protocol = match[i]["protocol"].asInt();
-
-					}
+					string port = limitNetworks[j]["port"].asString();
+					PORT_PARAMS portparam;
+					portparam.type = IOCTL_WFP_SDWS_ADD_PORT;
+					portparam.dir = FWP_DIRECTION_OUTBOUND;
+					portparam.port = parsePort(atoi(port.c_str()));
+					result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_PORT, (LPVOID)&portparam, sizeof(PORT_PARAMS), NULL, 0, &dwretcode, NULL);
 				}
 			}
 		}
@@ -264,7 +234,7 @@ int setJsonConfig_new(const WCHAR* filename, char* utf8data, int utf8size) {
 
 
 
-extern "C" __declspec(dllexport) int configBox_new(const WCHAR * wstrusername, const WCHAR * wstrpassword, WCHAR * verapath, WCHAR * strverasize) {
+extern "C" __declspec(dllexport) int configBox(const WCHAR * wstrusername, const WCHAR * wstrpassword, WCHAR * verapath, WCHAR * strverasize) {
 	int result = 0;
 	if (wstrusername == 0 || wstrpassword == 0)
 	{
@@ -383,6 +353,8 @@ extern "C" __declspec(dllexport) int configBox_new(const WCHAR * wstrusername, c
 		return FALSE;
 	}
 
+	string timestamp = root["timestamp"].asString();
+
 	string cmd = root["cmd"].asString();
 	if (cmd != "getSandBoxRule" && cmd != "updateSandBoxRule")
 	{
@@ -397,14 +369,13 @@ extern "C" __declspec(dllexport) int configBox_new(const WCHAR * wstrusername, c
 	Json::Value data = root["data"];
 	int datacnt = data.size();
 
-	for (int i = 0; i < datacnt; i++)
+	for (int data_number = 0; data_number < datacnt; data_number++)
 	{
-		Json::Value spaceinfo = data[i]["spaceInfo"];
-		Json::Value safepolicy = data[i]["safePolicy"];
+		Json::Value spaceinfo = data[data_number]["spaceInfo"];
+		Json::Value safepolicy = data[data_number]["safePolicy"];
 
 		string name = spaceinfo["name"].asString();
-		string spaceType = spaceinfo["spaceType"].asString();
-		string safeLevel = spaceinfo["safeLevel"].asString();
+		int spaceType = spaceinfo["spaceType"].asInt();
 
 		if (name != "")
 		{
@@ -479,83 +450,68 @@ extern "C" __declspec(dllexport) int configBox_new(const WCHAR * wstrusername, c
 		BOOLEAN printer = SbieApi_QueryPrinter();
 		mylog(L"query screen:%d,watermark:%d,printer:%d", screencap, watermark, printer);
 
-		Json::Value allowPrograms = safepolicy["allowPrograms"];
-		int allowprogcnt = allowPrograms.size();
-		for (int j = 0; j < allowprogcnt; j++)
+		BOOLEAN programLimit = safepolicy["programLimit"].asBool();
+		if (programLimit)
 		{
-			string name = allowPrograms[j]["name"].asString();
-
-			string copyright = allowPrograms[j]["copyrightInfo"].asString();
-
-			string protype = allowPrograms[j]["proType"].asString();
-
-			Json::Value programs = allowPrograms[j]["programs"].asString();
-			int programs_cnt = programs.size();
-			for (int k = 0;k < programs_cnt;k ++)
+			Json::Value allowPrograms = safepolicy["allowPrograms"];
+			int allowprogcnt = allowPrograms.size();
+			for (int j = 0; j < allowprogcnt; j++)
 			{
-				string sign = allowPrograms[j]["signerInfo"].asString();
+				string name = allowPrograms[j]["name"].asString();
 
-				string procname = allowPrograms[j]["processName"].asString();
-				WCHAR wstrprocname[MAX_PATH];
-				MultiByteToWideChar(CP_ACP, 0, procname.c_str(), -1, wstrprocname, MAX_PATH);
-				setProcessMonitor(wstrprocname);
+				string copyright = allowPrograms[j]["copyrightInfo"].asString();
+
+				string protype = allowPrograms[j]["proType"].asString();
+
+				Json::Value programs = allowPrograms[j]["programs"];
+				int programs_cnt = programs.size();
+				for (int k = 0; k < programs_cnt; k++)
+				{
+					string sign = programs[k]["signerInfo"].asString();
+
+					string procname = programs[k]["processName"].asString();
+					WCHAR wstrprocname[MAX_PATH];
+					MultiByteToWideChar(CP_ACP, 0, procname.c_str(), -1, wstrprocname, MAX_PATH);
+					setProcessMonitor(wstrprocname);
+				}
 			}
 		}
 
-		BOOLEAN networklimit = safepolicy["outNetworkLimit"].asInt();
 
-		int network_state = safepolicy["resProtectState"].asBool();
-		if (network_state)
+
+		int resProtectState = safepolicy["resProtectState"].asBool();
+		if (resProtectState == 1)
 		{
-			Json::Value network = safepolicy["resList"];
-			int networkcnt = network.size();
-			for (int j = 0; j < networkcnt; j++)
+			Json::Value resList = safepolicy["resList"];
+			int resListcnt = resList.size();
+			for (int j = 0; j < resListcnt; j++)
 			{
-				string procname = network[j]["name"].asString();
-				char dstname[256 + 4];
-				*(DWORD*)dstname = IOCTL_WFP_SDWS_ADD_PROCESS;
-				lstrcpyA(dstname + sizeof(DWORD), procname.c_str());
-				int namelen = (int)procname.length();
-				result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_PROCESS, (LPVOID)dstname, namelen + 1 + sizeof(DWORD), NULL, 0, &dwretcode, NULL);
-				//mylog("DeviceIoControl type:%d dns:%s\r\n", IOCTL_WFP_SDWS_ADD_PROCESS, dstname + sizeof(DWORD));
 
-				string resseq = network[j]["resSeq"].asString();
+			}
+		}
 
-				int resauth_state = network[j]["resAuthState"].asBool();
+		BOOLEAN outNetworkLimit = safepolicy["outNetworkLimit"].asBool();
+		if (outNetworkLimit)
+		{
+			Json::Value limitNetworks = safepolicy["limitNetworks"];
+			int limitNetworkscnt = limitNetworks.size();
+			for (int j = 0; j < limitNetworkscnt; j++)
+			{
+				string strip = limitNetworks[j]["network"].asString();
+				IPV4_PARAMS ipparam;
+				ipparam.type = IOCTL_WFP_SDWS_ADD_IPV4;
+				ipparam.dir = FWP_DIRECTION_OUTBOUND;
+				result = parseIPv4(strip.c_str(), &ipparam.ip, &ipparam.mask);
+				result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_IPV4, &ipparam, sizeof(IPV4_PARAMS), NULL, 0, &dwretcode, NULL);
+				//mylog("DeviceIoControl type:%d ip:%x ipstr:%s\r\n", IOCTL_WFP_SDWS_ADD_IPV4, ipparam.ip, strip.c_str());
 
-				string resauth_mark = network[j]["resAuthremark"].asString();
-
-				Json::Value match = network[j]["ipMatchInfo"];
-				int matchsize = match.size();
-				for (int i = 0; i < matchsize; i++)
-				{
-					string strip = match[i]["ip"].asString();
-					IPV4_PARAMS ipparam;
-					ipparam.type = IOCTL_WFP_SDWS_ADD_IPV4;
-					ipparam.dir = FWP_DIRECTION_OUTBOUND;
-					result = parseIPv4(strip.c_str(), &ipparam.ip, &ipparam.mask);
-					result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_IPV4, &ipparam, sizeof(IPV4_PARAMS), NULL, 0, &dwretcode, NULL);
-					//mylog("DeviceIoControl type:%d ip:%x ipstr:%s\r\n", IOCTL_WFP_SDWS_ADD_IPV4, ipparam.ip, strip.c_str());
-
-					string url = match[i]["showUrl"].asString();
-					char dsturl[256 + 4];
-					*(DWORD*)dsturl = IOCTL_WFP_SDWS_ADD_URL;
-					int urllen = parseUrl(url.c_str(), dsturl + sizeof(DWORD));
-					result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_URL, (LPVOID)dsturl, urllen + 1 + sizeof(DWORD), NULL, 0, &dwretcode, NULL);
-					//mylog("DeviceIoControl type:%d dns:%s\r\n", IOCTL_WFP_SDWS_ADD_URL, dsturl + sizeof(DWORD));
-
-					int enable = match[i]["defaultShow"].asBool();
-
-					int port = match[i]["minPort"].asInt();
-					PORT_PARAMS portparam;
-					portparam.type = IOCTL_WFP_SDWS_ADD_PORT;
-					portparam.dir = FWP_DIRECTION_OUTBOUND;
-					portparam.port = parsePort(port);
-					result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_PORT, (LPVOID)&portparam, sizeof(PORT_PARAMS), NULL, 0, &dwretcode, NULL);
-					//mylog("DeviceIoControl type:%d port:%d\r\n", IOCTL_WFP_SDWS_ADD_PORT, portparam.port);
-
-					int protocol = match[i]["protocol"].asInt();
-				}
+				string port = limitNetworks[j]["port"].asString();
+				PORT_PARAMS portparam;
+				portparam.type = IOCTL_WFP_SDWS_ADD_PORT;
+				portparam.dir = FWP_DIRECTION_OUTBOUND;
+				portparam.port = parsePort(atoi(port.c_str()));
+				result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_PORT, (LPVOID)&portparam, sizeof(PORT_PARAMS), NULL, 0, &dwretcode, NULL);
+				//mylog("DeviceIoControl type:%d port:%d\r\n", IOCTL_WFP_SDWS_ADD_PORT, portparam.port);
 			}
 		}
 	}

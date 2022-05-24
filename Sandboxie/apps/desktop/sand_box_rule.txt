@@ -1,1 +1,99 @@
-{"cmd":"getSandBoxRule","data":[{"name":"test","fileExport":1,"screenCapture":2,"waterMark":2,"printer":1,"allowPrograms":[{"name":"uTools","copyrightInfo":"Copyrighe@ 2021 uTools.All rights reserved.","processName":"uTools.exe","signerInfo":"Fuzhou Yuanli Information Technology Co., Ltd.","originalName":"uTools.exe"}],"resProtectState":1,"resList":[{"name":"禅道","resSeq":"f7c6ebcf","ipMatchInfo":[{"ip":"192.168.100.250","protocol":6,"showUrl":"http://192.168.100.250:9001","defaultShow":true}],"proxySrvAddr":"/","resAuthState":1,"resAuthremark":"正常"},{"name":"Git","resSeq":"8d659cec","ipMatchInfo":[{"ip":"192.168.100.250","protocol":6,"showUrl":"http://192.168.100.250","defaultShow":true},{"ip":"192.168.100.250","protocol":1,"showUrl":"icmp://192.168.100.250"}],"proxySrvAddr":"/","resAuthState":1,"resAuthremark":"正常"},{"name":"190","resSeq":"5c3c276c","ipMatchInfo":[{"ip":"192.168.100.190","protocol":6,"showUrl":"https://192.168.100.190","defaultShow":true},{"ip":"192.168.100.190","protocol":1,"showUrl":"icmp://192.168.100.190"}],"proxySrvAddr":"/","resAuthState":1,"resAuthremark":"正常"}],"spaceType":2},{"resProtectState":1,"resList":[{"name":"Git","resSeq":"8d659cec","ipMatchInfo":[{"ip":"192.168.100.250","protocol":6,"showUrl":"http://192.168.100.250","defaultShow":true},{"ip":"192.168.100.250","protocol":1,"showUrl":"icmp://192.168.100.250"}],"proxySrvAddr":"/","resAuthState":1,"resAuthremark":"正常"},{"name":"190","resSeq":"5c3c276c","ipMatchInfo":[{"ip":"192.168.100.190","protocol":6,"showUrl":"https://192.168.100.190","defaultShow":true},{"ip":"192.168.100.190","protocol":1,"showUrl":"icmp://192.168.100.190"}],"proxySrvAddr":"/","resAuthState":1,"resAuthremark":"正常"},{"name":"禅道","resSeq":"f7c6ebcf","ipMatchInfo":[{"ip":"192.168.100.250","protocol":6,"showUrl":"http://192.168.100.250:9001","defaultShow":true}],"proxySrvAddr":"/","resAuthState":1,"resAuthremark":"正常"}],"spaceType":1}],"err_code":0,"ret":"success","timestamp":"2022-04-18T16:44:43.3523495+08:00"}
+{
+    "cmd": "getSandBoxRule",
+    "data": [
+        {
+            "spaceInfo": {
+                "name": "研发空间",
+                "spaceType": 2
+            },
+            "safePolicy": {
+                "fileExport": 2,
+                "screenCapture": 2,
+                "waterMark": 2,
+                "printer": 2,
+                "allowPrograms": [
+                    {
+                        "name": "微信",
+                        "copyrightInfo": "腾讯计算机系统有限公司",
+                        "proType": "聊天软件",
+                        "programs": [
+                            {
+                                "processName": "wechat.exe",
+                                "signerInfo": "Tencent Technology(Shenzhen) Company Limited"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "腾讯QQ",
+                        "copyrightInfo": "腾讯计算机系统有限公司",
+                        "proType": "聊天软件",
+                        "programs": [
+                            {
+                                "processName": "QQ.EXE",
+                                "signerInfo": "Tencent Technology(Shenzhen) Company Limited"
+                            }
+                        ]
+                    }
+                ],
+                "resProtectState": 1,
+                "resList": [
+                    {
+                        "name": "国铁",
+                        "resSeq": "a0cf82c8"
+                    },
+                    {
+                        "resType": 1,
+                        "name": "知乎",
+                        "resSeq": "ceda6c41",
+                        "realSrvAddr": "https://zhuanlan.zhihu.com/p/147377961",
+                        "proxySrvAddr": "https://zhuanlan.proxy.sowings.com.cn:8002"
+                    },
+                    {
+                        "name": "文件服务-10.77.0.4",
+                        "resSeq": "23b8371",
+                        "ipMatchInfo": [
+                            {
+                                "ip": "10.77.0.4",
+                                "protocol": 6,
+                                "showUrl": "https://10.77.0.4:8003"
+                            }
+                        ]
+                    }
+                ],
+                "programLimit": true
+            }
+        },
+        {
+            "spaceInfo": {
+                "name": "娱乐空间",
+                "spaceType": 2
+            },
+            "safePolicy": {
+                "fileExport": 1,
+                "screenCapture": 1,
+                "waterMark": 1,
+                "printer": 1,
+                "resProtectState": 2
+            }
+        },
+        {
+            "spaceInfo": {
+                "name": "本地空间",
+                "spaceType": 1
+            },
+            "safePolicy": {
+                "resProtectState": 1,
+                "outNetworkLimit": true,
+                "limitNetworks": [
+                    {
+                        "network": "10.77.0.4/32",
+                        "port": "8003"
+                    }
+                ]
+            }
+        }
+    ],
+    "err_code": 0,
+    "ret": "success",
+    "timestamp": "2022-05-20T16:35:57.8928296+08:00"
+}

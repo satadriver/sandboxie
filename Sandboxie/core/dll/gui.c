@@ -1267,6 +1267,7 @@ ptrSetWindowDisplayAffinity lpSetWindowDisplayAffinity = 0;
 
 int setWindowHiddenAttribute(HWND hwnd) {
 #define WDA_MONITOR 1
+	return TRUE;
 
 	int result = SbieApi_QueryScreenshot();
 	if (result == BASIC_DISABLE_STATE)

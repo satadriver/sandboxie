@@ -36,12 +36,40 @@ int parseUrl(const char* url, char* dsturl) {
 	return urllen;
 }
 
-DWORD parseIPv4(const char * stripv4,DWORD * dstip,DWORD * mask) {
+DWORD parseIPv4(const char * strip,DWORD * dstip,DWORD * mask) {
+
+	char stripv4[64];
+	lstrcpyA(stripv4, strip);
+	char * pos = strchr(stripv4, '/');
+	if (pos)
+	{
+		*pos = 0;
+		int masksize = atoi(pos + 1);
+		if (masksize == 8)
+		{
+			*mask = 0xffffff00;
+		}else if (masksize == 16)
+		{
+			*mask = 0xffff0000;
+		}else if (masksize == 24)
+		{
+			*mask = 0xff000000;
+		}else if (masksize == 32)
+		{
+			*mask = 0xffffffff;
+		}
+		else {
+			*mask = 0xffffffff;
+		}
+	}
+	else {
+		*mask = 0xffffffff;
+	}
+
 	DWORD dwip = inet_addr(stripv4);
 	if (dwip && dwip != 0xffffffff )
 	{
 		*dstip = dwip;
-		*mask = 0xffffffff;
 		return TRUE;
 	}
 	int ipv4len = lstrlenA(stripv4);
@@ -254,6 +282,8 @@ int setProcessMonitor(const WCHAR * processname) {
 	}
 	return TRUE;
 }
+
+
 
 int setPrinterControl(BOOLEAN enable) {
 	int result = 0;

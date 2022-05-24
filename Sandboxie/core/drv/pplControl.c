@@ -41,6 +41,8 @@ extern "C"
 
 extern UCHAR* PsGetProcessImageFileName(__in PEPROCESS Process);
 
+/*
+
 ULONG PsProtectionOffset = 0;
 ULONG SignatureLevelOffset = 0;
 ULONG SectionSignatureLevelOffset = 0;
@@ -545,3 +547,4 @@ NTSTATUS pplInit()
 }
 
 
+*/

@@ -138,6 +138,8 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 /*
 to setup and start driver without digital signature on 64 bit windows,run below 4 commands in cmd.exe with administrator priority:
+
+bcdedit /set testsigning on
 bcdedit /set testsigning on
 
 bcdedit /bootdebug ON

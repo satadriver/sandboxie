@@ -475,10 +475,10 @@ BOOL CreateLucencyBorderWindow(
 	ScreenshotEnabled = SbieApi_QueryScreenshot();
 	if (ScreenshotEnabled == 2)
 	{
-		if (!SetWindowDisplayAffinity(hWnd, WDA_MONITOR))
-		{
-			DP1("[LYSM][CreateLucencyBorderWindow] SetWindowDisplayAffinity error : %d \n", GetLastError());
-		}
+// 		if (!SetWindowDisplayAffinity(hWnd, WDA_MONITOR))
+// 		{
+// 			DP1("[LYSM][CreateLucencyBorderWindow] SetWindowDisplayAffinity error : %d \n", GetLastError());
+// 		}
 	}
 	
 	// 显示窗口

@@ -237,6 +237,8 @@ _FX NTSTATUS Syscall_OpenHandle(
     // The theory is that if some other process is attempting an OpenThread with write access, it will fail later on when it actually tries to write.
     // But these strange calls from WOW64 will succeed. So no hole is created.
 
+	DbgPrint("Syscall_OpenHandle name:%s",syscall_entry->name);
+
     if ((strcmp(syscall_entry->name, "OpenThread") == 0) && (user_args[1] == (THREAD_GET_CONTEXT | THREAD_SET_CONTEXT))) {
         PCLIENT_ID  ClientId = (PCLIENT_ID)user_args[3];
         if ( (ClientId == NULL) || !Process_IsSameBox(proc, NULL, (ULONG_PTR)ClientId->UniqueProcess)) {

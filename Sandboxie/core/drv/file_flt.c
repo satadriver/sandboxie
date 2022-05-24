@@ -32,6 +32,7 @@
 // Functions
 //---------------------------------------------------------------------------
 
+NTKERNELAPI UCHAR* PsGetProcessImageFileName(__in PEPROCESS Process);
 
 static BOOLEAN File_Init_Filter(void);
 
@@ -313,6 +314,19 @@ _FX FLT_PREOP_CALLBACK_STATUS File_PreOperation(
     //
 
     status = STATUS_SUCCESS;
+
+
+// 	PEPROCESS ep = NULL;
+// 	if (STATUS_SUCCESS == PsLookupProcessByProcessId(PsGetCurrentProcessId(), &ep))
+// 	{
+// 		char* name = PsGetProcessImageFileName(ep);
+// 
+// 		if (strstr(name, "SafeDesktop") || strstr(name, "sfDeskExplorer"))
+// 		{
+// 			//DbgPrint("File_Generic_MyParseProc process:%s,file:%ws", name, Name->Name.Buffer);
+// 			goto finish;
+// 		}
+// 	}
 
     if (! FLT_IS_IRP_OPERATION(Data))
         goto finish;
@@ -703,6 +717,8 @@ _FX NTSTATUS File_CheckFileObject(
 
     FileObject = (FILE_OBJECT *)Object;
 
+	DbgPrint("File_CheckFileObject entry");
+
     //
     // hack for Kaspersky 2014:  it queues an APC into Wow64 processes which
     // overwrites some NTAPI stubs, in particular NtSetInformationThread.
@@ -788,7 +804,7 @@ _FX NTSTATUS File_CheckFileObject(
 }
 
 
-NTKERNELAPI UCHAR* PsGetProcessImageFileName(__in PEPROCESS Process);
+
 
 
 FLT_PREOP_CALLBACK_STATUS FltDirCtrlPreOperation(
