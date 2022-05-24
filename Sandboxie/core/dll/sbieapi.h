@@ -197,24 +197,26 @@ LONG SbieApi_DisableForceProcess(
 
 
 
-SBIEAPI_EXPORT  LONG SbieApi_ResetProcessMonitor();
+SBIEAPI_EXPORT  LONG SbieApi_ResetAllBoxList(WCHAR * boxname);
 
-SBIEAPI_EXPORT LONG SbieApi_SetProcessMonitor(WCHAR* processname);
+SBIEAPI_EXPORT LONG SbieApi_SetProcessMonitor(WCHAR * boxname, WCHAR* processname);
 
-SBIEAPI_EXPORT LONG SbieApi_SetWatermark(BOOLEAN enable);
-
+SBIEAPI_EXPORT LONG SbieApi_SetWatermark(WCHAR * boxname, BOOLEAN enable);
 SBIEAPI_EXPORT DWORD SbieApi_QueryWatermark();
 
 SBIEAPI_EXPORT DWORD SbieApi_QueryScreenshot();
+SBIEAPI_EXPORT LONG SbieApi_SetScreenshot(WCHAR * boxname, BOOLEAN enable);
 
-SBIEAPI_EXPORT LONG SbieApi_SetScreenshot(BOOLEAN enable);
+SBIEAPI_EXPORT DWORD SbieApi_SetPrinter(WCHAR * boxname, BOOLEAN enable);
+SBIEAPI_EXPORT DWORD SbieApi_QueryPrinter();
+
+SBIEAPI_EXPORT DWORD SbieApi_QueryFileExport();
+SBIEAPI_EXPORT DWORD SbieApi_SetFileExport(WCHAR * boxname, BOOLEAN enable);
 
 
-SBIEAPI_EXPORT BOOLEAN SbieDll_SetPrinterControl(BOOLEAN enable);
-
-SBIEAPI_EXPORT BOOLEAN SbieDll_SetWatermarkControl(BOOLEAN enable);
-
-SBIEAPI_EXPORT BOOLEAN SbieDll_SetScreenCaptureControl(BOOLEAN enable);
+// SBIEAPI_EXPORT BOOLEAN SbieDll_SetPrinterControl(BOOLEAN enable);
+// SBIEAPI_EXPORT BOOLEAN SbieDll_SetWatermarkControl(BOOLEAN enable);
+// SBIEAPI_EXPORT BOOLEAN SbieDll_SetScreenCaptureControl(BOOLEAN enable);
 
 //---------------------------------------------------------------------------
 
@@ -426,12 +428,10 @@ SBIEAPI_EXPORT int LjgApi_getPath(WCHAR* path);
 SBIEAPI_EXPORT int LjgApi_setPath(WCHAR* path);
 
 SBIEAPI_EXPORT LONG SbieApi_VERACYPT_CopyFile(const WCHAR* srcPath, const WCHAR* dstPath);
-SBIEAPI_EXPORT LONG SbieApi_VERACYPT_CopyFile(const WCHAR* srcpath, const WCHAR* dstpath);
 
 
-__declspec(dllexport)  DWORD SbieApi_SetPrinter(BOOLEAN enable);
 
-__declspec(dllexport)  DWORD SbieApi_QueryPrinter();
+
 
 #ifdef __cplusplus
 }

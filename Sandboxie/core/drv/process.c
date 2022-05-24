@@ -213,27 +213,23 @@ _FX BOOLEAN Process_Init(void)
     Api_SetFunction(API_QUERY_PATH_LIST,      Process_Api_QueryPathList);
     Api_SetFunction(API_ENUM_PROCESSES,       Process_Api_Enum);
 
-	Api_SetFunction(API_RESET_PROCESS_MONITOR, Process_Api_ResetProcessMonitor);
+	Api_SetFunction(API_RESET_ALL_BOX_LIST, Process_Api_ResetAll);
 	Api_SetFunction(API_SET_PROCESS_MONITOR, Process_Api_SetProcessMonitor);
 
 	Api_SetFunction(API_SET_FILEEXPORT, Process_Api_SetFileExport);
 	Api_SetFunction(API_QUERY_FILEEXPORT, Process_Api_QueryFileExport);
 
 	Api_SetFunction(API_SET_SCREENSHOT, Process_Api_SetScreenshot);
-
 	Api_SetFunction(API_QUERY_SCREENSHOT, Process_Api_QueryScreenshot);
 
-	Api_SetFunction(API_USERNAME_PASSWORD, Process_Api_UsernamePassword);
-
 	Api_SetFunction(API_SET_WATERMARK, Process_Api_SetWatermark);
-
 	Api_SetFunction(API_QUERY_WATERMARK, Process_Api_QueryWatermark);
 
 	Api_SetFunction(API_SET_PRINTER, Process_Api_SetPrinter);
-
 	Api_SetFunction(API_QUERY_PRINTER, Process_Api_QueryPrinter);
 
 	Api_SetFunction(API_VERACRYPT_COPYFILE, Veracrypt_Api_CopyFile);
+	Api_SetFunction(API_USERNAME_PASSWORD, Process_Api_UsernamePassword);
 
     return TRUE;
 }

@@ -965,7 +965,7 @@ int getBoxedFile(const WCHAR* filename,const WCHAR * boxname, WCHAR* dospath) {
 
 	mylog(L"getBoxedFile  start\r\n"); 
 
-	DWORD exportFlag = SbieApi_QueryFileExport();
+	DWORD exportFlag = SbieApi__QueryFileExport();
 	if (exportFlag != BASIC_ENABLE_STATE)
 	{
 		mylog(L"exportFlag:%d is not permitted to export file", exportFlag);

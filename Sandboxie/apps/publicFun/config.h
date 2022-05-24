@@ -20,10 +20,7 @@
 
 
 
-// #define IPV4_TYPE	0X12345678
-// #define PORT_TYPE	0X01234567
-// #define DNS_TYPE	0X23456789
-// #define URL_TYPE	0X3456789A
+
 
 
 #pragma pack(1)
@@ -82,15 +79,13 @@ extern "C" __declspec(dllexport) DWORD parseIPv4(const char* stripv4, DWORD* dst
 
 extern "C" __declspec(dllexport) WORD parsePort(WORD port);
 
-extern "C" __declspec(dllexport) int resetProcessMonitor();
+extern "C" __declspec(dllexport) int resetAllBoxList();
 
 extern "C" __declspec(dllexport) int setProcessMonitor(const WCHAR* processname);
 
-extern "C" __declspec(dllexport) int setPrinterControl(BOOLEAN enable);
-
-extern "C" __declspec(dllexport) BOOLEAN SetWatermarkControl(BOOLEAN enable);
-
-extern "C" __declspec(dllexport) BOOLEAN SetScreenCaptureControl(BOOLEAN enable);
+// extern "C" __declspec(dllexport) int setPrinterControl(BOOLEAN enable);
+// extern "C" __declspec(dllexport) BOOLEAN SetWatermarkControl(BOOLEAN enable);
+// extern "C" __declspec(dllexport) BOOLEAN SetScreenCaptureControl(BOOLEAN enable);
 
 extern "C" __declspec(dllexport) int setScreenshot(int enable);
 

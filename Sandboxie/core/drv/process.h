@@ -39,39 +39,68 @@ typedef struct  _PROCESS_MONITOR_LIST
 {
 	struct  _PROCESS_MONITOR_LIST* prev;
 	struct  _PROCESS_MONITOR_LIST* next;
+	WCHAR boxname[32];
 	wchar_t processname[64];
 }PROCESS_MONITOR_LIST;
+
+
+typedef struct  _WATERMARK_BOX_LIST
+{
+	struct  _WATERMARK_BOX_LIST* prev;
+	struct  _WATERMARK_BOX_LIST* next;
+	WCHAR boxname[32];
+	int enable;
+}WATERMARK_BOX_LIST;
+
+typedef struct  _SCREENSHOT_BOX_LIST
+{
+	struct  _SCREENSHOT_BOX_LIST* prev;
+	struct  _SCREENSHOT_BOX_LIST* next;
+	WCHAR boxname[32];
+	int enable;
+}SCREENSHOT_BOX_LIST;
+
+typedef struct  _FILEEXPORT_BOX_LIST
+{
+	struct  _FILEEXPORT_BOX_LIST* prev;
+	struct  _FILEEXPORT_BOX_LIST* next;
+	WCHAR boxname[32];
+	int enable;
+}FILEEXPORT_BOX_LIST;
+
+
+typedef struct  _PRINTER_BOX_LIST
+{
+	struct  _PRINTER_BOX_LIST* prev;
+	struct  _PRINTER_BOX_LIST* next;
+	WCHAR boxname[32];
+	int enable;
+}PRINTER_BOX_LIST;
 
 #pragma pack()
 
 extern PROCESS_MONITOR_LIST* g_process_monitor_list;
 
-NTSTATUS Process_Api_ResetProcessMonitor(PROCESS* proc, ULONG64* parms);
-
 PROCESS_MONITOR_LIST* getProhibitProcess(const WCHAR* value);
 
+NTSTATUS Process_Api_ResetAll(PROCESS* proc, ULONG64* parms);
 NTSTATUS Process_Api_SetProcessMonitor(PROCESS* proc, ULONG64* parms);
 
 NTSTATUS Process_Api_SetScreenshot(PROCESS* proc, ULONG64* parms);
-
-NTSTATUS Process_Api_QueryWatermark(PROCESS* proc, ULONG64* parms);
-
-NTSTATUS Process_Api_QueryPrinter(PROCESS* proc, ULONG64* parms);
-
-
-NTSTATUS Veracrypt_Api_CopyFile(PROCESS* proc, ULONG64* parms);
-
-NTSTATUS Process_Api_SetPrinter(PROCESS* proc, ULONG64* parms);
-
-NTSTATUS Process_Api_SetWatermark(PROCESS* proc, ULONG64* parms);
-
 NTSTATUS Process_Api_QueryScreenshot(PROCESS* proc, ULONG64* parms);
 
-NTSTATUS Process_Api_UsernamePassword(PROCESS* proc, ULONG64* parms);
+NTSTATUS Process_Api_QueryPrinter(PROCESS* proc, ULONG64* parms);
+NTSTATUS Process_Api_SetPrinter(PROCESS* proc, ULONG64* parms);
+
+NTSTATUS Process_Api_QueryWatermark(PROCESS* proc, ULONG64* parms);
+NTSTATUS Process_Api_SetWatermark(PROCESS* proc, ULONG64* parms);
 
 NTSTATUS Process_Api_QueryFileExport(PROCESS* proc, ULONG64* parms);
 NTSTATUS Process_Api_SetFileExport(PROCESS* proc, ULONG64* parms);
 
+NTSTATUS Veracrypt_Api_CopyFile(PROCESS* proc, ULONG64* parms);
+
+NTSTATUS Process_Api_UsernamePassword(PROCESS* proc, ULONG64* parms);
 
 #ifdef _WIN64
 #define PROCESS_TERMINATED      ((PROCESS *) 0xFFFFFFFFFFFFFFFF)

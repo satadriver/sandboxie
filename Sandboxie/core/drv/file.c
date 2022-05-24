@@ -1137,10 +1137,6 @@ _FX NTSTATUS File_Generic_MyParseProc(
         return status;
     }
 
-
-
-
-
     //
     // check if the specified path leads inside the box.  and if this
     // is an unsandboxed NamedPipe or MailSlot, we need to remember

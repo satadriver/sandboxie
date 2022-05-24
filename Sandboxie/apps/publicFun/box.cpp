@@ -598,15 +598,6 @@ int runDesktopBox(const wchar_t* boxname) {
 	int result = 0;
 	wchar_t szparam[1024];
 
-// 	WCHAR curpath[MAX_PATH];
-// 	GetModuleFileNameW(0, curpath, MAX_PATH);
-// 	WCHAR* pos = wcsrchr(curpath, L'\\');
-// 	if (pos)
-// 	{
-// 		*(pos + 1) = 0;
-// 	}
-// 	lstrcatW(curpath, L"mingw" SANDBOXIE_DESKTOPEXE);
-//	int len = wsprintfW(szparam, L"%ws %ws", curpath, boxname);
 	int len = wsprintfW(szparam, L"%ws %ws", SANDBOXIE_DESKTOPEXE, boxname);
 	result = IsUserAnAdmin();
 	if (result)

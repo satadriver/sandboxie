@@ -315,19 +315,6 @@ _FX FLT_PREOP_CALLBACK_STATUS File_PreOperation(
 
     status = STATUS_SUCCESS;
 
-
-// 	PEPROCESS ep = NULL;
-// 	if (STATUS_SUCCESS == PsLookupProcessByProcessId(PsGetCurrentProcessId(), &ep))
-// 	{
-// 		char* name = PsGetProcessImageFileName(ep);
-// 
-// 		if (strstr(name, "SafeDesktop") || strstr(name, "sfDeskExplorer"))
-// 		{
-// 			//DbgPrint("File_Generic_MyParseProc process:%s,file:%ws", name, Name->Name.Buffer);
-// 			goto finish;
-// 		}
-// 	}
-
     if (! FLT_IS_IRP_OPERATION(Data))
         goto finish;
 

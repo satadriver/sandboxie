@@ -24,7 +24,7 @@ extern "C" __declspec(dllexport) void WINAPI UnInstallLaunchEv()
 
 extern "C" __declspec(dllexport) int WINAPI InstallLaunchEv()
 {
-	int result = SbieApi_QueryScreenshot();
+	int result = SbieApi__QueryScreenshot();
 	if (result == BASIC_DISABLE_STATE)
 	{
 		return FALSE;

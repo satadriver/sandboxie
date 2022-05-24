@@ -99,7 +99,7 @@ BOOL WINAPI PrintWindowNew(_In_ HWND hwnd, _In_ HDC hdcBlt, _In_ UINT nFlags) {
 		{
 			//HWND hwnd = GetDesktopWindow();
 			//SetWindowDisplayAffinity(hwnd, WDA_MONITOR);
-			int result = SbieApi_QueryScreenshot();
+			int result = SbieApi__QueryScreenshot();
 			if (result == BASIC_DISABLE_STATE)
 			{
 				log(L"process %d call PrintWindow\r\n", GetCurrentProcessId());
@@ -123,7 +123,7 @@ HDC WINAPI GetDCNew(HWND hwnd) {
 	HWND hdesktop = GetDesktopWindow();
 	if (hwnd == 0 || hdesktop == hwnd )
 	{
-		int result = SbieApi_QueryScreenshot();
+		int result = SbieApi__QueryScreenshot();
 		if (result == BASIC_DISABLE_STATE)
 		{
 			TlsSetValue(g_tlsIdx, hdc);
@@ -147,7 +147,7 @@ HDC WINAPI CreateDCWNew(
 	{
 		if (lstrcmpiW(pwszDriver, L"DISPLAY") == 0)
 		{
-			int result = SbieApi_QueryScreenshot();
+			int result = SbieApi__QueryScreenshot();
 			if (result == BASIC_DISABLE_STATE)
 			{
 				TlsSetValue(g_tlsIdx, hdc);
@@ -171,7 +171,7 @@ HDC WINAPI CreateDCANew(
 	{
 		if (lstrcmpiA(pszDriver, "DISPLAY") == 0)
 		{
-			int result = SbieApi_QueryScreenshot();
+			int result = SbieApi__QueryScreenshot();
 			if (result == BASIC_DISABLE_STATE)
 			{
 				TlsSetValue(g_tlsIdx, hdc);
@@ -191,7 +191,7 @@ HDC __stdcall GetWindowDCNew(HWND hwnd)
 
 	if (hdesktop == hwnd)
 	{
-		int result = SbieApi_QueryScreenshot();
+		int result = SbieApi__QueryScreenshot();
 		if (result == BASIC_DISABLE_STATE)
 		{
 			TlsSetValue(g_tlsIdx, hdc);
@@ -443,7 +443,7 @@ BOOL WINAPI OpenPrinterANew(
 
 	OutputDebugStringW(L"OpenPrinterA enter\r\n");
 
-	int result = SbieApi_QueryPrinter();
+	int result = SbieApi__QueryPrinter();
 	if (result == BASIC_DISABLE_STATE)
 	{
 		if (phPrinter)
@@ -467,7 +467,7 @@ BOOL WINAPI OpenPrinter2ANew(
 
 	OutputDebugStringW(L"OpenPrinter2A enter\r\n");
 
-	int result = SbieApi_QueryPrinter();
+	int result = SbieApi__QueryPrinter();
 	if (result == BASIC_DISABLE_STATE)
 	{
 		if (phPrinter)
@@ -491,7 +491,7 @@ BOOL WINAPI OpenPrinterWNew(
 
 	OutputDebugStringW(L"OpenPrinterW enter\r\n");
 
-	int result = SbieApi_QueryPrinter();
+	int result = SbieApi__QueryPrinter();
 	if (result == BASIC_DISABLE_STATE)
 	{
 		if (phPrinter)
@@ -511,7 +511,7 @@ BOOL WINAPI OpenPrinterWNew(
 BOOL WINAPI OpenPrinter2WNew(WCHAR* pPrinterName, HANDLE* phPrinter, void* pDefault, void* pOptions) {
 	OutputDebugStringW(L"OpenPrinter2W enter\r\n");
 
-	int result = SbieApi_QueryPrinter();
+	int result = SbieApi__QueryPrinter();
 	if (result == BASIC_DISABLE_STATE)
 	{
 		if (phPrinter)

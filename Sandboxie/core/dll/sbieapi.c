@@ -36,13 +36,12 @@
 
 
 
-#pragma  data_seg(".SbieShared")	//. is part of section name?
-__declspec(dllexport)  BOOLEAN  g_printerControl = FALSE;
-__declspec(dllexport) BOOLEAN  g_waterMarkControl = FALSE;
-__declspec(dllexport) BOOLEAN  g_screenShotControl = FALSE;
-#pragma  data_seg()
-
-#pragma  comment(linker, "/Section:.SbieShared,rws") 
+// #pragma  data_seg(".SbieShared")	//. is part of section name?
+// __declspec(dllexport)  BOOLEAN  g_printerControl = FALSE;
+// __declspec(dllexport) BOOLEAN  g_waterMarkControl = FALSE;
+// __declspec(dllexport) BOOLEAN  g_screenShotControl = FALSE;
+// #pragma  data_seg()
+// #pragma  comment(linker, "/Section:.SbieShared,rws") 
 
 
 //---------------------------------------------------------------------------
@@ -856,20 +855,59 @@ _FX LONG SbieApi_DisableForceProcess(
 }
 
 
+_FX LONG SbieApi_ResetAllBoxList(WCHAR * boxname)
+{
+	NTSTATUS status;
+	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS] = { 0 };
+	API_SET_PROCESS_MONITOR_ARGS* args = (API_SET_PROCESS_MONITOR_ARGS*)parms;
 
-_FX LONG SbieApi_SetWatermark(BOOLEAN enable)
+	memset(parms, 0, sizeof(parms));
+	args->func_code = API_RESET_ALL_BOX_LIST;
+	lstrcpyW(args->boxname.val, boxname);
+	status = SbieApi_Ioctl(parms);
+
+	if (!NT_SUCCESS(status)) {
+		OutputDebugStringW(L"SbieApi_ResetProcessMonitor error");
+	}
+
+	return status;
+}
+
+_FX LONG SbieApi_SetProcessMonitor(WCHAR * boxname, WCHAR* processname)
+{
+	NTSTATUS status;
+	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS] = { 0 };
+	API_SET_PROCESS_MONITOR_ARGS* args = (API_SET_PROCESS_MONITOR_ARGS*)parms;
+
+	memset(parms, 0, sizeof(parms));
+	lstrcpyW(args->boxname.val, boxname);
+	args->func_code = API_SET_PROCESS_MONITOR;
+	args->processname.val = processname;
+	status = SbieApi_Ioctl(parms);
+
+	if (!NT_SUCCESS(status)) {
+		OutputDebugStringW(L"SbieApi_SetProcessMonitor error");
+	}
+
+	return status;
+}
+
+
+_FX LONG SbieApi_SetWatermark(WCHAR * boxname, BOOLEAN enable)
 {
 	NTSTATUS status;
 	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS];
 	API_SET_WATERMARK_ARGS* args = (API_SET_WATERMARK_ARGS*)parms;
 
 	memset(parms, 0, sizeof(parms));
+
+	lstrcpyW(args->boxname.val, boxname);
 	args->func_code = API_SET_WATERMARK;
 	args->enable.val = (VOID*)enable;
 	status = SbieApi_Ioctl(parms);
 
 	if (!NT_SUCCESS(status)) {
-
+		OutputDebugStringW(L"SbieApi_SetWatermark error");
 	}
 
 	return status;
@@ -888,21 +926,20 @@ _FX DWORD SbieApi_QueryWatermark()
 	status = SbieApi_Ioctl(parms);
 
 	if (!NT_SUCCESS(status)) {
-
+		OutputDebugStringW(L"SbieApi_QueryWatermark error");
 	}
 
 	return enable;
 }
 
-
-
-_FX LONG SbieApi_SetScreenshot(BOOLEAN enable)
+_FX LONG SbieApi_SetScreenshot(WCHAR * boxname, BOOLEAN enable)
 {
 	NTSTATUS status;
 	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS];
 	API_SET_SCREENSHOT_ARGS* args = (API_SET_SCREENSHOT_ARGS*)parms;
 
 	memset(parms, 0, sizeof(parms));
+	lstrcpyW(args->boxname.val, boxname);
 	args->func_code = API_SET_SCREENSHOT;
 	args->enable.val = (VOID*)enable;
 	status = SbieApi_Ioctl(parms);
@@ -922,6 +959,7 @@ _FX DWORD SbieApi_QueryScreenshot()
 
 	DWORD enable = 0;
 	memset(parms, 0, sizeof(parms));
+
 	args->func_code = API_QUERY_SCREENSHOT;
 	args->enable.val = &enable;
 	status = SbieApi_Ioctl(parms);
@@ -934,47 +972,80 @@ _FX DWORD SbieApi_QueryScreenshot()
 }
 
 
-
-
-
-
-
-
-
-_FX LONG SbieApi_ResetProcessMonitor()
+DWORD SbieApi_SetPrinter(WCHAR * boxname, BOOLEAN enable)
 {
 	NTSTATUS status;
-	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS] = { 0 };
-	API_RESET_PROCESS_MONITOR_ARGS* args = (API_RESET_PROCESS_MONITOR_ARGS*)parms;
+	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS];
+	API_SET_PRINTER_ARGS* args = (API_SET_PRINTER_ARGS*)parms;
 
 	memset(parms, 0, sizeof(parms));
-	args->func_code = API_RESET_PROCESS_MONITOR;
-
+	lstrcpyW(args->boxname.val, boxname);
+	args->func_code = API_SET_PRINTER;
+	args->enable.val = (VOID*)enable;
 	status = SbieApi_Ioctl(parms);
 
 	if (!NT_SUCCESS(status)) {
-
+		OutputDebugStringW(L"SbieApi_SetPrinter error");
 	}
 
 	return status;
 }
 
-_FX LONG SbieApi_SetProcessMonitor(WCHAR* processname)
+DWORD SbieApi_QueryPrinter()
 {
 	NTSTATUS status;
-	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS] = { 0 };
-	API_SET_PROCESS_MONITOR_ARGS* args = (API_SET_PROCESS_MONITOR_ARGS*)parms;
+	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS];
+	API_SET_PRINTER_ARGS* args = (API_SET_PRINTER_ARGS*)parms;
 
+	DWORD enable = 0;
 	memset(parms, 0, sizeof(parms));
-	args->func_code = API_SET_PROCESS_MONITOR;
-	args->processname.val = processname;
+	args->func_code = API_QUERY_PRINTER;
+	args->enable.val = &enable;
 	status = SbieApi_Ioctl(parms);
 
 	if (!NT_SUCCESS(status)) {
+		OutputDebugStringW(L"SbieApi_QueryPrinter error");
+	}
 
+	return enable;
+}
+
+DWORD SbieApi_SetFileExport(WCHAR * boxname, BOOLEAN enable)
+{
+	NTSTATUS status;
+	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS];
+	API_SET_FILEEXPORT_ARGS* args = (API_SET_FILEEXPORT_ARGS*)parms;
+
+	memset(parms, 0, sizeof(parms));
+	lstrcpyW(args->boxname.val, boxname);
+	args->func_code = API_SET_FILEEXPORT;
+	args->enable.val = (VOID*)enable;
+	status = SbieApi_Ioctl(parms);
+
+	if (!NT_SUCCESS(status)) {
+		OutputDebugStringW(L"SbieApi_SetFileExport error");
 	}
 
 	return status;
+}
+
+DWORD SbieApi_QueryFileExport()
+{
+	NTSTATUS status;
+	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS];
+	API_SET_FILEEXPORT_ARGS* args = (API_SET_FILEEXPORT_ARGS*)parms;
+
+	DWORD enable = 0;
+	memset(parms, 0, sizeof(parms));
+	args->func_code = API_QUERY_FILEEXPORT;
+	args->enable.val = &enable;
+	status = SbieApi_Ioctl(parms);
+
+	if (!NT_SUCCESS(status)) {
+		OutputDebugStringW(L"SbieApi_QueryFileExport error");
+	}
+
+	return enable;
 }
 
 
@@ -2164,9 +2235,15 @@ SBIEAPI_EXPORT int SbieApi_DeleteFile(const WCHAR* filepath) {
 	return STATUS_UNSUCCESSFUL;
 }
 
+
+
+
 extern int __CRTDECL Sbie_snwprintf(wchar_t* _Buffer, size_t Count, const wchar_t* const _Format, ...);
 
 extern int __CRTDECL Sbie_snprintf(char* _Buffer, size_t Count, const char* const _Format, ...);
+
+
+
 
 int SbieApi_CopyFile(const WCHAR* srcpath, const WCHAR* dstpath) {
 
@@ -2235,21 +2312,18 @@ int SbieApi_CopyFile(const WCHAR* srcpath, const WCHAR* dstpath) {
 }
 
 
-BOOLEAN SbieDll_SetPrinterControl(BOOLEAN enable) {
-	g_printerControl = enable;
-	return g_printerControl;
-}
-
-
-BOOLEAN SbieDll_SetWatermarkControl(BOOLEAN enable) {
-	g_waterMarkControl = enable;
-	return g_waterMarkControl;
-}
-
-BOOLEAN SbieDll_SetScreenCaptureControl(BOOLEAN enable) {
-	g_screenShotControl = enable;
-	return g_screenShotControl;
-}
+// BOOLEAN SbieDll_SetPrinterControl(BOOLEAN enable) {
+// 	g_printerControl = enable;
+// 	return g_printerControl;
+// }
+// BOOLEAN SbieDll_SetWatermarkControl(BOOLEAN enable) {
+// 	g_waterMarkControl = enable;
+// 	return g_waterMarkControl;
+// }
+// BOOLEAN SbieDll_SetScreenCaptureControl(BOOLEAN enable) {
+// 	g_screenShotControl = enable;
+// 	return g_screenShotControl;
+// }
 
 
 //---------------------------------------------------------------------------
@@ -2562,39 +2636,3 @@ int Sbie_writeAlert(const WCHAR* dstfn,char * data,int datasize) {
 
 
 
-DWORD SbieApi_SetPrinter(BOOLEAN enable)
-{
-	NTSTATUS status;
-	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS];
-	API_SET_PRINTER_ARGS* args = (API_SET_PRINTER_ARGS*)parms;
-
-	memset(parms, 0, sizeof(parms));
-	args->func_code = API_SET_PRINTER;
-	args->enable.val = (VOID*)enable;
-	status = SbieApi_Ioctl(parms);
-
-	if (!NT_SUCCESS(status)) {
-		OutputDebugStringW(L"SbieApi_SetPrinter error");
-	}
-
-	return status;
-}
-
-DWORD SbieApi_QueryPrinter()
-{
-	NTSTATUS status;
-	__declspec(align(8)) ULONG64 parms[API_NUM_ARGS];
-	API_SET_PRINTER_ARGS* args = (API_SET_PRINTER_ARGS*)parms;
-
-	DWORD enable = 0;
-	memset(parms, 0, sizeof(parms));
-	args->func_code = API_QUERY_PRINTER;
-	args->enable.val = &enable;
-	status = SbieApi_Ioctl(parms);
-
-	if (!NT_SUCCESS(status)) {
-		OutputDebugStringW(L"SbieApi_QueryPrinter error");
-	}
-
-	return enable;
-}

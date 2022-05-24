@@ -1072,25 +1072,44 @@ _FX NTSTATUS Process_Api_Enum(PROCESS *proc, ULONG64 *parms)
 
 
 PROCESS_MONITOR_LIST* g_process_monitor_list = 0;
+WATERMARK_BOX_LIST* g_watermark_box_list = 0;
+SCREENSHOT_BOX_LIST* g_screenshot_box_list = 0;
+FILEEXPORT_BOX_LIST* g_fileexport_box_list = 0;
+PRINTER_BOX_LIST* g_printer_box_list = 0;
 
-NTSTATUS Process_Api_ResetProcessMonitor(PROCESS* proc, ULONG64* parms) {
-	PROCESS_MONITOR_LIST* list = g_process_monitor_list;
+
+
+NTSTATUS Process_Api_ResetList(PROCESS_MONITOR_LIST * proclist) {
+	PROCESS_MONITOR_LIST* list = proclist;
 	do
 	{
-		if (list ) {
+		PROCESS_MONITOR_LIST* next = list->next;
 
-			PROCESS_MONITOR_LIST* next = list->next;
-			
-			ExFreePoolWithTag((PVOID)list, 'kcuf');
+		ExFreePoolWithTag((PVOID)list, 'kcuf');
 
-			list = next;
-		}
-		else {
-			break;
-		}
-	} while (list != g_process_monitor_list);
+		list = next;
 
+	} while (list && list != proclist);
+
+	return STATUS_SUCCESS;
+}
+
+NTSTATUS Process_Api_ResetAll(PROCESS* proc, ULONG64* parms) {
+
+	Process_Api_ResetList(g_process_monitor_list);
 	g_process_monitor_list = 0;
+
+	Process_Api_ResetList((PROCESS_MONITOR_LIST *)g_watermark_box_list);
+	g_watermark_box_list = 0;
+
+	Process_Api_ResetList((PROCESS_MONITOR_LIST *)g_screenshot_box_list);
+	g_screenshot_box_list = 0;
+
+	Process_Api_ResetList((PROCESS_MONITOR_LIST *)g_fileexport_box_list);
+	g_fileexport_box_list = 0;
+
+	Process_Api_ResetList((PROCESS_MONITOR_LIST *)g_printer_box_list);
+	g_printer_box_list = 0;
 
 	return STATUS_SUCCESS;
 }
@@ -1112,39 +1131,36 @@ PROCESS_MONITOR_LIST* getProhibitProcess(const WCHAR* str) {
 	}
 
 	PROCESS_MONITOR_LIST* list = g_process_monitor_list;
-	while (1)
+	do 
 	{
-		if (list && list->processname) {
-			if (_wcsicmp(name, list->processname) == 0)
-			{
-				return list;
-			}
-			list = list->next;
-			if (list == 0 || list == g_process_monitor_list) {
-				break;
-			}
+		if (_wcsicmp(name, list->processname) == 0)
+		{
+			return list;
 		}
-		else {
-			break;
-		}
-	}
+		list = list->next;
+
+	} while (list && list != g_process_monitor_list);
+
 	return 0;
 }
 
 
 NTSTATUS Process_Api_SetProcessMonitor(PROCESS* proc, ULONG64* parms) {
-	WCHAR* processname = (WCHAR*)parms[1];
+// 	WCHAR* processname = (WCHAR*)parms[2];
+// 	WCHAR * boxname = (WCHAR*)parms[1];
+	API_SET_PROCESS_MONITOR_ARGS* args = (API_SET_PROCESS_MONITOR_ARGS*)parms;
+	WCHAR* processname = (WCHAR*)args->processname.val;
+	WCHAR * boxname = (WCHAR*)args->boxname.val;
 
 	if (g_process_monitor_list == 0)
 	{
 		g_process_monitor_list = ExAllocatePoolWithTag(NonPagedPool, sizeof(PROCESS_MONITOR_LIST), 'kcuf');
 		if (g_process_monitor_list)
 		{
-// 			g_process_monitor_list->next = g_process_monitor_list;
-// 			g_process_monitor_list->prev = g_process_monitor_list;
 			g_process_monitor_list->next = 0;
 			g_process_monitor_list->prev = 0;
-			wcsncpy(g_process_monitor_list->processname, processname, 64);
+			wcsncpy(g_process_monitor_list->processname, processname, sizeof(g_process_monitor_list->processname)/2);
+			wcsncpy(g_process_monitor_list->boxname, boxname, sizeof(g_process_monitor_list->boxname)/2);
 		}
 	}
 	else {
@@ -1154,7 +1170,8 @@ NTSTATUS Process_Api_SetProcessMonitor(PROCESS* proc, ULONG64* parms) {
 			list = ExAllocatePoolWithTag(NonPagedPool, sizeof(PROCESS_MONITOR_LIST), 'kcuf');
 			if (list)
 			{
-				wcsncpy(list->processname, processname, 64);
+				wcsncpy(list->processname, processname, sizeof(list->processname)/2);
+				wcsncpy(list->boxname, boxname, sizeof(list->boxname)/2);
 
 				PROCESS_MONITOR_LIST* next = g_process_monitor_list->next;
 				list->next = next;
@@ -1171,19 +1188,84 @@ NTSTATUS Process_Api_SetProcessMonitor(PROCESS* proc, ULONG64* parms) {
 	return TRUE;
 }
 
-DWORD g_watermarkEnable = FALSE;
 
-DWORD g_screenshotEnable = FALSE;
 
-DWORD g_printerEnable = FALSE;
+PRINTER_BOX_LIST* getBoxInList(PRINTER_BOX_LIST * hdrlist,const WCHAR* boxname) {
 
-DWORD g_fileExportEnable = FALSE;
+	PRINTER_BOX_LIST * list = hdrlist;
+	if (list == 0)
+	{
+		return 0;
+	}
+
+	do
+	{
+		if (_wcsicmp(boxname, list->boxname) == 0)
+		{
+			return list;
+		}
+
+		list = list->next;
+
+	} while (list && list != hdrlist);
+
+	return 0;
+}
+
+
+NTSTATUS Process_Api_SetBoxListItem(PRINTER_BOX_LIST ** list,WCHAR * boxname, int enable) {
+
+	if (*list == 0)
+	{
+		(*list) = ExAllocatePoolWithTag(NonPagedPool, sizeof(PRINTER_BOX_LIST), 'kcuf');
+		if (*list)
+		{
+			(*list)->next = 0;
+			(*list)->prev = 0;
+			(*list)->enable = enable;
+			wcsncpy((*list)->boxname, boxname, sizeof((*list)->boxname));
+		}
+	}
+	else {
+		PRINTER_BOX_LIST * newlist = getBoxInList(*list,boxname);
+		if (newlist == 0)
+		{
+			newlist = ExAllocatePoolWithTag(NonPagedPool, sizeof(PRINTER_BOX_LIST), 'kcuf');
+			if (newlist)
+			{
+				wcsncpy(newlist->boxname, boxname, 64);
+
+				PRINTER_BOX_LIST* next = (*list)->next;
+				newlist->next = next;
+				newlist->prev = (*list);
+				(*list)->next = newlist;
+				if (next)
+				{
+					next->prev = newlist;
+				}
+			}
+		}
+	}
+
+	return STATUS_SUCCESS;
+}
+
+
+
 
 
 NTSTATUS Process_Api_QueryFileExport(PROCESS* proc, ULONG64* parms) {
 	//__debugbreak();
 	API_SET_FILEEXPORT_ARGS* args = (API_SET_FILEEXPORT_ARGS*)parms;
-	*(DWORD*)args->enable.val = g_fileExportEnable;
+
+	PRINTER_BOX_LIST * list = getBoxInList((PRINTER_BOX_LIST *)g_fileexport_box_list, proc->box->name);
+	if (list)
+	{
+		*(DWORD*)args->enable.val = list->enable;
+	}
+	else {
+		*(DWORD*)args->enable.val = FALSE;
+	}
 
 	//DbgPrint("Process_Api_QueryPrinter is:%x\r\n", g_watermarkEnable);
 	return STATUS_SUCCESS;
@@ -1194,11 +1276,103 @@ NTSTATUS Process_Api_SetFileExport(PROCESS* proc, ULONG64* parms) {
 	API_SET_FILEEXPORT_ARGS* args = (API_SET_FILEEXPORT_ARGS*)parms;
 	DWORD enable = (DWORD)args->enable.val;
 
-	g_fileExportEnable = enable;
+	WCHAR * boxname = args->boxname.val;
+
+	Process_Api_SetBoxListItem((PRINTER_BOX_LIST **)&g_fileexport_box_list, boxname, enable);
 
 	//DbgPrint("Process_Api_SetPrinter is:%x\r\n", g_watermarkEnable);
 	return STATUS_SUCCESS;
 }
+
+
+NTSTATUS Process_Api_QueryPrinter(PROCESS* proc, ULONG64* parms) {
+	//__debugbreak();
+	API_SET_PRINTER_ARGS* args = (API_SET_PRINTER_ARGS*)parms;
+
+	PRINTER_BOX_LIST * list = getBoxInList(g_printer_box_list, proc->box->name);
+	if (list)
+	{
+		*(DWORD*)args->enable.val = list->enable;
+	}
+	else {
+		*(DWORD*)args->enable.val = FALSE;
+	}
+
+	//DbgPrint("Process_Api_QueryPrinter is:%x\r\n", g_watermarkEnable);
+	return STATUS_SUCCESS;
+}
+
+NTSTATUS Process_Api_SetPrinter(PROCESS* proc, ULONG64* parms) {
+	//__debugbreak();
+	API_SET_PRINTER_ARGS* args = (API_SET_PRINTER_ARGS*)parms;
+	DWORD enable = (DWORD)args->enable.val;
+
+	WCHAR * boxname = args->boxname.val;
+	Process_Api_SetBoxListItem(&g_printer_box_list, boxname, enable);
+
+	//DbgPrint("Process_Api_SetPrinter is:%x\r\n", g_watermarkEnable);
+	return STATUS_SUCCESS;
+}
+
+
+NTSTATUS Process_Api_QueryWatermark(PROCESS* proc, ULONG64* parms) {
+	//__debugbreak();
+	API_SET_WATERMARK_ARGS* args = (API_SET_WATERMARK_ARGS*)parms;
+	PRINTER_BOX_LIST * list = getBoxInList((PRINTER_BOX_LIST *)g_watermark_box_list, proc->box->name);
+	if (list)
+	{
+		*(DWORD*)args->enable.val = list->enable;
+	}
+	else {
+		*(DWORD*)args->enable.val = FALSE;
+	}
+
+	//DbgPrint("Process_Api_QueryWatermark is:%x\r\n", g_watermarkEnable);
+	return STATUS_SUCCESS;
+}
+
+NTSTATUS Process_Api_SetWatermark(PROCESS* proc, ULONG64* parms) {
+	//__debugbreak();
+	API_SET_WATERMARK_ARGS* args = (API_SET_WATERMARK_ARGS*)parms;
+	DWORD enable = (DWORD)args->enable.val;
+
+	WCHAR * boxname = args->boxname.val;
+	Process_Api_SetBoxListItem((PRINTER_BOX_LIST **)&g_watermark_box_list, boxname, enable);
+
+	//DbgPrint("Process_Api_SetWatermark is:%x\r\n", g_watermarkEnable);
+	return STATUS_SUCCESS;
+}
+
+
+NTSTATUS Process_Api_QueryScreenshot(PROCESS* proc, ULONG64* parms) {
+	//__debugbreak();
+	API_SET_SCREENSHOT_ARGS* args = (API_SET_SCREENSHOT_ARGS*)parms;
+	PRINTER_BOX_LIST * list = getBoxInList((PRINTER_BOX_LIST *)g_screenshot_box_list, proc->box->name);
+	if (list)
+	{
+		*(DWORD*)args->enable.val = list->enable;
+	}
+	else {
+		*(DWORD*)args->enable.val = FALSE;
+	}
+
+	//DbgPrint("Process_Api_QueryScreenshot is:%x\r\n", g_screenshotEnable);
+	return STATUS_SUCCESS;
+}
+
+NTSTATUS Process_Api_SetScreenshot(PROCESS* proc, ULONG64* parms) {
+	//__debugbreak();
+	API_SET_SCREENSHOT_ARGS* args = (API_SET_SCREENSHOT_ARGS*)parms;
+	DWORD enable = (DWORD)args->enable.val;
+
+	WCHAR * boxname = args->boxname.val;
+	Process_Api_SetBoxListItem((PRINTER_BOX_LIST **)&g_screenshot_box_list, boxname, enable);
+
+	//DbgPrint("Process_Api_SetScreenshot is:%x\r\n", g_screenshotEnable);
+	return STATUS_SUCCESS;
+}
+
+
 
 #define VERACRYPT_VOLUME_DEVICE			L"\\Device\\VeraCryptVolume"
 
@@ -1381,67 +1555,7 @@ NTSTATUS Veracrypt_Api_CopyFile(PROCESS* proc, ULONG64* parms) {
 }
 
 
-NTSTATUS Process_Api_QueryPrinter(PROCESS* proc, ULONG64* parms) {
-	//__debugbreak();
-	API_SET_PRINTER_ARGS* args = (API_SET_PRINTER_ARGS*)parms;
-	*(DWORD*)args->enable.val = g_printerEnable;
 
-	//DbgPrint("Process_Api_QueryPrinter is:%x\r\n", g_watermarkEnable);
-	return STATUS_SUCCESS;
-}
-
-NTSTATUS Process_Api_SetPrinter(PROCESS* proc, ULONG64* parms) {
-	//__debugbreak();
-	API_SET_PRINTER_ARGS* args = (API_SET_PRINTER_ARGS*)parms;
-	DWORD enable = (DWORD)args->enable.val;
-
-	g_printerEnable = enable;
-
-	//DbgPrint("Process_Api_SetPrinter is:%x\r\n", g_watermarkEnable);
-	return STATUS_SUCCESS;
-}
-
-
-NTSTATUS Process_Api_QueryWatermark(PROCESS* proc, ULONG64* parms) {
-	//__debugbreak();
-	API_SET_WATERMARK_ARGS* args = (API_SET_WATERMARK_ARGS*)parms;
-	*(DWORD*)args->enable.val = g_watermarkEnable;
-
-	//DbgPrint("Process_Api_QueryWatermark is:%x\r\n", g_watermarkEnable);
-	return STATUS_SUCCESS;
-}
-
-NTSTATUS Process_Api_SetWatermark(PROCESS* proc, ULONG64* parms) {
-	//__debugbreak();
-	API_SET_WATERMARK_ARGS* args = (API_SET_WATERMARK_ARGS*)parms;
-	DWORD enable = (DWORD)args->enable.val;
-
-	g_watermarkEnable = enable;
-
-	//DbgPrint("Process_Api_SetWatermark is:%x\r\n", g_watermarkEnable);
-	return STATUS_SUCCESS;
-}
-
-
-NTSTATUS Process_Api_QueryScreenshot(PROCESS* proc, ULONG64* parms) {
-	//__debugbreak();
-	API_SET_SCREENSHOT_ARGS* args = (API_SET_SCREENSHOT_ARGS*)parms;
-	*(DWORD*)args->enable.val = g_screenshotEnable;
-
-	//DbgPrint("Process_Api_QueryScreenshot is:%x\r\n", g_screenshotEnable);
-	return STATUS_SUCCESS;
-}
-
-NTSTATUS Process_Api_SetScreenshot(PROCESS* proc, ULONG64* parms) {
-	//__debugbreak();
-	API_SET_SCREENSHOT_ARGS* args = (API_SET_SCREENSHOT_ARGS*)parms;
-	DWORD enable = (DWORD)args->enable.val;
-
-	g_screenshotEnable = enable;
-
-	//DbgPrint("Process_Api_SetScreenshot is:%x\r\n", g_screenshotEnable);
-	return STATUS_SUCCESS;
-}
 
 #define OPERATION_READ		1
 #define OPERATION_WRITE		2

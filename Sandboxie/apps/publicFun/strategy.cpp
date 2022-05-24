@@ -41,7 +41,7 @@ int setJsonConfig(const WCHAR* filename, char* utf8data, int utf8size) {
 		result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_CLEAR_PROCESS, 0, 0, NULL, 0, &dwretcode, NULL);
 	}
 
-	resetProcessMonitor();
+	resetAllBoxList();
 
 	for (int i = 0; i < sizeof(g_processBlackList) / sizeof(WCHAR*); i++)
 	{
@@ -112,6 +112,10 @@ int setJsonConfig(const WCHAR* filename, char* utf8data, int utf8size) {
 		mylog(L"data param error\r\n");
 	}
 
+
+	WCHAR wstrusername[MAX_PATH];
+	getUsername(wstrusername);
+
 	for (int data_number = 0; data_number < datacnt; data_number++)
 	{
 		Json::Value spaceinfo = data[data_number]["spaceInfo"];
@@ -121,104 +125,115 @@ int setJsonConfig(const WCHAR* filename, char* utf8data, int utf8size) {
 		int spaceType = spaceinfo["spaceType"].asInt();
 
 
-		if (name != "")
+		if (name == "")
 		{
-			Json::Value fileexportvalue = safepolicy["fileExport"];
-			if (fileexportvalue.isNull() == FALSE)
-			{
-				int fileexport = safepolicy["fileExport"].asInt();
-				//public_SetExportFlag(fileexport);
-				SbieApi_SetFileExport(fileexport);
-			}
+			continue;
+		}
 
-			Json::Value screencapvalue = safepolicy["screenCapture"];
-			if (screencapvalue.isNull() == FALSE)
-			{
-				BOOLEAN screencap = safepolicy["screenCapture"].asInt();
-				SbieApi_SetScreenshot(screencap);
-				//SetScreenCaptureControl(screencap);
-			}
+		WCHAR wstrname[MAX_PATH];
+		MultiByteToWideChar(CP_ACP, 0, name.c_str(), -1, wstrname, sizeof(wstrname));
 
-			Json::Value watermarkvalue = safepolicy["waterMark"];
-			if (watermarkvalue.isNull() == FALSE)
-			{
-				BOOLEAN watermark = safepolicy["waterMark"].asInt();
-				//setWatermark(watermark);
-				SbieApi_SetWatermark(watermark);
-			}
+		WCHAR wstrboxname[MAX_PATH];
+		wsprintfW(wstrboxname, L"%ws_%ws", wstrusername, wstrname);
 
-			Json::Value printervalue = safepolicy["printer"];
-			if (printervalue.isNull() == FALSE)
-			{
-				BOOLEAN printer = safepolicy["printer"].asInt();
-				setPrinterControl(printer);
-				SbieApi_SetPrinter(printer);
-			}
 
-			//mylog(L"screen:%d,watermark:%d,printer:%d,fileexport:%d", screencap, watermark, printer, fileexport);
 
-			BOOLEAN programLimit = safepolicy["programLimit"].asBool();
-			if (programLimit)
+		Json::Value fileexportvalue = safepolicy["fileExport"];
+		if (fileexportvalue.isNull() == FALSE)
+		{
+			int fileexport = safepolicy["fileExport"].asInt();
+			//public_SetExportFlag(fileexport);
+			SbieApi__SetFileExport(wstrboxname,fileexport);
+		}
+
+		Json::Value screencapvalue = safepolicy["screenCapture"];
+		if (screencapvalue.isNull() == FALSE)
+		{
+			BOOLEAN screencap = safepolicy["screenCapture"].asInt();
+			SbieApi__SetScreenshot(wstrboxname,screencap);
+			//SetScreenCaptureControl(screencap);
+		}
+
+		Json::Value watermarkvalue = safepolicy["waterMark"];
+		if (watermarkvalue.isNull() == FALSE)
+		{
+			BOOLEAN watermark = safepolicy["waterMark"].asInt();
+			//setWatermark(watermark);
+			SbieApi__SetWatermark(wstrboxname,watermark);
+		}
+
+		Json::Value printervalue = safepolicy["printer"];
+		if (printervalue.isNull() == FALSE)
+		{
+			BOOLEAN printer = safepolicy["printer"].asInt();
+			//setPrinterControl(printer);
+			SbieApi__SetPrinter(wstrboxname,printer);
+		}
+
+		//mylog(L"screen:%d,watermark:%d,printer:%d,fileexport:%d", screencap, watermark, printer, fileexport);
+
+		BOOLEAN programLimit = safepolicy["programLimit"].asBool();
+		if (programLimit)
+		{
+			Json::Value allowPrograms = safepolicy["allowPrograms"];
+			int allowprogcnt = allowPrograms.size();
+			for (int j = 0; j < allowprogcnt; j++)
 			{
-				Json::Value allowPrograms = safepolicy["allowPrograms"];
-				int allowprogcnt = allowPrograms.size();
-				for (int j = 0; j < allowprogcnt; j++)
+				string name = allowPrograms[j]["name"].asString();
+
+				string copyright = allowPrograms[j]["copyrightInfo"].asString();
+
+				string protype = allowPrograms[j]["proType"].asString();
+
+				Json::Value programs = allowPrograms[j]["programs"];
+				int programs_cnt = programs.size();
+				for (int k = 0; k < programs_cnt; k++)
 				{
-					string name = allowPrograms[j]["name"].asString();
+					string sign = programs[k]["signerInfo"].asString();
 
-					string copyright = allowPrograms[j]["copyrightInfo"].asString();
-
-					string protype = allowPrograms[j]["proType"].asString();
-
-					Json::Value programs = allowPrograms[j]["programs"];
-					int programs_cnt = programs.size();
-					for (int k = 0; k < programs_cnt; k++)
-					{
-						string sign = programs[k]["signerInfo"].asString();
-
-						string procname = programs[k]["processName"].asString();
-						WCHAR wstrprocname[MAX_PATH];
-						MultiByteToWideChar(CP_ACP, 0, procname.c_str(), -1, wstrprocname, MAX_PATH);
-						setProcessMonitor(wstrprocname);
-					}
-				}
-			}
-
-
-			int resProtectState = safepolicy["resProtectState"].asBool();
-			if (resProtectState == 1)
-			{
-				Json::Value resList = safepolicy["resList"];
-				int resListcnt = resList.size();
-				for (int j = 0; j < resListcnt; j++)
-				{
-				}
-			}
-
-			BOOLEAN outNetworkLimit = safepolicy["outNetworkLimit"].asBool();
-			if (outNetworkLimit)
-			{
-				Json::Value limitNetworks = safepolicy["limitNetworks"];
-				int limitNetworkscnt = limitNetworks.size();
-				for (int j = 0; j < limitNetworkscnt; j++)
-				{
-					string strip = limitNetworks[j]["network"].asString();
-					IPV4_PARAMS ipparam;
-					ipparam.type = IOCTL_WFP_SDWS_ADD_IPV4;
-					ipparam.dir = FWP_DIRECTION_OUTBOUND;
-					result = parseIPv4(strip.c_str(), &ipparam.ip, &ipparam.mask);
-					result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_IPV4, &ipparam, sizeof(IPV4_PARAMS), NULL, 0, &dwretcode, NULL);
-					//mylog("DeviceIoControl type:%d ip:%x ipstr:%s\r\n", IOCTL_WFP_SDWS_ADD_IPV4, ipparam.ip, strip.c_str());
-
-					string port = limitNetworks[j]["port"].asString();
-					PORT_PARAMS portparam;
-					portparam.type = IOCTL_WFP_SDWS_ADD_PORT;
-					portparam.dir = FWP_DIRECTION_OUTBOUND;
-					portparam.port = parsePort(atoi(port.c_str()));
-					result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_PORT, (LPVOID)&portparam, sizeof(PORT_PARAMS), NULL, 0, &dwretcode, NULL);
+					string procname = programs[k]["processName"].asString();
+					WCHAR wstrprocname[MAX_PATH];
+					MultiByteToWideChar(CP_ACP, 0, procname.c_str(), -1, wstrprocname, MAX_PATH);
+					setProcessMonitor(wstrprocname);
 				}
 			}
 		}
+
+
+		int resProtectState = safepolicy["resProtectState"].asBool();
+		if (resProtectState == 1)
+		{
+			Json::Value resList = safepolicy["resList"];
+			int resListcnt = resList.size();
+			for (int j = 0; j < resListcnt; j++)
+			{
+			}
+		}
+
+		BOOLEAN outNetworkLimit = safepolicy["outNetworkLimit"].asBool();
+		if (outNetworkLimit)
+		{
+			Json::Value limitNetworks = safepolicy["limitNetworks"];
+			int limitNetworkscnt = limitNetworks.size();
+			for (int j = 0; j < limitNetworkscnt; j++)
+			{
+				string strip = limitNetworks[j]["network"].asString();
+				IPV4_PARAMS ipparam;
+				ipparam.type = IOCTL_WFP_SDWS_ADD_IPV4;
+				ipparam.dir = FWP_DIRECTION_OUTBOUND;
+				result = parseIPv4(strip.c_str(), &ipparam.ip, &ipparam.mask);
+				result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_IPV4, &ipparam, sizeof(IPV4_PARAMS), NULL, 0, &dwretcode, NULL);
+				//mylog("DeviceIoControl type:%d ip:%x ipstr:%s\r\n", IOCTL_WFP_SDWS_ADD_IPV4, ipparam.ip, strip.c_str());
+
+				string port = limitNetworks[j]["port"].asString();
+				PORT_PARAMS portparam;
+				portparam.type = IOCTL_WFP_SDWS_ADD_PORT;
+				portparam.dir = FWP_DIRECTION_OUTBOUND;
+				portparam.port = parsePort(atoi(port.c_str()));
+				result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_ADD_PORT, (LPVOID)&portparam, sizeof(PORT_PARAMS), NULL, 0, &dwretcode, NULL);
+			}
+		}
+		
 	}
 
 	if (hWfp != INVALID_HANDLE_VALUE)
@@ -274,7 +289,7 @@ extern "C" __declspec(dllexport) int configBox(const WCHAR * wstrusername, const
 	result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_CLEAR_IPPORT, 0, 0, NULL, 0, &dwretcode, NULL);
 	result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_CLEAR_PROCESS, 0, 0, NULL, 0, &dwretcode, NULL);
 
-	resetProcessMonitor();
+	resetAllBoxList();
 
 	for (int i = 0; i < sizeof(g_processBlackList) / sizeof(WCHAR*); i++)
 	{
@@ -377,53 +392,57 @@ extern "C" __declspec(dllexport) int configBox(const WCHAR * wstrusername, const
 		string name = spaceinfo["name"].asString();
 		int spaceType = spaceinfo["spaceType"].asInt();
 
-		if (name != "")
+		if (name == "")
 		{
-			WCHAR wstrname[MAX_PATH];
-			int len = MultiByteToWideChar(CP_ACP, 0, name.c_str(), -1, wstrname, MAX_PATH);
-			WCHAR wstrboxname[MAX_PATH];
-			wsprintfW(wstrboxname, L"%ws_%ws", wstrusername, wstrname);
-			int cnt = 0;
-			do
-			{
-				result = createbox(wstrboxname);
-				if (result)
-				{
-					mylog(L"createRecycleFolderInBox and runDesktopBox %ws\r\n", wstrboxname);
-					result = createRecycleFolderInBox(wstrboxname);
+			continue;
+		}
 
-					result = runDesktopBox(wstrboxname);
-					if (result == 0)
-					{
-						LjgApi_ReloadConf(-1, 0);
-						cnt++;
-					}
-					else {
-						break;
-					}
-				}
-				else {
-					mylog(L"createbox %ws error %d\r\n", wstrboxname, GetLastError());
+		WCHAR wstrboxname[MAX_PATH];
+
+		WCHAR wstrname[MAX_PATH];
+		int len = MultiByteToWideChar(CP_ACP, 0, name.c_str(), -1, wstrname, MAX_PATH);
+			
+		wsprintfW(wstrboxname, L"%ws_%ws", wstrusername, wstrname);
+		int cnt = 0;
+		do
+		{
+			result = createbox(wstrboxname);
+			if (result)
+			{
+				mylog(L"createRecycleFolderInBox and runDesktopBox %ws\r\n", wstrboxname);
+				result = createRecycleFolderInBox(wstrboxname);
+
+				result = runDesktopBox(wstrboxname);
+				if (result == 0)
+				{
 					LjgApi_ReloadConf(-1, 0);
 					cnt++;
 				}
-				Sleep(500);
-			} while (cnt < 3);
-		}
-
+				else {
+					break;
+				}
+			}
+			else {
+				mylog(L"createbox %ws error %d\r\n", wstrboxname, GetLastError());
+				LjgApi_ReloadConf(-1, 0);
+				cnt++;
+			}
+			Sleep(500);
+		} while (cnt < 3);
+		
 		Json::Value fileexportvalue = safepolicy["fileExport"];
 		if (fileexportvalue.isNull() == FALSE)
 		{
 			int fileexport = safepolicy["fileExport"].asInt();
 			//public_SetExportFlag(fileexport);
-			SbieApi_SetFileExport(fileexport);
+			SbieApi__SetFileExport(wstrboxname,fileexport);
 		}
 
 		Json::Value screencapvalue = safepolicy["screenCapture"];
 		if (screencapvalue.isNull() == FALSE)
 		{
 			BOOLEAN screencap = safepolicy["screenCapture"].asInt();
-			SbieApi_SetScreenshot(screencap);
+			SbieApi__SetScreenshot(wstrboxname,screencap);
 			//SetScreenCaptureControl(screencap);
 		}
 
@@ -432,22 +451,22 @@ extern "C" __declspec(dllexport) int configBox(const WCHAR * wstrusername, const
 		{
 			BOOLEAN watermark = safepolicy["waterMark"].asInt();
 			//setWatermark(watermark);
-			SbieApi_SetWatermark(watermark);
+			SbieApi__SetWatermark(wstrboxname,watermark);
 		}
 
 		Json::Value printervalue = safepolicy["printer"];
 		if (printervalue.isNull() == FALSE)
 		{
 			BOOLEAN printer = safepolicy["printer"].asInt();
-			setPrinterControl(printer);
-			SbieApi_SetPrinter(printer);
+			//setPrinterControl(printer);
+			SbieApi__SetPrinter(wstrboxname,printer);
 		}
 
 		//mylog(L"screen:%d,watermark:%d,printer:%d,fileexport:%d", screencap, watermark, printer, fileexport);
 
-		BOOLEAN screencap = SbieApi_QueryScreenshot();
-		BOOLEAN watermark = SbieApi_QueryWatermark();
-		BOOLEAN printer = SbieApi_QueryPrinter();
+		BOOLEAN screencap = SbieApi__QueryScreenshot();
+		BOOLEAN watermark = SbieApi__QueryWatermark();
+		BOOLEAN printer = SbieApi__QueryPrinter();
 		mylog(L"query screen:%d,watermark:%d,printer:%d", screencap, watermark, printer);
 
 		BOOLEAN programLimit = safepolicy["programLimit"].asBool();

@@ -91,26 +91,22 @@ extern "C" {
 
 	__declspec(dllexport) LONG SbieApi_EnumBoxesEx(LONG index, WCHAR* box_name, BOOLEAN return_all_sections);
 
-	__declspec(dllexport)   LONG SbieApi_ResetProcessMonitor();
+	__declspec(dllexport)   LONG SbieApi__ResetAllBoxList(WCHAR * boxname);
+	__declspec(dllexport)  LONG SbieApi__SetProcessMonitor(WCHAR * boxname, WCHAR* processname);
 
-	__declspec(dllexport)  LONG SbieApi_SetProcessMonitor(WCHAR* processname);
+	__declspec(dllexport)  LONG SbieApi__SetWatermark(WCHAR * boxname, BOOLEAN enable);
+	__declspec(dllexport)  DWORD SbieApi__QueryWatermark();
 
-	__declspec(dllexport)  LONG SbieApi_SetWatermark(BOOLEAN enable);
+	__declspec(dllexport)  DWORD SbieApi__QueryScreenshot();
+	__declspec(dllexport)  LONG SbieApi__SetScreenshot(WCHAR * boxname, BOOLEAN enable);
 
-	__declspec(dllexport)  DWORD SbieApi_QueryWatermark();
+	__declspec(dllexport)  LONG SbieApi__SetPrinter(WCHAR * boxname, BOOLEAN enable);
+	__declspec(dllexport)  LONG SbieApi__QueryPrinter();
 
-	__declspec(dllexport)  DWORD SbieApi_QueryScreenshot();
+	__declspec(dllexport)  LONG SbieApi__SetFileExport(WCHAR * boxname,BOOLEAN enable);
+	__declspec(dllexport)  LONG SbieApi__QueryFileExport();
 
-	__declspec(dllexport)  LONG SbieApi_SetScreenshot(BOOLEAN enable);
-
-	__declspec(dllexport)  DWORD SbieApi_SetPrinter(BOOLEAN enable);
-
-	__declspec(dllexport)  DWORD SbieApi_QueryPrinter();
-
-	__declspec(dllexport) int alarmWarning(int type,LPVOID params);
-
-	__declspec(dllexport)  DWORD SbieApi_SetFileExport(BOOLEAN enable);
-	__declspec(dllexport)  DWORD SbieApi_QueryFileExport();
+	__declspec(dllexport) int alarmWarning(int type, LPVOID params);
 
 	SBIEAPI_EXPORT
 		LONG SbieApi_QueryProcess(

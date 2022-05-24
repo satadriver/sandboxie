@@ -250,13 +250,13 @@ int setWatermark(int enable) {
 }
 
 
-int resetProcessMonitor() {
+int resetAllBoxList() {
 	int result = 0;
 	HMODULE h = LoadLibraryW(SBIEDLL L".dll");
 	if (h)
 	{
 		typedef LONG(*ptrSbieApi_ResetProcessMonitor)();
-		ptrSbieApi_ResetProcessMonitor func = (ptrSbieApi_ResetProcessMonitor)GetProcAddress(h, "SbieApi_ResetProcessMonitor");
+		ptrSbieApi_ResetProcessMonitor func = (ptrSbieApi_ResetProcessMonitor)GetProcAddress(h, "SbieApi_ResetAllBoxList");
 		if (func)
 		{
 			result = func();
@@ -284,7 +284,7 @@ int setProcessMonitor(const WCHAR * processname) {
 }
 
 
-
+/*
 int setPrinterControl(BOOLEAN enable) {
 	int result = 0;
 	HMODULE h = LoadLibraryW(SBIEDLL L".dll");
@@ -300,8 +300,6 @@ int setPrinterControl(BOOLEAN enable) {
 	}
 	return TRUE;
 }
-
-
 BOOLEAN SetWatermarkControl(BOOLEAN enable) {
 	int result = 0;
 	HMODULE h = LoadLibraryW(SBIEDLL L".dll");
@@ -317,7 +315,6 @@ BOOLEAN SetWatermarkControl(BOOLEAN enable) {
 	}
 	return result;
 }
-
 BOOLEAN SetScreenCaptureControl(BOOLEAN enable) {
 	int result = 0;
 	HMODULE h = LoadLibraryW(SBIEDLL L".dll");
@@ -333,7 +330,7 @@ BOOLEAN SetScreenCaptureControl(BOOLEAN enable) {
 	}
 	return result;
 }
-
+*/
 
 int getProcessInBox(const WCHAR* boxname, DWORD* pids) {
 	int result = 0;

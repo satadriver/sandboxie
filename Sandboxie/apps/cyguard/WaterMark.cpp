@@ -472,7 +472,7 @@ BOOL CreateLucencyBorderWindow(
 	}
 
 	// 反截屏
-	ScreenshotEnabled = SbieApi_QueryScreenshot();
+	ScreenshotEnabled = SbieApi__QueryScreenshot();
 	if (ScreenshotEnabled == 2)
 	{
 // 		if (!SetWindowDisplayAffinity(hWnd, WDA_MONITOR))
@@ -978,7 +978,7 @@ DWORD WINAPI CreateProcWndMonitor(PVOID pParam)
 BOOL WaterMarkStart()
 {
 	// 判断策略是否开启
-	INT enable = SbieApi_QueryWatermark();
+	INT enable = SbieApi__QueryWatermark();
 	if (enable == FALSE)
 	{
 		DP1("[LYSM][WaterMarkStartUp] SbieApi_QueryWatermark failed:%d\r\n", enable);
@@ -1021,7 +1021,7 @@ BOOL WaterMarkStart()
 BOOL WaterMarkStop()
 {
 	// 判断策略是否开启
-	INT enable = SbieApi_QueryWatermark();
+	INT enable = SbieApi__QueryWatermark();
 	if (enable == FALSE)
 	{
 		DP1("[LYSM][WaterMarkStop] SbieApi_QueryWatermark failed:%d\r\n", enable);

@@ -1596,9 +1596,7 @@ _FX LRESULT Gui_WindowProcW(
 	{
 		//__debugbreak();
 
-		//toggle = SbieApi_QueryWatermark();
-		extern BOOLEAN g_waterMarkControl;
-		toggle = g_waterMarkControl;
+		toggle = SbieApi_QueryWatermark();
 		if (toggle)
 		{
 			bupdate = GetUpdateRectFunction(hWnd, &updateRect, FALSE);

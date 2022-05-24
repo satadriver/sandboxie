@@ -57,7 +57,7 @@ int setJsonConfig_old(const WCHAR *filename,char * utf8data,int utf8size){
 		result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_CLEAR_PROCESS, 0, 0, NULL, 0, &dwretcode, NULL);
 	}
 
-	resetProcessMonitor();
+	resetAllBoxList();
 
 	for (int i = 0; i < sizeof(g_processBlackList) / sizeof(WCHAR*); i++)
 	{
@@ -131,28 +131,37 @@ int setJsonConfig_old(const WCHAR *filename,char * utf8data,int utf8size){
 		mylog(L"data param error\r\n");
 	}
 
+	WCHAR wstrusername[MAX_PATH];
+	getUsername(wstrusername);
+
 	for (int i = 0; i < datacnt; i++)
 	{
 		Json::Value sub = data[i];
 		string name = sub["name"].asString();
 
+		WCHAR wstrname[MAX_PATH];
+		MultiByteToWideChar(CP_ACP, 0, name.c_str(), -1, wstrname, sizeof(wstrname));
+
+		WCHAR wstrboxname[MAX_PATH];
+		wsprintfW(wstrboxname, L"%ws_%ws", wstrusername, wstrname);
+
 		if (name != "" )
 		{
 			int fileexport = sub["fileExport"].asInt();
 			//public_SetExportFlag(fileexport);
-			SbieApi_SetFileExport(fileexport);
+			SbieApi__SetFileExport(wstrname, fileexport);
 
 			BOOLEAN screencap = sub["screenCapture"].asInt();
-			SbieApi_SetScreenshot(screencap);
+			SbieApi__SetScreenshot(wstrname, screencap);
 			//SetScreenCaptureControl(screencap);
 
 			BOOLEAN watermark = sub["waterMark"].asInt();
 			//setWatermark(watermark);
-			SbieApi_SetWatermark(watermark);
+			SbieApi__SetWatermark(wstrname, watermark);
 
 			BOOLEAN printer = sub["printer"].asInt();
-			setPrinterControl(printer);
-			SbieApi_SetPrinter(printer);
+			//setPrinterControl(printer);
+			SbieApi__SetPrinter(wstrname, printer);
 
 			mylog(L"screen:%d,watermark:%d,printer:%d,fileexport:%d", screencap, watermark, printer,fileexport);
 
@@ -306,7 +315,7 @@ extern "C" __declspec(dllexport) int configBox_old(const WCHAR* wstrusername, co
 	result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_CLEAR_IPPORT, 0, 0, NULL, 0, &dwretcode, NULL);
 	result = DeviceIoControl(hWfp, IOCTL_WFP_SDWS_CLEAR_PROCESS, 0, 0, NULL, 0, &dwretcode, NULL);
 
-	resetProcessMonitor();
+	resetAllBoxList();
 
 	for (int i = 0; i < sizeof(g_processBlackList) / sizeof(WCHAR*); i++)
 	{
@@ -445,27 +454,27 @@ extern "C" __declspec(dllexport) int configBox_old(const WCHAR* wstrusername, co
 
 			int fileexport = sub["fileExport"].asInt();
 			//public_SetExportFlag(fileexport);
-			SbieApi_SetFileExport(fileexport);
+			SbieApi__SetFileExport(wstrboxname,fileexport);
 
 			BOOLEAN screencap = sub["screenCapture"].asInt();
-			SbieApi_SetScreenshot(screencap);
+			SbieApi__SetScreenshot(wstrboxname, screencap);
 			//SetScreenCaptureControl(screencap);
 
 			BOOLEAN watermark = sub["waterMark"].asInt();
-			SbieApi_SetWatermark(watermark);
+			SbieApi__SetWatermark(wstrboxname, watermark);
 			//SbieDll_SetWatermarkControl(watermark);
 
 			BOOLEAN printer = sub["printer"].asInt();
 			//SbieDll_SetPrinterControl(printer);
-			setPrinterControl(printer);
-			SbieApi_SetPrinter(printer);
+			//setPrinterControl(printer);
+			SbieApi__SetPrinter(wstrboxname, printer);
 			//LjgApi_SetPrinterControl(printer);
 
 			mylog(L"screen:%d,watermark:%d,printer:%d,fileexport:%d", screencap, watermark, printer, fileexport);
 
-			screencap = SbieApi_QueryScreenshot();
-			watermark = SbieApi_QueryWatermark();
-			printer = SbieApi_QueryPrinter();
+			screencap = SbieApi__QueryScreenshot();
+			watermark = SbieApi__QueryWatermark();
+			printer = SbieApi__QueryPrinter();
 			mylog(L"query screen:%d,watermark:%d,printer:%d", screencap, watermark, printer);
 
 			Json::Value allowPrograms = sub["allowPrograms"];
